@@ -16,7 +16,10 @@
             ANANTMART
         </div>
 <div class="search-box">
-            <input type="text" placeholder="Search for products...">
+            <input
+             type="text" 
+             id="searchInput"
+            placeholder="Search for products...">
         </div>
         <ul class="nav-links">
             <li><a href="#">Home</a></li>
@@ -27,7 +30,15 @@
         </ul>
 
         <div class="actions">
-            <a href="login.html"><button class="login-btn">Login</button></a>
+            <a href="login.html"id="loginlink">
+                <button class="login-btn">Login</
+                    button>
+                </a>
+                <span id="welcomeUser"></span>
+                <button id="logoutBtn"
+                style="display:none;">
+                Logout
+            </button>
            <a href="cart.html"> <button class="cart-btn">Cart</button></a>
         </div>
     </nav>
@@ -67,42 +78,13 @@
 
     <h2>Featured Products</h2>
 
-    <div class="product-grid">
-
-        <div class="product-card">
-            <img src="https://via.placeholder.com/250" alt="">
-            <h3>
-                <a href="product.html">Smartphone</a>
-            </h3>
-            <p>₹14,999</p>
-            <button>Buy Now</button>
-        </div>
-
-        <div class="product-card">
-            <img src="https://via.placeholder.com/250" alt="">
-            <h3>Headphones</h3>
-            <p>₹1,999</p>
-            <button>Buy Now</button>
-        </div>
-
-        <div class="product-card">
-            <img src="https://via.placeholder.com/250" alt="">
-            <h3>Shoes</h3>
-            <p>₹2,499</p>
-            <button>Buy Now</button>
-        </div>
-
-        <div class="product-card">
-            <img src="https://via.placeholder.com/250" alt="">
-            <h3>Smart Watch</h3>
-            <p>₹3,999</p>
-            <button>Buy Now</button>
-        </div>
+    <div class="product-grid"
+        id="productGrid">
 
     </div>
 
 </section>
-
+<script src="js/script.js"></script>
 </body>
 </html>
 <footer>

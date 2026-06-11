@@ -367,3 +367,154 @@ cursor:pointer;
 margin-top:10px;
 
 }
+#welcomeUser{
+    color:white;
+    font-weight:600;
+    margin: right 15px;
+}
+#logoutBtn{
+    background:#dc3545;
+    color:white;
+    border:none;
+    padding:10px 15px;
+    border-radius:8px;
+    cursor:pointer;
+}
+.admin-panel{
+
+max-width:500px;
+
+margin:50px auto;
+
+background:white;
+
+padding:30px;
+
+border-radius:15px;
+
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+
+}
+
+.admin-panel h1{
+
+text-align:center;
+
+margin-bottom:20px;
+
+color:#0a2e6d;
+
+}
+
+.admin-panel input{
+
+width:100%;
+
+padding:12px;
+
+margin:10px 0;
+
+border:1px solid #ddd;
+
+border-radius:8px;
+
+}
+.admin-panel select{
+width:100%;
+padding:12px;
+margin:10px 0;
+border:1px solid #ddd;
+border-radius:8px;
+}
+
+.admin-panel button{
+
+width:100%;
+
+padding:12px;
+
+background:#ff6b00;
+
+color:white;
+
+border:none;
+
+border-radius:8px;
+
+cursor:pointer;
+
+}
+.admin-product{
+
+background:white;
+
+padding:20px;
+
+margin-top:15px;
+
+border-radius:12px;
+
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+
+}
+
+.admin-product img{
+
+width:120px;
+
+height:120px;
+
+object-fit:cover;
+
+border-radius:10px;
+
+}
+
+.admin-product h3{
+
+margin:10px 0;
+
+color:#0a2e6d;
+
+}
+
+.admin-product p{
+
+color:#ff6b00;
+
+font-weight:bold;
+
+}
+
+.admin-product button{
+
+background:#dc3545;
+
+color:white;
+
+border:none;
+
+padding:10px 15px;
+
+border-radius:8px;
+
+cursor:pointer;
+
+}
+.edit-btn{
+
+background:#0a2e6d;
+
+color:white;
+
+border:none;
+
+padding:10px 15px;
+
+border-radius:8px;
+
+cursor:pointer;
+
+margin-right:10px;
+
+}
