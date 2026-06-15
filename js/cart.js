@@ -1,77 +1,151 @@
-let cart =
-JSON.parse(localStorage.getItem("cart")) || [];
+// =======================================================
+// ANANTMART - PRODUCTION READY CLEAN CART LOGIC (DAY 15)
+// =======================================================
 
-const cartContainer =
-document.getElementById("cart-items");
+async function loadCartFromServer() {
+  const cartItemsContainer = document.getElementById("cartItems");
+  const cartTotalElement = document.getElementById("cartTotal");
+  
+  // Browser se safe tarike se token nikalna
+  const token = localStorage.getItem("anantmart_token") || localStorage.getItem("token");
 
-const totalPriceElement =
-document.getElementById("total-price");
+  if (!token) {
+    if (cartItemsContainer) {
+      cartItemsContainer.innerHTML = "<p style='color:white; padding:20px; text-align:center;'>Please login to see your cart items.</p>";
+    }
+    return;
+  }
 
-function loadCart(){
+  try {
+    // 1. Backend se logged-in user ka cart lana
+    const response = await fetch("http://localhost:3000/cart", {
+      method: "GET",
+      headers: {
+        "authorization": token,
+        "Content-Type": "application/json"
+      }
+    });
 
-cartContainer.innerHTML = "";
+    // Token invalid hone par safe return
+    if (response.status === 401 || response.status === 403) {
+      if (cartItemsContainer) {
+        cartItemsContainer.innerHTML = "<p style='color:red; text-align:center;'>Session Expired! Please login again.</p>";
+      }
+      return;
+    }
 
-let total = 0;
+    const cartData = await response.json();
 
-if(cart.length === 0){
+    // 2. Main products ki list lana details match karne ke liye
+    const prodResponse = await fetch("http://localhost:3000/products");
+    const allProducts = await prodResponse.json();
 
-cartContainer.innerHTML =
-"<h2 class='cart-empty'>Your Cart is Empty</h2>";
+    if (!cartItemsContainer) return;
+    cartItemsContainer.innerHTML = ""; 
 
-totalPriceElement.innerHTML = '<h2 class="total-price">Total Price: ₹0</h2>';
+    if (!cartData || cartData.length === 0) {
+      cartItemsContainer.innerHTML = "<p style='color:white; padding:20px; text-align:center;'>Your cart is empty! 🛒</p>";
+      if (cartTotalElement) cartTotalElement.innerText = "0";
+      return;
+    }
 
-return;
+    let totalCartPrice = 0;
+    let itemsFoundCount = 0;
 
+    // 3. Products grid render karna aur price calculate karna
+    cartData.forEach(cartItem => {
+      if (!cartItem || !cartItem.productId) return; 
+
+      const matchingProduct = allProducts.find(p => {
+        if (!p) return false;
+        const pId = p._id || p.id;
+        return String(pId) === String(cartItem.productId);
+      });
+
+      if (matchingProduct) {
+        itemsFoundCount++;
+        const itemTotal = Number(matchingProduct.price || 0) * Number(cartItem.quantity || 1);
+        totalCartPrice += itemTotal;
+
+        // Safe HTML injection template literal ke sath
+        cartItemsContainer.innerHTML += `
+          <div class="cart-item" style="display:flex; justify-content:space-between; background:#1a1a2e; color:white; padding:15px; margin:10px auto; max-width:600px; border-radius:5px; align-items:center; border: 1px solid #f0a500;">
+            <div style="text-align: left;">
+              <h3 style="margin:0; color:#f0a500;">${matchingProduct.name}</h3>
+              <p style="margin:5px 0 0 0; color:#ccc;">Price: ₹${matchingProduct.price}</p>
+            </div>
+            <div style="text-align: right;">
+              <p style="margin:0;">Qty: <b>${cartItem.quantity}</b></p>
+              <p style="margin:5px 0 0 0; color:#f0a500;">Total: <b>₹${itemTotal}</b></p>
+            </div>
+          </div>
+        `;
+      }
+    });
+
+    if (itemsFoundCount === 0 && cartData.length > 0) {
+      cartItemsContainer.innerHTML = "<p style='color:orange; padding:20px; text-align:center;'>Cart items found, but matching product details missing in Database!</p>";
+    }
+
+    if (cartTotalElement) {
+      cartTotalElement.innerText = totalCartPrice;
+    }
+
+  } catch (error) {
+    console.error("Cart Loading Error:", error);
+    if (cartItemsContainer) {
+      cartItemsContainer.innerHTML = "<p style='color:red; text-align:center;'>Server connection error!</p>";
+    }
+  }
 }
 
-cart.forEach((product,index)=>{
+// =======================================================
+// 4. CHECKOUT / PLACE ORDER LOGIC (WINDOW SCOPE FOR HTML)
+// =======================================================
+window.placeOrderNow = async function() {
+  const token = localStorage.getItem("anantmart_token") || localStorage.getItem("token");
 
-total += product.price;
+  if (!token) {
+    alert("Please login to checkout!");
+    window.location.href = "login.html";
+    return;
+  }
 
-cartContainer.innerHTML += `
+  const confirmOrder = confirm("Kya aap order confirm karna chahte hain?");
+  if (!confirmOrder) return;
 
-<div style="
-padding:20px;
-margin:20px;
-border:1px solid #ddd;
-border-radius:10px;
-">
+  try {
+    const response = await fetch("http://localhost:3000/checkout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "authorization": token
+      }
+    });
 
-<h3>${product.name}</h3>
+    const result = await response.json();
 
-<p>₹${product.price}</p>
+    if (response.status === 201 || response.status === 200) {
+      alert(`🎉 Order Success!\nOrder ID: ${result.orderId}\nTotal Bill: ₹${result.totalBill || 0}\n\nThank you for shopping on ANANTMART!`);
+      window.location.href = "index.html"; 
+    } else {
+      alert("Error: " + result.message);
+    }
 
-<button class="remove-btn" 
-onclick="removeItem(${index})">
-Remove
-</button>
+  } catch (error) {
+    console.error("Checkout error:", error);
+    alert("Server issue! Order place nahi ho paya.");
+  }
+};
 
-</div>
-
-`;
-
-});
-
-totalPriceElement.innerHTML =
-'<h2 class="total-price">Total Price: ₹' + total + '</h2>';
-
+function clearCartLocal() {
+  const confirmClear = confirm("Kya aap apna poora cart khali karna chahte hain?");
+  if (confirmClear) {
+    const cartItemsContainer = document.getElementById("cartItems");
+    const cartTotalElement = document.getElementById("cartTotal");
+    if (cartItemsContainer) cartItemsContainer.innerHTML = "<p style='color:white; padding:20px; text-align:center;'>Your cart is empty! 🛒</p>";
+    if (cartTotalElement) cartTotalElement.innerText = "0";
+  }
 }
 
-function removeItem(index){
-
-cart.splice(index,1);
-
-localStorage.setItem(
-"cart",
-JSON.stringify(cart)
-);
-
-loadCart();
-
-}
-
-loadCart();
-function clearCart(){
-    localStorage.removeItem("cart");
-    location.reload();
-}
+document.addEventListener("DOMContentLoaded", loadCartFromServer);

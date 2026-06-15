@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - ANANTMART</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        /* ANANTMART Strict Brand Theme Integration */
+        body {
+            background-color: #F8F9FC; /* Light Premium Background */
+            color: #222222; /* Dark Text */
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .admin-panel {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #FFFFFF;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #E5E7EB;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            color: #1E3A8A; /* Primary Royal Blue */
+            font-size: 28px;
+            font-weight: 700;
+            border-bottom: 3px solid #1E3A8A;
+            padding-bottom: 10px;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #1E3A8A;
+            font-size: 22px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #E5E7EB;
+            padding-bottom: 8px;
+        }
+
+        /* Analytics Stats Counters Dashboard */
+        .stats-grid {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: #F8F9FC;
+            border: 1px solid #E5E7EB;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .stat-card h3 {
+            margin: 0;
+            font-size: 12px;
+            color: #666666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card p {
+            margin: 8px 0 0 0;
+            font-size: 26px;
+            font-weight: 700;
+            color: #F97316; /* Accent Orange */
+        }
+
+        /* Form Inputs Container & Layout */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .admin-panel input, .admin-panel select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #E5E7EB;
+            border-radius: 4px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            box-sizing: border-box;
+            background-color: #FFFFFF;
+        }
+
+        .admin-panel input:focus, .admin-panel select:focus {
+            border-color: #2563EB; /* Secondary Blue */
+            outline: none;
+        }
+
+        .admin-panel button {
+            background-color: #F97316; /* Accent Orange */
+            color: #FFFFFF;
+            border: none;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 250px;
+            transition: background 0.2s;
+            display: block;
+        }
+
+        .admin-panel button:hover {
+            background-color: #EA580C; /* Accent Hover */
+        }
+
+        /* Products Inventory List Grid Layout */
+        #adminProducts {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .admin-product {
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        }
+
+        .admin-product img {
+            width: 100%;
+            height: 140px;
+            object-fit: contain;
+            margin-bottom: 12px;
+            border-radius: 4px;
+        }
+
+        .admin-product h3 {
+            margin: 5px 0;
+            font-size: 15px;
+            color: #222222;
+            font-weight: 500;
+        }
+
+        .admin-product p {
+            margin: 4px 0;
+            font-size: 14px;
+            color: #666666;
+        }
+
+        .admin-product p:nth-of-type(1) {
+            color: #F97316; /* Price text in Orange */
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        /* Action Edit/Delete Buttons Inside Inventory Cards */
+        .admin-product button {
+            display: inline-block;
+            width: 45%;
+            padding: 6px 10px;
+            margin: 8px 2% 0 2%;
+            font-size: 12px;
+            font-weight: 500;
+            max-width: 100px;
+        }
+
+        .admin-product button:nth-of-type(1) { background-color: #2563EB; } /* Secondary Blue */
+        .admin-product button:nth-of-type(1):hover { background-color: #1E3A8A; }
+        .admin-product button:nth-of-type(2) { background-color: #FFFFFF; color: #DC2626; border: 1px solid #FCA5A5; }
+        .admin-product button:nth-of-type(2):hover { background-color: #FEF2F2; }
+
+        /* Day 16: Live Orders Table Styling */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            background: #FFFFFF;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+        }
+
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .order-table th, .order-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .order-table th {
+            background-color: #1E3A8A; /* Primary Royal Blue Header */
+            color: #FFFFFF;
+            font-weight: 500;
+        }
+
+        .order-table tr:hover {
+            background-color: #F8F9FC;
+        }
+
+        .status-badge {
+            background: #2563EB;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-panel">
+        <h1>ANANTMART Admin Control Center</h1>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Revenue</h3>
+                <p>₹<span id="revenueWidget">0</span></p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Orders</h3>
+                <p id="ordersWidget">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Registered Users</h3>
+                <p id="usersWidget">0</p>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <input type="text" id="productName" placeholder="Product Name">
+            <input type="number" id="productPrice" placeholder="Product Price">
+            
+            <select id="productCategory">
+                <option value="">Select Category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Fashion">Fashion</option>
+                <option value="Home & Kitchen">Home & Kitchen</option>
+                <option value="Beauty">Beauty</option>
+                <option value="Groceries">Groceries</option>
+                <option value="Sports">Sports</option>
+                <option value="Home Decor">Home Decor</option>
+            </select>
+            
+            <input type="number" id="productStock" placeholder="Stock Quantity">
+            <input type="text" id="productImage" placeholder="Product Image URL">
+        </div>
+
+        <button onclick="addProduct()">Add Product</button>
+
+        <h2>All Products Inventory</h2>
+        <div id="adminProducts"></div>
+
+        <h2>📦 Customer Live Orders</h2>
+        <div class="table-container">
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer Email</th>
+                        <th>Items (Qty)</th>
+                        <th>Total Amount</th>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="adminOrderTableBody">
+                    </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

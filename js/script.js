@@ -1,118 +1,133 @@
-const addToCart =
-document.getElementById("addToCart");
+// Global array taaki search filter sahi se kaam kare
+let allProductsArray = []; 
 
-if(addToCart){
+// =======================================================
+// 1. PRODUCTS SCREEN PAR DIKHANA (SAFE ID RESOLUTION)
+// =======================================================
+function displayProducts(products) {
+  const productGrid = document.getElementById("productGrid");
+  if (!productGrid) return;
 
-addToCart.addEventListener("click",()=>{
+  productGrid.innerHTML = ""; // Purani grid saaf karna
 
-const product = {
+  products.forEach(product => {
+    // SECURITY CHECK: NeDB database me real automatic ID '_id' hoti hai, 
+    // par hum har safety ke liye teenon scenarios check kar rahe hain.
+    const realProductId = product._id || product.id || product.id;
 
-name:"Premium Smartphone",
-price:14999
+    console.log(`Product Name: ${product.name} -> Resolved ID:`, realProductId);
 
-};
-
-let cart =
-JSON.parse(localStorage.getItem("cart")) || [];
-
-cart.push(product);
-
-localStorage.setItem(
-"cart",
-JSON.stringify(cart)
-);
-
-alert("Product Added To Cart");
-
-});
-
+    productGrid.innerHTML += `
+      <div class="product-card">
+        <h3>${product.name}</h3>
+        <p>₹${product.price}</p>
+        <button onclick="addToCart('${realProductId}')">Add to Cart 🛒</button>
+        <button class="buy-now-btn">Buy Now</button>
+      </div>
+    `;
+  });
 }
-const user =
-JSON.parse(localStorage.getItem("user"));
 
-const welcomeUser =
-document.getElementById("welcomeUser");
-
-const loginLink =
-document.getElementById("loginLink");
-
-const logoutBtn =
-document.getElementById("logoutBtn");
-
-if(user && welcomeUser && loginLink && logoutBtn){
-
-welcomeUser.innerHTML =
-`👤 ${user.name}`;
-
-loginLink.style.display = "none";
-
-logoutBtn.style.display = "inline-block";
-
-
-logoutBtn.addEventListener("click",()=>{
-
-localStorage.removeItem("user");
-
-location.reload();
-
-});
+// Backend se live products load karna
+async function loadProducts() {
+  try {
+    const response = await fetch("http://localhost:3000/products");
+    const products = await response.json();
+    
+    console.log("Raw Backend Products:", products); // Debugging line
+    allProductsArray = products; 
+    displayProducts(products);
+  } catch (error) {
+    console.log("Products load karne me dikkat:", error);
+  }
 }
-let products =
-JSON.parse(localStorage.getItem("products")) || [];
-function displayProducts(products){
-const productGrid =
-document.getElementById("productGrid");
 
-if(!productGrid) return;
+loadProducts();
 
-productGrid.innerHTML = "";
+// =======================================================
+// 2. SECURE ADD TO CART FUNCTION 
+// =======================================================
+async function addToCart(productId) {
+  const token = localStorage.getItem("anantmart_token");
 
-products.forEach(product=>{
+  if (!token) {
+    alert("Please login first to add items to your cart!");
+    window.location.href = "login.html";
+    return;
+  }
 
-productGrid.innerHTML += `
+  // Debugging log dekhne ke liye ki console me kya ja raha hai
+  console.log("Sending to Backend ProductId:", productId);
 
-<div class="product-card">
+  const cartData = {
+    productId: productId,
+    quantity: 1
+  };
 
-<img src="${product.image}">
+  try {
+    const response = await fetch("http://localhost:3000/cart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "authorization": token 
+      },
+      body: JSON.stringify(cartData)
+    });
 
-<h3>${product.name}</h3>
+    const result = await response.json();
 
-<p>₹${product.price}</p>
-
-<p>${product.category}</p>
-
-<button>Buy Now</button>
-
-</div>
-
-`;
-
-});
-
+    if (response.status === 201 || response.status === 200) {
+      alert("Item added to cart successfully! 🛒");
+    } else {
+      alert("Error: " + result.message);
+    }
+  } catch (error) {
+    console.error("Cart error:", error);
+    alert("Server band hai! Pehle backend chalu karo.");
+  }
 }
-displayProducts(products);
 
-const searchInput =
-document.getElementById("searchInput");
+// =======================================================
+// 3. USER WELCOME & LOGOUT LOGIC
+// =======================================================
+const isLoggedIn = localStorage.getItem("isLoggedIn");
+const userEmail = localStorage.getItem("userEmail");
 
-if(searchInput){
+const welcomeUser = document.getElementById("welcomeUser");
+const loginLink = document.getElementById("loginlink"); 
+const logoutBtn = document.getElementById("logoutBtn");
 
-searchInput.addEventListener("keyup",()=>{
+if (isLoggedIn === "true" && userEmail && welcomeUser && loginLink && logoutBtn) {
+  const shortName = userEmail.split("@")[0]; 
+  
+  welcomeUser.innerHTML = `👤 ${shortName}`;
+  welcomeUser.style.display = "inline-block";
+  loginLink.style.display = "none";
+  logoutBtn.style.display = "inline-block";
 
-const searchText =
-searchInput.value.toLowerCase();
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("anantmart_token");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("isLoggedIn");
+    
+    alert("Logged out successfully!");
+    window.location.href = "index.html";
+  });
+}
 
-const filteredProducts =
-products.filter(product=>
+// =======================================================
+// 4. LIVE SEARCH FILTER
+// =======================================================
+const searchInput = document.getElementById("searchInput");
 
-product.name
-.toLowerCase()
-.includes(searchText)
+if (searchInput) {
+  searchInput.addEventListener("keyup", () => {
+    const searchText = searchInput.value.toLowerCase();
+    
+    const filteredProducts = allProductsArray.filter(product =>
+      product.name.toLowerCase().includes(searchText)
+    );
 
-);
-
-displayProducts(filteredProducts);
-
-});
-
+    displayProducts(filteredProducts);
+  });
 }

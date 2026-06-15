@@ -1,25 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cart - ANANTMART</title>
-<link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - ANANTMART</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body style="background-color: #0b0b1a; color: white; font-family: sans-serif; padding: 20px;">
 
-<h1 class="cart-title">
-Shopping Cart
-</h1>
+    <header style="margin-bottom: 30px;">
+        <a href="index.html" style="color: #ffffff; text-decoration: none; font-weight: bold;">← Back to Shop</a>
+    </header>
 
-<div id="cart-items"></div>
-<h2 id="total-price" style="text-align:center;"></h2>
-<button class="clear-cart-btn"
- onclick="clearCart()">
-    Clear Cart
-</button>
+    <h1 class="cart-title" style="text-align: center; color: #ffffff; margin-bottom: 20px; letter-spacing: 1px;">
+        🛒 Your Shopping Cart
+    </h1>
 
-<script src="js/cart.js"></script>
+    <div id="cartItems" style="max-width: 600px; margin: 0 auto;"></div>
 
+    <div style="text-align: center; margin-top: 20px;">
+        <h2>Grand Total: ₹<span id="cartTotal">0</span></h2>
+    </div>
+
+    <div style="max-width: 600px; margin: 30px auto; display: flex; gap: 15px;">
+        <button id="checkoutBtn" onclick="placeOrderNow()" class="shop-btn" style="flex: 2; background-color: #f0a500; color: #000; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 16px;">
+            Place Order 🎁
+        </button>
+        <button class="clear-cart-btn" onclick="clearCartLocal()" style="flex: 1; background-color: #d9534f; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer;">
+            Clear Cart
+        </button>
+    </div>
+
+    <script src="js/cart.js"></script>
 </body>
 </html>
