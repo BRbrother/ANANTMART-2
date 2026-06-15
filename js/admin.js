@@ -2,6 +2,9 @@
 // ANANTMART - PRODUCTION READY COMPLETE ADMIN LOGIC (DAY 16)
 // =======================================================
 
+// MASTER URL: Pure file ke liye ek hi baar live link set kar diya
+const BACKEND_URL = "https://anantmart-backend.onrender.com";
+
 // -------------------------------------------------------
 // 1. PRODUCTS SCREEN PAR DIKHANA (GET REQUEST)
 // -------------------------------------------------------
@@ -10,21 +13,17 @@ async function loadProducts() {
   if (!adminProducts) return;
 
   try {
-    const response = await fetch("http://localhost:3000/products");
+    const response = await fetch(`${BACKEND_URL}/products`);
     const products = await response.json();
 
     adminProducts.innerHTML = ""; // Purani list saaf karna
 
     products.forEach((product) => {
-      // SAFE FALLBACK: Agar image URL missing hai, toh default placeholder image lagao
       const productImage = product.image || "https://via.placeholder.com/150";
       const productCat = product.category || 'N/A';
       const productStock = product.stock || '0';
-      
-      // NeDB ki automatic real ID ALWAYS '_id' hoti hai
       const realId = product._id || product.id;
 
-      // ANANTMART Premium Grid Card Layout Style
       adminProducts.innerHTML += `
         <div class="admin-product">
           <img src="${productImage}" alt="${product.name}">
@@ -69,7 +68,8 @@ async function addProduct() {
   };
 
   try {
-    const response = await fetch("http://localhost:3000/products", {
+    // FIXED: Localhost hata kar global BACKEND_URL lagaya
+    const response = await fetch(`${BACKEND_URL}/products`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -83,6 +83,7 @@ async function addProduct() {
       alert("🎉 Product Added to ANANTMART Store Successfully!");
       
       loadProducts(); // Fresh list update
+      loadAdminStatsAndOrders(); // Stats automatic reload karne ke liye
       
       // Form fields ko wapas khali karna
       document.getElementById("productName").value = "";
@@ -95,7 +96,7 @@ async function addProduct() {
     }
   } catch (error) {
     console.error("Backend se connect nahi ho paya:", error);
-    alert("Server band hai! Pehle terminal me server.js run karo.");
+    alert("Server connect nahi ho pa raha hai bhaa!");
   }
 }
 
@@ -116,7 +117,8 @@ async function editProduct(id) {
   if (newPrice) updatedData.price = Number(newPrice);
 
   try {
-    const response = await fetch(`http://localhost:3000/products/${id}`, {
+    // FIXED: Global BACKEND_URL integrate kiya
+    const response = await fetch(`${BACKEND_URL}/products/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -147,7 +149,8 @@ async function deleteProduct(id) {
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/products/${id}`, {
+    // FIXED: Global BACKEND_URL integrate kiya
+    const response = await fetch(`${BACKEND_URL}/products/${id}`, {
       method: "DELETE"
     });
 
@@ -156,6 +159,7 @@ async function deleteProduct(id) {
     if (response.status === 200) {
       alert("🗑️ Deleted Successfully!");
       loadProducts(); 
+      loadAdminStatsAndOrders(); // Dynamic dashboard numerical sync
     } else {
       alert("Error: " + result.message);
     }
@@ -170,7 +174,8 @@ async function deleteProduct(id) {
 // -------------------------------------------------------
 async function loadAdminStatsAndOrders() {
   try {
-    const response = await fetch("http://localhost:3000/admin/stats");
+    // FIXED: Missing fetch call ko yahan jod diya hai
+    const response = await fetch(`${BACKEND_URL}/admin/stats`);
     const data = await response.json();
 
     // Top Row Cards Widgets Update
