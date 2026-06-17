@@ -1,8 +1,15 @@
 // =======================================================
-// 1. USER REGISTRATION (BACKEND CONNECTED - DAY 9)
+// ANANTMART - PRODUCTION READY AUTHENTICATION LOGIC
+// =======================================================
+
+// MASTER URL: Pure file ke liye ek hi baar live link set kar diya
+const BACKEND_URL = "https://anantmart-backend.onrender.com";
+
+// =======================================================
+// 1. USER REGISTRATION (BACKEND CONNECTED)
 // =======================================================
 async function registerUser() {
-  const name = document.getElementById("name").value; // Abhi hum backend me sirf email/password bhej rahe hain
+  const name = document.getElementById("name").value; 
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
@@ -11,15 +18,14 @@ async function registerUser() {
     return;
   }
 
-  // Data object taiyar kiya backend ko bhejne ke liye
   const userData = {
     email: email,
     password: password
   };
 
   try {
-    // Backend API ko POST request bhejna
-    const response = await fetch("http://localhost:3000/register", {
+    // FIXED: Localhost hata kar global BACKEND_URL lagaya
+    const response = await fetch(`${BACKEND_URL}/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -31,22 +37,20 @@ async function registerUser() {
 
     if (response.status === 201) {
       alert("Registration Successful! 🎉");
-      
-      // Account bante hi sidhe login page par bhej dena
       window.location.href = "login.html";
     } else {
-      // Agar email pehle se register hoga, toh backend ka error message dikhega
       alert("Error: " + result.message);
     }
 
   } catch (error) {
     console.error("Register karne me dikkat aayi:", error);
-    alert("Server band hai! Pehle terminal me server.js run karo.");
+    alert("Server connect nahi ho pa raha hai bhaa!");
   }
 }
 
-
-// Is pure function ko fir se paste kar lein (Day 12 Update)
+// =======================================================
+// 2. USER LOGIN (TOKEN MANAGEMENT)
+// =======================================================
 async function loginUser() {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
@@ -59,7 +63,8 @@ async function loginUser() {
   const loginData = { email, password };
 
   try {
-    const response = await fetch("http://localhost:3000/login", {
+    // FIXED: Localhost hata kar global BACKEND_URL lagaya
+    const response = await fetch(`${BACKEND_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(loginData)
@@ -70,10 +75,8 @@ async function loginUser() {
     if (response.status === 200) {
       alert("Login Successful! Welcome back. 🎉");
 
-      // =======================================================
       // TOKEN KO LOCALSTORAGE ME SAVE KARNA
-      // =======================================================
-      localStorage.setItem("anantmart_token", result.token); // Secure Token Saved!
+      localStorage.setItem("anantmart_token", result.token); 
       localStorage.setItem("userEmail", result.user.email);
       localStorage.setItem("isLoggedIn", "true");
 
@@ -83,6 +86,6 @@ async function loginUser() {
     }
   } catch (error) {
     console.error("Login Error:", error);
-    alert("Server Error!");
+    alert("Server Error! Connection nahi ban paya.");
   }
 }

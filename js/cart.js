@@ -2,6 +2,9 @@
 // ANANTMART - PRODUCTION READY CLEAN CART LOGIC (DAY 15)
 // =======================================================
 
+// MASTER URL: Pure file ke liye ek hi baar live link set kar diya
+const BACKEND_URL = "https://anantmart-backend.onrender.com";
+
 async function loadCartFromServer() {
   const cartItemsContainer = document.getElementById("cartItems");
   const cartTotalElement = document.getElementById("cartTotal");
@@ -17,8 +20,8 @@ async function loadCartFromServer() {
   }
 
   try {
-    // 1. Backend se logged-in user ka cart lana
-    const response = await fetch("http://localhost:3000/cart", {
+    // 1. FIXED: Backend se logged-in user ka cart lana (Render URL connected)
+    const response = await fetch(`${BACKEND_URL}/cart`, {
       method: "GET",
       headers: {
         "authorization": token,
@@ -36,8 +39,8 @@ async function loadCartFromServer() {
 
     const cartData = await response.json();
 
-    // 2. Main products ki list lana details match karne ke liye
-    const prodResponse = await fetch("http://localhost:3000/products");
+    // 2. FIXED: Main products ki list lana details match karne ke liye
+    const prodResponse = await fetch(`${BACKEND_URL}/products`);
     const allProducts = await prodResponse.json();
 
     if (!cartItemsContainer) return;
@@ -115,7 +118,8 @@ window.placeOrderNow = async function() {
   if (!confirmOrder) return;
 
   try {
-    const response = await fetch("http://localhost:3000/checkout", {
+    // FIXED: Localhost hata kar global BACKEND_URL lagaya
+    const response = await fetch(`${BACKEND_URL}/checkout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
