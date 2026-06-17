@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const datastore = require("nedb-promises");
 const jwt = require("jsonwebtoken");
+const path = require("path"); // FIXED: Path module add kiya absolute routing ke liye
 
 const app = express();
 
@@ -11,14 +12,15 @@ app.use(express.json());
 const JWT_SECRET = "AnantMart_Super_Secret_Key_2026";
 
 // =======================================================
-// 1. DATABASES CONNECTION (Day 15: Orders DB Added)
+// 1. DATABASES CONNECTION (FIXED FOR CLOUD DIRECT STORAGE)
 // =======================================================
-const Product = datastore.create({ filename: "products.db", autoload: true });
-const User = datastore.create({ filename: "users.db", autoload: true });
-const Cart = datastore.create({ filename: "carts.db", autoload: true });
-const Order = datastore.create({ filename: "orders.db", autoload: true }); // DAY 15
+// path.join(__dirname, ...) se ab data direct project folder ke andar sahi files me save hoga
+const Product = datastore.create({ filename: path.join(__dirname, "products.db"), autoload: true });
+const User = datastore.create({ filename: path.join(__dirname, "users.db"), autoload: true });
+const Cart = datastore.create({ filename: path.join(__dirname, "carts.db"), autoload: true });
+const Order = datastore.create({ filename: path.join(__dirname, "orders.db"), autoload: true }); 
 
-console.log("All Databases (Products, Users, Carts, Orders) Connected! 🚀");
+console.log("All Databases (Products, Users, Carts, Orders) Connected Safely in Root! 🚀");
 
 // --- MIDDLEWARE: Token Verification ---
 const verifyToken = (req, res, next) => {
@@ -67,18 +69,15 @@ app.post("/checkout", verifyToken, async (req, res) => {
   const email = req.user.email;
 
   try {
-    // 1. User ke cart se saare items uthana
     const userCartItems = await Cart.find({ email: email });
 
     if (userCartItems.length === 0) {
       return res.status(400).json({ message: "Apka cart khali hai! Order place nahi ho sakta." });
     }
 
-    // 2. Saare products ki original list lana price calculate karne ke liye
     const allProducts = await Product.find({});
     let grandTotal = 0;
     
-    // Final items list taiyar karna jisme original name aur price bhi linked ho
     const orderItems = userCartItems.map(cartItem => {
       const matchedProd = allProducts.find(p => p._id === cartItem.productId);
       const price = matchedProd ? matchedProd.price : 0;
@@ -93,16 +92,14 @@ app.post("/checkout", verifyToken, async (req, res) => {
       };
     });
 
-    // 3. Naya Order Object database me insert karna
     const newOrder = await Order.insert({
       email: email,
       items: orderItems,
       totalAmount: grandTotal,
       orderDate: new Date().toLocaleString(),
-      status: "Pending" // Default status delivery ke liye
+      status: "Pending" 
     });
 
-    // 4. Order successfully place hone ke baad user ka cart khali kar dena
     await Cart.remove({ email: email }, { multi: true }); 
 
     res.status(201).json({ 
@@ -117,34 +114,31 @@ app.post("/checkout", verifyToken, async (req, res) => {
   }
 });
 
-// User ke purane orders dekhne ki API (Bonus)
 app.get("/orders", verifyToken, async (req, res) => {
   try {
     const userOrders = await Order.find({ email: req.user.email });
     res.json(userOrders);
   } catch (error) { res.status(500).json({ message: "Orders lane me dikkat aayi!" }); }
 });
+
 // =======================================================
 // DAY 16: ADMIN DASHBOARD DATA API
 // =======================================================
 app.get("/admin/stats", async (req, res) => {
   try {
-    // 1. Database se saare orders aur total users nikalna
     const allOrders = await Order.find({});
     const allUsers = await User.find({});
     
-    // 2. Total Revenue (Kamai) calculate karna
     let totalRevenue = 0;
     allOrders.forEach(order => {
       totalRevenue += Number(order.totalAmount || 0);
     });
 
-    // 3. Ek hi baar me saara stats object frontend ko bhej dena
     res.json({
       totalOrders: allOrders.length,
       totalUsers: allUsers.length,
       totalRevenue: totalRevenue,
-      ordersList: allOrders // Saare orders ki list tables me dikhane ke liye
+      ordersList: allOrders 
     });
 
   } catch (error) {
@@ -152,4 +146,7 @@ app.get("/admin/stats", async (req, res) => {
     res.status(500).json({ message: "Admin data load karne me dikkat!" });
   }
 });
-app.listen(3000, () => { console.log("Server running on port 3000"); });
+
+// Port configuration for Render cloud compatibility
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => { console.log(`Server running on port ${PORT}`); });
