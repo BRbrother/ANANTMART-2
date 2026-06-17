@@ -24,7 +24,7 @@ function displayProducts(products) {
         <h3>${product.name}</h3>
         <p>₹${product.price}</p>
         <button onclick="addToCart('${realProductId}')">Add to Cart 🛒</button>
-        <button class="buy-now-btn">Buy Now</button>
+        <a href="product.html?id=${realProductId}" class="buy-now-btn">Buy Now</a>
       </div>
     `;
   });
