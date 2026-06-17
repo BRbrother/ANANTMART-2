@@ -586,3 +586,58 @@ margin-right:10px;
     padding: 5px 10px !important;
   }
 }
+/* =======================================================
+   ANANTMART PREMIUM NAVBAR BUTTONS STYLING (DAY 16)
+   ======================================================= */
+
+/* Actions container jisme dono buttons hain */
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Dono buttons ke beech ka gap */
+}
+
+/* Premium Login Button Style */
+.login-btn {
+    background-color: transparent;
+    color: #1e293b; /* Dark charcoal text */
+    border: 1px solid #cbd5e1;
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+    background-color: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+/* Premium Cart Button Style (ANANTMART Brand Orange) */
+.cart-btn {
+    background-color: #ea580c; /* High-end Premium Orange */
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(234, 88, 12, 0.2);
+    transition: all 0.2s ease;
+}
+
+.cart-btn:hover {
+    background-color: #c2410c; /* Thoda dark orange hover par */
+    box-shadow: 0 4px 6px rgba(234, 88, 12, 0.3);
+    transform: translateY(-1px); /* Chota sa lift effect */
+}
+
+.cart-btn:active {
+    transform: translateY(0);
+}

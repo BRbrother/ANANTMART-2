@@ -20,11 +20,19 @@ function displayProducts(products) {
     console.log(`Product Name: ${product.name} -> Resolved ID:`, realProductId);
 
     productGrid.innerHTML += `
-      <div class="product-card">
-        <h3>${product.name}</h3>
-        <p>₹${product.price}</p>
-        <button onclick="addToCart('${realProductId}')">Add to Cart 🛒</button>
-        <a href="product.html?id=${realProductId}" class="buy-now-btn">Buy Now</a>
+      <div class="product-card" style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; text-align: center; background: #fff; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <img src="${product.image || 'https://via.placeholder.com/150'}" alt="${product.name}" style="width: 100%; height: auto; border-radius: 4px; margin-bottom: 12px;">
+        <h3 style="margin: 10px 0; font-size: 18px; color: #1e293b;">${product.name}</h3>
+        <p style="font-size: 16px; font-weight: bold; color: #ea580c; margin-bottom: 15px;">₹${product.price}</p>
+
+        <div class="product-actions" style="display: flex; flex-direction: column; gap: 8px; ">
+        <button onclick="addToCart('${realProductId}')" style="background: #ea580c; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%;">
+        Add to Cart 🛒
+        </button>
+        <a href="product.html?id=${realProductId}" style="text-decoration: none; background: #1e293b; color: white; padding: 10px; border-radius: 6px; font-weight: bold; text-align: center; display: block; width: 100%;">
+          Buy Now
+        </a>
+      </div>
       </div>
     `;
   });
