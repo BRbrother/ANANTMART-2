@@ -1,6 +1,9 @@
 // Global array taaki search filter sahi se kaam kare
 let allProductsArray = []; 
 
+// MASTER URL: Pure file ke liye ek hi baar live link set kar diya
+const BACKEND_URL = "https://anantmart-backend.onrender.com";
+
 // =======================================================
 // 1. PRODUCTS SCREEN PAR DIKHANA (SAFE ID RESOLUTION)
 // =======================================================
@@ -11,9 +14,8 @@ function displayProducts(products) {
   productGrid.innerHTML = ""; // Purani grid saaf karna
 
   products.forEach(product => {
-    // SECURITY CHECK: NeDB database me real automatic ID '_id' hoti hai, 
-    // par hum har safety ke liye teenon scenarios check kar rahe hain.
-    const realProductId = product._id || product.id || product.id;
+    // SECURITY CHECK: NeDB database me real automatic ID '_id' hoti hai
+    const realProductId = product._id || product.id;
 
     console.log(`Product Name: ${product.name} -> Resolved ID:`, realProductId);
 
@@ -31,7 +33,8 @@ function displayProducts(products) {
 // Backend se live products load karna
 async function loadProducts() {
   try {
-    const response = await fetch("http://localhost:3000/products");
+    // FIXED: Localhost hata kar global BACKEND_URL lagaya
+    const response = await fetch(`${BACKEND_URL}/products`);
     const products = await response.json();
     
     console.log("Raw Backend Products:", products); // Debugging line
@@ -56,7 +59,6 @@ async function addToCart(productId) {
     return;
   }
 
-  // Debugging log dekhne ke liye ki console me kya ja raha hai
   console.log("Sending to Backend ProductId:", productId);
 
   const cartData = {
@@ -65,7 +67,8 @@ async function addToCart(productId) {
   };
 
   try {
-    const response = await fetch("http://localhost:3000/cart", {
+    // FIXED: Localhost hata kar global BACKEND_URL lagaya
+    const response = await fetch(`${BACKEND_URL}/cart`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -83,7 +86,7 @@ async function addToCart(productId) {
     }
   } catch (error) {
     console.error("Cart error:", error);
-    alert("Server band hai! Pehle backend chalu karo.");
+    alert("Server connect nahi ho pa raha hai bhaa!");
   }
 }
 
