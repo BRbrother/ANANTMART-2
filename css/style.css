@@ -541,3 +541,48 @@ margin-right:10px;
     cursor: pointer;
     font-weight: bold;
 }
+/* =======================================================
+   ANANTMART MOBILE RESPONSIVE NAVBAR FIX (DAY 16)
+   ======================================================= */
+@media screen and (max-width: 768px) {
+  /* Main Header Container */
+  header, .navbar {
+    display: flex !important;
+    flex-direction: column !important; /* Items ko row se column me badla */
+    gap: 12px !important;
+    padding: 12px 8px !important;
+    height: auto !important; /* Fixed height hatayi */
+    text-align: center !important;
+  }
+
+  /* Logo container adjustments */
+  header h1, .brand-logo, .logo {
+    font-size: 24px !important;
+    margin: 0 auto !important;
+    display: block !important;
+  }
+
+  /* Search Bar Box Fix */
+  .search-container, header input, #searchInput {
+    width: 90% !important;
+    margin: 0 auto !important;
+    max-width: 100% !important;
+    position: static !important; /* Kisi ke upar na chadhe */
+    display: block !important;
+  }
+
+  /* Right Side Navigation Links/Buttons */
+  nav, .nav-links, .auth-buttons {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 15px !important;
+    width: 100% !important;
+    margin-top: 5px !important;
+  }
+
+  nav a, .nav-links a {
+    font-size: 14px !important;
+    padding: 5px 10px !important;
+  }
+}
