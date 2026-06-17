@@ -1,84 +1,93 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Product Details - ANANTMART</title>
+// =======================================================
+// ANANTMART - PRODUCTION READY DYNAMIC PRODUCT DETAILS (DAY 16)
+// =======================================================
 
-<link rel="stylesheet" href="css/style.css">
-</head>
+const BACKEND_URL = "https://anantmart-backend.onrender.com";
 
-<body>
-    <header>
-    <nav class="navbar">
+// URL se Product ID nikaalna (e.g., product.html?id=12345)
+const urlParams = new URLSearchParams(window.location.search);
+const productId = urlParams.get('id');
 
-        <div class="logo">
-            ANANTMART
-        </div>
+async function loadProductDetails() {
+  if (!productId) {
+    alert("Bhai, koi product select nahi kiya gaya!");
+    window.location.href = "index.html";
+    return;
+  }
 
-        <div class="search-box">
-            <input type="text" placeholder="Search products...">
-        </div>
+  try {
+    // Live backend se specific product ka data fetch karna
+    const response = await fetch(`${BACKEND_URL}/products`);
+    const products = await response.json();
+    
+    // URL wali ID se product match karna
+    const product = products.find(p => (p._id || p.id) === productId);
 
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="#">Categories</a></li>
-            <li><a href="#">Deals</a></li>
-            <li><a href="#">Sell</a></li>
-            <li><a href="#">Contact</a></li>
-        </ul>
+    if (!product) {
+      alert("Product database me nahi mila bhaa!");
+      window.location.href = "index.html";
+      return;
+    }
 
-        <div class="actions">
-            <button class="login-btn">Login</button>
+    // HTML Elements ko live data se populate karna
+    document.querySelector(".product-info h1").innerText = product.name;
+    document.querySelector(".product-info h2").innerText = `₹${product.price}`;
+    document.querySelector(".product-image img").src = product.image || "https://via.placeholder.com/500";
+    document.querySelector(".product-image img").alt = product.name;
+    
+    if (product.description) {
+      document.querySelector(".product-info p").innerText = product.description;
+    } else {
+      document.querySelector(".product-info p").innerText = "ANANTMART Premium and authentic quality handcrafted product.";
+    }
 
-            <a href="cart.html">
-                <button class="cart-btn">Cart</button>
-            </a>
-        </div>
+    // Add to Cart button par event listener lagana
+    const addToCartBtn = document.getElementById("addToCart");
+    addToCartBtn.onclick = () => addThisToCart(productId);
 
-    </nav>
-</header>
+  } catch (error) {
+    console.error("Product details load karne me error:", error);
+    alert("Backend server se connect nahi ho paya bhaa!");
+  }
+}
 
-<section class="product-page">
+// SECURE ADD TO CART FUNCTION
+async function addThisToCart(prodId) {
+  const token = localStorage.getItem("anantmart_token");
+  const qty = document.querySelector(".quantity input").value || 1;
 
-    <div class="product-image">
-        <img src="https://via.placeholder.com/500" alt="Product">
-    </div>
+  if (!token) {
+    alert("Please login first to add items to your cart!");
+    window.location.href = "login.html";
+    return;
+  }
 
-    <div class="product-info">
+  const cartData = {
+    productId: prodId,
+    quantity: Number(qty)
+  };
 
-        <h1>Premium Smartphone</h1>
+  try {
+    const response = await fetch(`${BACKEND_URL}/cart`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "authorization": token 
+      },
+      body: JSON.stringify(cartData)
+    });
 
-        <h2>₹14,999</h2>
+    if (response.status === 201 || response.status === 200) {
+      alert("Item added to cart successfully! 🛒");
+    } else {
+      const result = await response.json();
+      alert("Error: " + result.message);
+    }
+  } catch (error) {
+    console.error("Cart error:", error);
+    alert("Server issue! Cart me add nahi ho paya.");
+  }
+}
 
-        <p>
-            High performance smartphone with
-            amazing camera and battery life.
-        </p>
-
-        <div class="quantity">
-
-            <label>Quantity:</label>
-
-            <input type="number"
-            value="1"
-            min="1">
-
-        </div>
-
-        <button 
-        id="addToCart"
-        class="cart-btn-big">
-            Add To Cart
-        </button>
-
-        <button class="buy-btn">
-            Buy Now
-        </button>
-
-    </div>
-
-</section>
-<script src="js/script.js"></script>
-</body>
-</html>
+// Page load hote hi function trigger karna
+document.addEventListener("DOMContentLoaded", loadProductDetails);

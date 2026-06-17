@@ -1,23 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Product Details - ANANTMART</title>
-
-<link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - ANANTMART</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Ekdum sleek aur modern spacing product page ke liye */
+        .product-page {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            justify-content: center;
+        }
+        .product-image {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+        }
+        .product-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            object-fit: cover;
+        }
+        .product-info {
+            flex: 1;
+            min-width: 300px;
+            text-align: left;
+        }
+        .product-info h1 {
+            font-size: 2rem;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        .product-info h2 {
+            font-size: 1.8rem;
+            color: #ea580c; /* ANANTMART Premium Orange Accent */
+            margin-bottom: 20px;
+        }
+        .product-info p {
+            font-size: 1rem;
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        .quantity {
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .quantity input {
+            width: 60px;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .cart-btn-big {
+            background: #ea580c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+        .cart-btn-big:hover {
+            background: #c2410c;
+        }
+        .buy-btn {
+            background: #1e293b;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+        .buy-btn:hover {
+            background: #0f172a;
+        }
+    </style>
 </head>
 
 <body>
-    <header>
+<header>
     <nav class="navbar">
-
-        <div class="logo">
+        <div class="logo" style="cursor: pointer;" onclick="window.location.href='index.html'">
             ANANTMART
         </div>
 
         <div class="search-box">
-            <input type="text" placeholder="Search products...">
+            <input type="text" id="searchInput" placeholder="Search products...">
         </div>
 
         <ul class="nav-links">
@@ -29,56 +118,41 @@
         </ul>
 
         <div class="actions">
-            <button class="login-btn">Login</button>
+            <span id="welcomeUser" style="display: none; color: #1e293b; font-weight: bold; margin-right: 15px;"></span>
+            <a href="login.html" id="loginlink"><button class="login-btn">Login</button></a>
+            <button id="logoutBtn" class="login-btn" style="display: none; background: #ef4444; color: white; border: none;">Logout</button>
 
-            <a href="cart.html">
-                <button class="cart-btn">Cart</button>
+            <a href="cart.html" style="text-decoration: none;">
+                <button class="cart-btn">Cart 🛒</button>
             </a>
         </div>
-
     </nav>
 </header>
 
-<section class="product-page">
-
-    <div class="product-image">
-        <img src="https://via.placeholder.com/500" alt="Product">
-    </div>
-
-    <div class="product-info">
-
-        <h1>Premium Smartphone</h1>
-
-        <h2>₹14,999</h2>
-
-        <p>
-            High performance smartphone with
-            amazing camera and battery life.
-        </p>
-
-        <div class="quantity">
-
-            <label>Quantity:</label>
-
-            <input type="number"
-            value="1"
-            min="1">
-
+<main>
+    <section class="product-page">
+        <div class="product-image">
+            <img src="https://via.placeholder.com/500" alt="Loading Product...">
         </div>
 
-        <button 
-        id="addToCart"
-        class="cart-btn-big">
-            Add To Cart
-        </button>
+        <div class="product-info">
+            <h1>Loading Title...</h1>
+            <h2>₹0</h2>
+            <p>Loading premium authentic quality product details from ANANTMART cloud database...</p>
 
-        <button class="buy-btn">
-            Buy Now
-        </button>
+            <div class="quantity">
+                <label style="font-weight: bold; color: #475569;">Quantity:</label>
+                <input type="number" id="productQty" value="1" min="1">
+            </div>
 
-    </div>
+            <div class="action-buttons">
+                <button id="addToCart" class="cart-btn-big">Add To Cart 🛒</button>
+                <button class="buy-btn" onclick="window.location.href='cart.html'">Buy Now</button>
+            </div>
+        </div>
+    </section>
+</main>
 
-</section>
 <script src="js/product.js"></script>
 </body>
 </html>
