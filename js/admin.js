@@ -1,221 +1,461 @@
-// =======================================================
-// ANANTMART - PRODUCTION READY COMPLETE ADMIN LOGIC (DAY 16)
-// =======================================================
+/* =====================================================
+   ANANTMART ADMIN — SUPABASE VERSION
+   Requires: Supabase CDN + js/supabase.js
+===================================================== */
 
-// MASTER URL: Pure file ke liye ek hi baar live link set kar diya
-const BACKEND_URL = "https://anantmart-backend.onrender.com";
+const db = window.supabaseClient;
 
-// -------------------------------------------------------
-// 1. PRODUCTS SCREEN PAR DIKHANA (GET REQUEST)
-// -------------------------------------------------------
+let adminVerified = false;
+let adminCheckPromise = null;
+
+// ---------- HELPERS ----------
+
+function byId(id) {
+  return document.getElementById(id);
+}
+
+function showError(message) {
+  console.error(message);
+  alert(message);
+}
+
+function formatINR(value) {
+  return Number(value || 0).toLocaleString("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 2
+  });
+}
+
+function addCell(row, value) {
+  const td = document.createElement("td");
+  td.textContent = String(value ?? "N/A");
+  row.appendChild(td);
+  return td;
+}
+
+// ---------- ADMIN AUTHORIZATION ----------
+
+async function verifyAdmin() {
+  if (adminVerified) return true;
+  if (adminCheckPromise) return adminCheckPromise;
+
+  adminCheckPromise = (async () => {
+    if (!db) {
+      throw new Error(
+        "Supabase client nahi mila. Script loading order check karo."
+      );
+    }
+
+    const { data: sessionData, error: sessionError } =
+      await db.auth.getSession();
+
+    if (sessionError) throw sessionError;
+
+    const session = sessionData.session;
+
+    if (!session) {
+      alert("Admin panel ke liye login karna zaroori hai.");
+      window.location.href = "./login.html";
+      return false;
+    }
+
+    const { data: isAdmin, error } = await db.rpc("is_admin");
+
+    if (error) throw error;
+
+    if (isAdmin !== true) {
+      alert("Access denied: Sirf authorized admin access kar sakta hai.");
+      window.location.href = "./index.html";
+      return false;
+    }
+
+    adminVerified = true;
+    return true;
+  })();
+
+  try {
+    return await adminCheckPromise;
+  } finally {
+    adminCheckPromise = null;
+  }
+}
+
+// ---------- LOAD PRODUCTS ----------
+
 async function loadProducts() {
-  const adminProducts = document.getElementById("adminProducts");
-  if (!adminProducts) return;
+  const container = byId("adminProducts");
+  if (!container) return;
 
   try {
-    const response = await fetch(`${BACKEND_URL}/products`);
-    const products = await response.json();
+    if (!(await verifyAdmin())) return;
 
-    adminProducts.innerHTML = ""; // Purani list saaf karna
+    const { data: products, error } = await db
+      .from("products")
+      .select(
+        "id, name, price, category, stock, image_url, is_active"
+      )
+      .order("created_at", { ascending: false });
 
-    products.forEach((product) => {
-      const productImage = product.image || "https://via.placeholder.com/150";
-      const productCat = product.category || 'N/A';
-      const productStock = product.stock || '0';
-      const realId = product._id || product.id;
+    if (error) throw error;
 
-      adminProducts.innerHTML += `
-        <div class="admin-product">
-          <img src="${productImage}" alt="${product.name}">
-          <h3>${product.name}</h3>
-          <p>₹${product.price}</p>
-          <p style="font-size: 12px; color: #666; margin: 2px 0;">Cat: ${productCat}</p>
-          <p style="font-size: 12px; color: #666; margin: 2px 0;">Stock: ${productStock}</p>
-          <div class="action-btns" style="display: flex; gap: 5px; justify-content: center; margin-top: 10px;">
-            <button class="edit-btn" onclick="editProduct('${realId}')" style="background:#2563EB; color:white; border:none; padding:5px 10px; cursor:pointer; border-radius:4px;">Edit</button>
-            <button class="delete-btn" onclick="deleteProduct('${realId}')" style="background:#FFFFFF; color:#DC2626; border:1px solid #FCA5A5; padding:5px 10px; cursor:pointer; border-radius:4px;">Delete</button>
-          </div>
-        </div>
-      `;
-    });
-  } catch (error) {
-    console.error("Products load karne me dikkat aayi:", error);
-    adminProducts.innerHTML = "<p style='color:red; text-align:center;'>Backend server connect nahi hai ya band hai!</p>";
-  }
-}
+    container.replaceChildren();
 
-// -------------------------------------------------------
-// 2. PRODUCT ADD KARNA (POST REQUEST)
-// -------------------------------------------------------
-async function addProduct() {
-  const name = document.getElementById("productName").value;
-  const price = document.getElementById("productPrice").value;
-  const category = document.getElementById("productCategory").value;
-  const stock = document.getElementById("productStock").value;
-  const image = document.getElementById("productImage").value;
-
-  if (!name || !price || !image) {
-    alert("Bhai, Product Name, Price aur Image URL bharna jaroori hai!");
-    return;
-  }
-
-  const productData = {
-    name: name,
-    price: Number(price),
-    category: category,
-    stock: Number(stock || 0),
-    image: image
-  };
-
-  try {
-    // FIXED: Localhost hata kar global BACKEND_URL lagaya
-    const response = await fetch(`${BACKEND_URL}/products`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(productData)
-    });
-
-    const result = await response.json();
-
-    if (response.status === 201 || response.status === 200) {
-      alert("🎉 Product Added to ANANTMART Store Successfully!");
-      
-      loadProducts(); // Fresh list update
-      loadAdminStatsAndOrders(); // Stats automatic reload karne ke liye
-      
-      // Form fields ko wapas khali karna
-      document.getElementById("productName").value = "";
-      document.getElementById("productPrice").value = "";
-      document.getElementById("productCategory").value = "";
-      document.getElementById("productStock").value = "";
-      document.getElementById("productImage").value = "";
-    } else {
-      alert("Server Error: " + result.message);
-    }
-  } catch (error) {
-    console.error("Backend se connect nahi ho paya:", error);
-    alert("Server connect nahi ho pa raha hai bhaa!");
-  }
-}
-
-// -------------------------------------------------------
-// 3. PRODUCT EDIT KARNA (PUT REQUEST)
-// -------------------------------------------------------
-async function editProduct(id) {
-  const newName = prompt("Naya Product Name daalein:");
-  const newPrice = prompt("Naya Product Price daalein:");
-
-  if (!newName && !newPrice) {
-    alert("Kuch bhi badlaav nahi kiya gya bhai!");
-    return;
-  }
-
-  const updatedData = {};
-  if (newName) updatedData.name = newName;
-  if (newPrice) updatedData.price = Number(newPrice);
-
-  try {
-    // FIXED: Global BACKEND_URL integrate kiya
-    const response = await fetch(`${BACKEND_URL}/products/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(updatedData)
-    });
-
-    const result = await response.json();
-
-    if (response.status === 200) {
-      alert("🔄 Updated Successfully!");
-      loadProducts(); 
-    } else {
-      alert("Error: " + result.message);
-    }
-  } catch (error) {
-    console.error("Update karne me error aaya:", error);
-    alert("Server connect nahi ho paya!");
-  }
-}
-
-// -------------------------------------------------------
-// 4. PRODUCT DELETE KARNA (DELETE REQUEST)
-// -------------------------------------------------------
-async function deleteProduct(id) {
-  if (!confirm("Kya aap sach me ye product ANANTMART se hatana chahte hain?")) {
-    return;
-  }
-
-  try {
-    // FIXED: Global BACKEND_URL integrate kiya
-    const response = await fetch(`${BACKEND_URL}/products/${id}`, {
-      method: "DELETE"
-    });
-
-    const result = await response.json();
-
-    if (response.status === 200) {
-      alert("🗑️ Deleted Successfully!");
-      loadProducts(); 
-      loadAdminStatsAndOrders(); // Dynamic dashboard numerical sync
-    } else {
-      alert("Error: " + result.message);
-    }
-  } catch (error) {
-    console.error("Delete request fail ho gayi:", error);
-    alert("Server connect nahi ho paya!");
-  }
-}
-
-// -------------------------------------------------------
-// 5. LIVE COUNTER WIDGETS & CUSTOMER ORDERS TABLE LOAD
-// -------------------------------------------------------
-async function loadAdminStatsAndOrders() {
-  try {
-    // FIXED: Missing fetch call ko yahan jod diya hai
-    const response = await fetch(`${BACKEND_URL}/admin/stats`);
-    const data = await response.json();
-
-    // Top Row Cards Widgets Update
-    if (document.getElementById("revenueWidget")) document.getElementById("revenueWidget").innerText = data.totalRevenue || 0;
-    if (document.getElementById("ordersWidget")) document.getElementById("ordersWidget").innerText = data.totalOrders || 0;
-    if (document.getElementById("usersWidget")) document.getElementById("usersWidget").innerText = data.totalUsers || 0;
-
-    const tableBody = document.getElementById("adminOrderTableBody");
-    if (!tableBody) return;
-    tableBody.innerHTML = ""; 
-
-    if (!data.ordersList || data.ordersList.length === 0) {
-      tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center; padding:20px; color:#666;'>Abhi tak koi order nahi aaya hai. 📭</td></tr>";
+    if (!products || products.length === 0) {
+      container.textContent = "Abhi koi product nahi hai.";
       return;
     }
 
-    data.ordersList.forEach(order => {
-      const itemsString = order.items ? order.items.map(item => `${item.name} (${item.quantity})`).join(", ") : "N/A";
+    products.forEach(product => {
+      const card = document.createElement("div");
+      card.className = "admin-product";
 
-      tableBody.innerHTML += `
-        <tr>
-          <td style="font-family: monospace; color: #666; font-size:12px;">${order._id || order.id}</td>
-          <td><b>${order.email}</b></td>
-          <td>${itemsString}</td>
-          <td style="color: #F97316; font-weight: bold;">₹${order.totalAmount}</td>
-          <td style="font-size: 13px; color: #555;">${order.orderDate || 'Recent'}</td>
-          <td><span class="status-badge" style="background: #2563EB; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px;">${order.status || "Pending"}</span></td>
-        </tr>
-      `;
+      const img = document.createElement("img");
+      img.src = product.image_url || "https://placehold.co/150";
+      img.alt = product.name || "Product";
+      img.loading = "lazy";
+      img.onerror = () => {
+        img.onerror = null;
+        img.src = "https://placehold.co/150";
+      };
+
+      const title = document.createElement("h3");
+      title.textContent = product.name;
+
+      const price = document.createElement("p");
+      price.textContent = formatINR(product.price);
+
+      const category = document.createElement("p");
+      category.textContent = "Category: " + product.category;
+
+      const stock = document.createElement("p");
+      stock.textContent = "Stock: " + product.stock;
+
+      const status = document.createElement("p");
+      status.textContent = product.is_active ? "Active" : "Inactive";
+
+      const actions = document.createElement("div");
+      actions.className = "action-btns";
+
+      const edit = document.createElement("button");
+      edit.type = "button";
+      edit.textContent = "Edit";
+      edit.className = "edit-btn";
+      edit.addEventListener("click", () => editProduct(product.id));
+
+      const del = document.createElement("button");
+      del.type = "button";
+      del.textContent = "Delete";
+      del.className = "delete-btn";
+      del.addEventListener("click", () => deleteProduct(product.id));
+
+      actions.append(edit, del);
+      card.append(img, title, price, category, stock, status, actions);
+      container.appendChild(card);
     });
-
   } catch (error) {
-    console.error("Admin details render block failed:", error);
+    console.error("Products load error:", error);
+    container.textContent = "Products load nahi hue. Console check karo.";
   }
 }
 
-// -------------------------------------------------------
-// 6. DOM RENDER LOGIC TRIGGER ON LOAD
-// -------------------------------------------------------
-document.addEventListener("DOMContentLoaded", () => {
-  loadProducts();
-  loadAdminStatsAndOrders();
+// ---------- ADD PRODUCT ----------
+
+async function addProduct() {
+  try {
+    if (!(await verifyAdmin())) return;
+
+    const name = byId("productName")?.value.trim();
+    const priceText = byId("productPrice")?.value;
+    const category = byId("productCategory")?.value;
+    const stockText = byId("productStock")?.value;
+    const imageUrl = byId("productImage")?.value.trim();
+
+    const price = Number(priceText);
+    const stock = Number(stockText || 0);
+
+    if (!name || priceText === "" || !category) {
+      return showError("Product name, price aur category bharo.");
+    }
+
+    if (!Number.isFinite(price) || price < 0) {
+      return showError("Valid product price daalo.");
+    }
+
+    if (!Number.isInteger(stock) || stock < 0) {
+      return showError("Stock zero ya positive whole number hona chahiye.");
+    }
+
+    if (imageUrl) {
+      try {
+        const parsed = new URL(imageUrl);
+        if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+          throw new Error("Invalid image URL");
+        }
+      } catch {
+        return showError("Valid HTTP/HTTPS image URL daalo.");
+      }
+    }
+
+    const { error } = await db.from("products").insert({
+      name,
+      price,
+      category,
+      stock,
+      image_url: imageUrl || null,
+      is_active: true
+    });
+
+    if (error) throw error;
+
+    alert("Product successfully add ho gaya!");
+
+    ["productName", "productPrice", "productStock", "productImage"]
+      .forEach(id => {
+        if (byId(id)) byId(id).value = "";
+      });
+
+    await loadProducts();
+    await loadAdminStatsAndOrders();
+  } catch (error) {
+    console.error("Add product error:", error);
+    showError("Product add nahi hua. RLS policy aur console error check karo.");
+  }
+}
+
+// ---------- EDIT PRODUCT ----------
+
+async function editProduct(id) {
+  try {
+    if (!(await verifyAdmin())) return;
+
+    const { data: product, error: fetchError } = await db
+      .from("products")
+      .select("id, name, price, category, stock, image_url, is_active")
+      .eq("id", id)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    const nameInput = prompt("Product name:", product.name);
+    if (nameInput === null) return;
+
+    const priceInput = prompt("Product price:", String(product.price));
+    if (priceInput === null) return;
+
+    const stockInput = prompt("Product stock:", String(product.stock));
+    if (stockInput === null) return;
+
+    const imageInput = prompt(
+      "Image URL (blank = no image):",
+      product.image_url || ""
+    );
+    if (imageInput === null) return;
+
+    const name = nameInput.trim();
+    const price = Number(priceInput);
+    const stock = Number(stockInput);
+    const imageUrl = imageInput.trim();
+
+    if (!name || priceInput.trim() === "" ||
+        !Number.isFinite(price) || price < 0 ||
+        !Number.isInteger(stock) || stock < 0) {
+      return showError("Name, price ya stock ki value valid nahi hai.");
+    }
+
+    if (imageUrl) {
+      try {
+        const parsed = new URL(imageUrl);
+        if (!["https:", "http:"].includes(parsed.protocol)) {
+          throw new Error("Invalid URL");
+        }
+      } catch {
+        return showError("Valid HTTP/HTTPS image URL daalo.");
+      }
+    }
+
+    const { error } = await db
+      .from("products")
+      .update({
+        name,
+        price,
+        stock,
+        image_url: imageUrl || null
+      })
+      .eq("id", id);
+
+    if (error) throw error;
+
+    alert("Product update ho gaya!");
+    await loadProducts();
+  } catch (error) {
+    console.error("Edit product error:", error);
+    showError("Product update nahi hua. RLS permissions check karo.");
+  }
+}
+
+// ---------- DELETE PRODUCT ----------
+
+async function deleteProduct(id) {
+  if (!confirm("Kya tum is product ko permanently delete karna chahte ho?")) {
+    return;
+  }
+
+  try {
+    if (!(await verifyAdmin())) return;
+
+    const { error } = await db
+      .from("products")
+      .delete()
+      .eq("id", id);
+
+    if (error) throw error;
+
+    alert("Product delete ho gaya!");
+    await loadProducts();
+    await loadAdminStatsAndOrders();
+  } catch (error) {
+    console.error("Delete product error:", error);
+    showError("Product delete nahi hua. RLS aur order references check karo.");
+  }
+}
+
+// ---------- DASHBOARD STATS & ORDERS ----------
+
+async function loadAdminStatsAndOrders() {
+  const tableBody = byId("adminOrderTableBody");
+
+  try {
+    if (!(await verifyAdmin())) return;
+
+    const [ordersResult, usersResult] = await Promise.all([
+      db.from("orders")
+        .select("id, user_id, total_amount, status, shipping_address, created_at")
+        .order("created_at", { ascending: false }),
+
+      db.from("profiles")
+        .select("id", { count: "exact", head: true })
+    ]);
+
+    if (ordersResult.error) throw ordersResult.error;
+    if (usersResult.error) throw usersResult.error;
+
+    const orders = ordersResult.data || [];
+
+    if (byId("ordersWidget")) {
+      byId("ordersWidget").textContent = String(orders.length);
+    }
+
+    if (byId("usersWidget")) {
+      byId("usersWidget").textContent = String(usersResult.count || 0);
+    }
+
+    // Sirf paid/completed/delivered orders ko revenue maana gaya hai.
+    // Apne actual payment/status workflow ke hisaab se statuses adjust karo.
+    const revenueStatuses = new Set(["paid", "completed", "delivered"]);
+
+    const revenue = orders.reduce((sum, order) => {
+      const status = String(order.status || "").toLowerCase();
+      return revenueStatuses.has(status)
+        ? sum + Number(order.total_amount || 0)
+        : sum;
+    }, 0);
+
+    if (byId("revenueWidget")) {
+      byId("revenueWidget").textContent = formatINR(revenue);
+    }
+
+    if (!tableBody) return;
+
+    tableBody.replaceChildren();
+
+    if (orders.length === 0) {
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+      cell.colSpan = 6;
+      cell.textContent = "Abhi koi order nahi hai.";
+      row.appendChild(cell);
+      tableBody.appendChild(row);
+      return;
+    }
+
+    const orderIds = orders.map(order => order.id);
+
+    const { data: items, error: itemsError } = await db
+      .from("order_items")
+      .select("order_id, product_name, quantity")
+      .in("order_id", orderIds);
+
+    if (itemsError) throw itemsError;
+
+    const itemsByOrder = {};
+
+    (items || []).forEach(item => {
+      if (!itemsByOrder[item.order_id]) {
+        itemsByOrder[item.order_id] = [];
+      }
+      itemsByOrder[item.order_id].push(item);
+    });
+
+    orders.forEach(order => {
+      const row = document.createElement("tr");
+      const address = order.shipping_address || {};
+      const orderItems = itemsByOrder[order.id] || [];
+
+      const itemsText = orderItems.length
+        ? orderItems.map(item =>
+            `${item.product_name} (${item.quantity})`
+          ).join(", ")
+        : "No item details";
+
+      const contact =
+        address.email ||
+        address.phone ||
+        address.full_name ||
+        address.name ||
+        order.user_id ||
+        "N/A";
+
+      const date = order.created_at
+        ? new Date(order.created_at).toLocaleString("en-IN")
+        : "N/A";
+
+      addCell(row, order.id);
+      addCell(row, contact);
+      addCell(row, itemsText);
+      addCell(row, formatINR(order.total_amount));
+      addCell(row, date);
+      addCell(row, order.status || "Pending");
+
+      tableBody.appendChild(row);
+    });
+  } catch (error) {
+    console.error("Admin dashboard error:", error);
+
+    if (tableBody) {
+      tableBody.replaceChildren();
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+      cell.colSpan = 6;
+      cell.textContent = "Dashboard data load nahi hua. Console check karo.";
+      row.appendChild(cell);
+      tableBody.appendChild(row);
+    }
+  }
+}
+
+// ---------- START ----------
+
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    if (!(await verifyAdmin())) return;
+
+    await Promise.all([
+      loadProducts(),
+      loadAdminStatsAndOrders()
+    ]);
+  } catch (error) {
+    console.error("Admin initialization failed:", error);
+    alert("Admin panel initialize nahi hua. Login aur Supabase settings check karo.");
+  }
 });

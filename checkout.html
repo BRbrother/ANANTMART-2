@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | Anantmart</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .checkout-container {
+      max-width: 700px;
+      margin: 35px auto;
+      padding: 24px;
+      background: #fff;
+      color: #222;
+      border-radius: 12px;
+    }
+    .checkout-container h1 { margin-top: 0; }
+    .checkout-form { display: grid; gap: 14px; }
+    .checkout-form input, .checkout-form textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      box-sizing: border-box;
+      font: inherit;
+    }
+    .checkout-form button {
+      padding: 13px;
+      background: #f28c28;
+      border: 0;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #checkoutMessage { white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <main class="checkout-container">
+    <h1>Secure Checkout</h1>
+    <p>Apna delivery address bharo.</p>
+
+    <form id="checkoutForm" class="checkout-form">
+      <input name="full_name" placeholder="Full name" required>
+      <input name="phone" type="tel" placeholder="Mobile number"
+             pattern="[0-9]{10}" maxlength="10" required>
+      <textarea name="address_line1" placeholder="House / Street / Area"
+                required></textarea>
+      <input name="city" placeholder="City" required>
+      <input name="state" placeholder="State" required>
+      <input name="postal_code" placeholder="PIN code"
+             pattern="[0-9]{6}" maxlength="6" required>
+
+      <button id="placeOrderButton" type="submit">
+        Place Order
+      </button>
+    </form>
+
+    <p id="checkoutMessage" role="status"></p>
+    <p><a href="cart.html">← Back to cart</a></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script>
+    const form = document.getElementById("checkoutForm");
+    const message = document.getElementById("checkoutMessage");
+    const button = document.getElementById("placeOrderButton");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const supabase = window.supabaseClient;
+      if (!supabase) {
+        message.textContent = "Supabase connection missing.";
+        return;
+      }
+
+      button.disabled = true;
+      message.textContent = "Checking login and placing order...";
+
+      try {
+        const { data: userData, error: userError } =
+          await supabase.auth.getUser();
+
+        if (userError) throw userError;
+
+        if (!userData.user) {
+          message.textContent = "Please login before checkout.";
+          window.location.href = "login.html";
+          return;
+        }
+
+        const formData = new FormData(form);
+        const address = Object.fromEntries(formData.entries());
+
+        const { data: orderId, error } = await supabase.rpc(
+          "place_order",
+          { p_shipping_address: address }
+        );
+
+        if (error) throw error;
+
+        message.textContent =
+          "Order placed successfully!\nOrder ID: " + orderId;
+
+        form.reset();
+      } catch (error) {
+        console.error("Checkout error:", error);
+        message.textContent =
+          error.message || "Order place nahi ho paya.";
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

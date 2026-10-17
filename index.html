@@ -31,11 +31,18 @@
 
         <div class="actions">
     <a href="login.html" id="loginlink" class="login-btn">Login</a>
-    
+
     <span id="welcomeUser" style="display:none;" class="user-name-tag"></span>
-    
-    <button id="logoutBtn" style="display:none;" class="logout-btn">Logout</button>
-    <a href="cart.html"><button class="cart-btn">Cart</button></a>
+
+    <button id="logoutBtn" style="display:none;" class="logout-btn">
+        Logout
+    </button>
+
+    <a href="./my-orders.html" class="login-btn">My Orders</a>
+
+    <a href="./cart.html">
+        <button class="cart-btn">Cart</button>
+    </a>
 </div>
     </nav>
 </header>
@@ -81,7 +88,9 @@
     </div>
 
 </section>
-<script src="js/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./js/supabase.js"></script>
+<script src="./js/script.js"></script>
 </body>
 </html>
 <footer>

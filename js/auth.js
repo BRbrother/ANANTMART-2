@@ -1,91 +1,108 @@
-// =======================================================
-// ANANTMART - PRODUCTION READY AUTHENTICATION LOGIC
-// =======================================================
+/* ANANTMART — Supabase Authentication */
 
-// MASTER URL: Pure file ke liye ek hi baar live link set kar diya
-const BACKEND_URL = "https://anantmart-backend.onrender.com";
+function showAuthMessage(message) {
+  const el = document.getElementById("message");
+  if (el) {
+    el.textContent = message;
+  } else {
+    alert(message);
+  }
+}
 
-// =======================================================
-// 1. USER REGISTRATION (BACKEND CONNECTED)
-// =======================================================
+// REGISTER
 async function registerUser() {
-  const name = document.getElementById("name").value; 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const name = document.getElementById("name")?.value.trim();
+  const email = document.getElementById("email")?.value.trim();
+  const password = document.getElementById("password")?.value;
 
   if (!name || !email || !password) {
-    alert("Please Fill All Fields");
+    showAuthMessage("Please fill all fields.");
     return;
   }
 
-  const userData = {
-    email: email,
-    password: password
-  };
-
-  try {
-    // FIXED: Localhost hata kar global BACKEND_URL lagaya
-    const response = await fetch(`${BACKEND_URL}/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(userData)
-    });
-
-    const result = await response.json();
-
-    if (response.status === 201) {
-      alert("Registration Successful! 🎉");
-      window.location.href = "login.html";
-    } else {
-      alert("Error: " + result.message);
-    }
-
-  } catch (error) {
-    console.error("Register karne me dikkat aayi:", error);
-    alert("Server connect nahi ho pa raha hai bhaa!");
-  }
-}
-
-// =======================================================
-// 2. USER LOGIN (TOKEN MANAGEMENT)
-// =======================================================
-async function loginUser() {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-
-  if (!email || !password) {
-    alert("Please Fill All Fields");
+  if (password.length < 6) {
+    showAuthMessage("Password must be at least 6 characters.");
     return;
   }
 
-  const loginData = { email, password };
+  const client = window.supabaseClient;
+
+  if (!client) {
+    showAuthMessage("Supabase connection missing. Check js/supabase.js.");
+    return;
+  }
+
+  showAuthMessage("Creating your account...");
 
   try {
-    // FIXED: Localhost hata kar global BACKEND_URL lagaya
-    const response = await fetch(`${BACKEND_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(loginData)
+    const { data, error } = await client.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { full_name: name }
+      }
     });
 
-    const result = await response.json();
+    if (error) throw error;
 
-    if (response.status === 200) {
-      alert("Login Successful! Welcome back. 🎉");
-
-      // TOKEN KO LOCALSTORAGE ME SAVE KARNA
-      localStorage.setItem("anantmart_token", result.token); 
-      localStorage.setItem("userEmail", result.user.email);
-      localStorage.setItem("isLoggedIn", "true");
-
+    if (data.session) {
+      showAuthMessage("Account created successfully!");
       window.location.href = "index.html";
     } else {
-      alert("Error: " + result.message);
+      showAuthMessage(
+        "Account request successful. Check your email to confirm your account, then log in."
+      );
     }
   } catch (error) {
-    console.error("Login Error:", error);
-    alert("Server Error! Connection nahi ban paya.");
+    console.error("Registration error:", error);
+    showAuthMessage(error.message || "Registration failed.");
   }
 }
+
+// LOGIN
+async function loginUser() {
+  const email =
+    document.getElementById("loginEmail")?.value.trim() ||
+    document.getElementById("email")?.value.trim();
+
+  const password =
+    document.getElementById("loginPassword")?.value ||
+    document.getElementById("password")?.value;
+
+  if (!email || !password) {
+    showAuthMessage("Please enter your email and password.");
+    return;
+  }
+
+  const client = window.supabaseClient;
+
+  if (!client) {
+    showAuthMessage("Supabase connection missing. Check js/supabase.js.");
+    return;
+  }
+
+  showAuthMessage("Logging in...");
+
+  try {
+    const { data, error } = await client.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) throw error;
+
+    if (data.session) {
+      showAuthMessage("Login successful!");
+      window.location.href = "index.html";
+    }
+  } catch (error) {
+    console.error("Login error:", error);
+    showAuthMessage(error.message || "Login failed.");
+  }
+}
+
+// Supports the register form shown in register.html
+document.getElementById("registerForm")?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  registerUser();
+});

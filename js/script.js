@@ -1,144 +1,193 @@
-// Global array taaki search filter sahi se kaam kare
-let allProductsArray = []; 
+let allProductsArray = [];
 
-// MASTER URL: Pure file ke liye ek hi baar live link set kar diya
-const BACKEND_URL = "https://anantmart-backend.onrender.com";
+function escapeHTML(value = "") {
+  return String(value).replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
 
-// =======================================================
-// 1. PRODUCTS SCREEN PAR DIKHANA (SAFE ID RESOLUTION)
-// =======================================================
+async function loadProducts() {
+  const grid = document.getElementById("productGrid");
+  if (!grid) return;
+
+  grid.textContent = "Loading products...";
+
+  const { data, error } = await window.supabaseClient
+    .from("products")
+    .select("id, name, description, price, image_url, category, stock")
+    .eq("is_active", true)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Products load error:", error.message);
+    grid.textContent = "Products load nahi ho paaye. Please try again.";
+    return;
+  }
+
+  allProductsArray = data || [];
+  displayProducts(allProductsArray);
+}
+
 function displayProducts(products) {
-  const productGrid = document.getElementById("productGrid");
-  if (!productGrid) return;
+  const grid = document.getElementById("productGrid");
+  if (!grid) return;
 
-  productGrid.innerHTML = ""; // Purani grid saaf karna
+  if (!products.length) {
+    grid.textContent = "Abhi koi product available nahi hai.";
+    return;
+  }
 
-  products.forEach(product => {
-    // SECURITY CHECK: NeDB database me real automatic ID '_id' hoti hai
-    const realProductId = product._id || product.id;
+  grid.innerHTML = products.map(product => {
+    const id = escapeHTML(product.id);
+    const name = escapeHTML(product.name);
+    const image = escapeHTML(product.image_url || "");
+    const price = Number(product.price).toFixed(2);
+    const outOfStock = Number(product.stock) <= 0;
 
-    console.log(`Product Name: ${product.name} -> Resolved ID:`, realProductId);
-
-    productGrid.innerHTML += `
-      <div class="product-card" style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; text-align: center; background: #fff; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-        <img src="${product.image || 'https://via.placeholder.com/150'}" alt="${product.name}" style="width: 100%; height: auto; border-radius: 4px; margin-bottom: 12px;">
-        <h3 style="margin: 10px 0; font-size: 18px; color: #1e293b;">${product.name}</h3>
-        <p style="font-size: 16px; font-weight: bold; color: #ea580c; margin-bottom: 15px;">₹${product.price}</p>
-
-        <div class="product-actions" style="display: flex; flex-direction: column; gap: 8px; ">
-        <button onclick="addToCart('${realProductId}')" style="background: #ea580c; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%;">
-        Add to Cart 🛒
+    return `
+      <div class="product-card">
+        <img
+          src="${image || "https://placehold.co/300x300?text=Anantmart"}"
+          alt="${name}"
+          loading="lazy"
+          style="width:100%;max-height:220px;object-fit:contain;"
+          onerror="this.onerror=null;this.src='https://placehold.co/300x300?text=Product';"
+        >
+        <h3>${name}</h3>
+        <p>₹${price}</p>
+        <button
+          type="button"
+          data-product-id="${id}"
+          class="add-cart-btn"
+          ${outOfStock ? "disabled" : ""}
+        >
+          ${outOfStock ? "Out of Stock" : "Add to Cart 🛒"}
         </button>
-        <a href="product.html?id=${realProductId}" style="text-decoration: none; background: #1e293b; color: white; padding: 10px; border-radius: 6px; font-weight: bold; text-align: center; display: block; width: 100%;">
-          Buy Now
+        <a href="product.html?id=${encodeURIComponent(product.id)}">
+          View Product
         </a>
       </div>
-      </div>
     `;
+  }).join("");
+
+  grid.querySelectorAll(".add-cart-btn").forEach(button => {
+    button.addEventListener("click", () => {
+      addToCart(button.dataset.productId);
+    });
   });
 }
 
-// Backend se live products load karna
-async function loadProducts() {
-  try {
-    // FIXED: Localhost hata kar global BACKEND_URL lagaya
-    const response = await fetch(`${BACKEND_URL}/products`);
-    const products = await response.json();
-    
-    console.log("Raw Backend Products:", products); // Debugging line
-    allProductsArray = products; 
-    displayProducts(products);
-  } catch (error) {
-    console.log("Products load karne me dikkat:", error);
-  }
-}
-
-loadProducts();
-
-// =======================================================
-// 2. SECURE ADD TO CART FUNCTION 
-// =======================================================
 async function addToCart(productId) {
-  const token = localStorage.getItem("anantmart_token");
+  const { data: { user }, error: authError } =
+    await window.supabaseClient.auth.getUser();
 
-  if (!token) {
-    alert("Please login first to add items to your cart!");
+  if (authError || !user) {
+    alert("Cart use karne ke liye pehle login karo.");
     window.location.href = "login.html";
     return;
   }
 
-  console.log("Sending to Backend ProductId:", productId);
+  const product = allProductsArray.find(p => p.id === productId);
 
-  const cartData = {
-    productId: productId,
-    quantity: 1
-  };
-
-  try {
-    // FIXED: Localhost hata kar global BACKEND_URL lagaya
-    const response = await fetch(`${BACKEND_URL}/cart`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "authorization": token 
-      },
-      body: JSON.stringify(cartData)
-    });
-
-    const result = await response.json();
-
-    if (response.status === 201 || response.status === 200) {
-      alert("Item added to cart successfully! 🛒");
-    } else {
-      alert("Error: " + result.message);
-    }
-  } catch (error) {
-    console.error("Cart error:", error);
-    alert("Server connect nahi ho pa raha hai bhaa!");
+  if (!product || product.stock < 1) {
+    alert("Ye product abhi stock mein nahi hai.");
+    return;
   }
+
+  const { data: existing, error: readError } = await window.supabaseClient
+    .from("cart_items")
+    .select("id, quantity")
+    .eq("user_id", user.id)
+    .eq("product_id", productId)
+    .maybeSingle();
+
+  if (readError) {
+    console.error(readError);
+    alert("Cart check nahi ho paaya.");
+    return;
+  }
+
+  let result;
+
+  if (existing) {
+    if (existing.quantity >= product.stock) {
+      alert("Available stock se zyada quantity add nahi kar sakte.");
+      return;
+    }
+
+    result = await window.supabaseClient
+      .from("cart_items")
+      .update({ quantity: existing.quantity + 1 })
+      .eq("id", existing.id);
+  } else {
+    result = await window.supabaseClient
+      .from("cart_items")
+      .insert({
+        user_id: user.id,
+        product_id: productId,
+        quantity: 1
+      });
+  }
+
+  if (result.error) {
+    console.error("Cart error:", result.error);
+    alert("Item add nahi hua. Please dobara try karo.");
+    return;
+  }
+
+  alert("Product cart mein add ho gaya! 🛒");
 }
 
-// =======================================================
-// 3. USER WELCOME & LOGOUT LOGIC
-// =======================================================
-const isLoggedIn = localStorage.getItem("isLoggedIn");
-const userEmail = localStorage.getItem("userEmail");
-
-const welcomeUser = document.getElementById("welcomeUser");
-const loginLink = document.getElementById("loginlink"); 
-const logoutBtn = document.getElementById("logoutBtn");
-
-if (isLoggedIn === "true" && userEmail && welcomeUser && loginLink && logoutBtn) {
-  const shortName = userEmail.split("@")[0]; 
-  
-  welcomeUser.innerHTML = `👤 ${shortName}`;
-  welcomeUser.style.display = "inline-block";
-  loginLink.style.display = "none";
-  logoutBtn.style.display = "inline-block";
-
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("anantmart_token");
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("isLoggedIn");
-    
-    alert("Logged out successfully!");
-    window.location.href = "index.html";
-  });
-}
-
-// =======================================================
-// 4. LIVE SEARCH FILTER
-// =======================================================
 const searchInput = document.getElementById("searchInput");
 
 if (searchInput) {
-  searchInput.addEventListener("keyup", () => {
-    const searchText = searchInput.value.toLowerCase();
-    
-    const filteredProducts = allProductsArray.filter(product =>
-      product.name.toLowerCase().includes(searchText)
-    );
+  searchInput.addEventListener("input", () => {
+    const query = searchInput.value.trim().toLowerCase();
 
-    displayProducts(filteredProducts);
+    displayProducts(
+      allProductsArray.filter(product =>
+        `${product.name} ${product.category || ""}`
+          .toLowerCase()
+          .includes(query)
+      )
+    );
   });
 }
+
+async function updateHeaderAuth() {
+  const { data: { user } } = await window.supabaseClient.auth.getUser();
+
+  const welcome = document.getElementById("welcomeUser");
+  const login = document.getElementById("loginlink");
+  const logout = document.getElementById("logoutBtn");
+
+  if (welcome) {
+    welcome.textContent = user
+      ? `👤 ${user.user_metadata?.full_name || user.email}`
+      : "";
+    welcome.style.display = user ? "inline-block" : "none";
+  }
+
+  if (login) login.style.display = user ? "none" : "inline-block";
+  if (logout) logout.style.display = user ? "inline-block" : "none";
+
+  if (logout) {
+    logout.onclick = async () => {
+      const { error } = await window.supabaseClient.auth.signOut();
+
+      if (error) {
+        alert("Logout nahi ho paaya. Dobara try karo.");
+        return;
+      }
+
+      window.location.href = "index.html";
+    };
+  }
+}
+
+updateHeaderAuth();
+loadProducts();

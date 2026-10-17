@@ -23,14 +23,18 @@
     </div>
 
     <div style="max-width: 600px; margin: 30px auto; display: flex; gap: 15px;">
-        <button id="checkoutBtn" onclick="placeOrderNow()" class="shop-btn" style="flex: 2; background-color: #f0a500; color: #000; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 16px;">
-            Place Order 🎁
-        </button>
+        <button id="checkoutBtn"
+    onclick="window.location.href='checkout.html'"
+    class="shop-btn"
+    style="flex: 2; background-color: #f0a500; color: #000; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 16px;">
+    Proceed to Checkout →
+</button>
         <button class="clear-cart-btn" onclick="clearCartLocal()" style="flex: 1; background-color: #d9534f; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer;">
             Clear Cart
         </button>
     </div>
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
     <script src="js/cart.js"></script>
 </body>
 </html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders | ANANTMART</title>
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #0b0b1a;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    .orders-container {
+      max-width: 850px;
+      margin: 30px auto;
+    }
+
+    .orders-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 25px;
+    }
+
+    .orders-header a {
+      color: #f0a500;
+      text-decoration: none;
+    }
+
+    .order-card {
+      background: #17172b;
+      border: 1px solid #30304b;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      overflow-wrap: anywhere;
+    }
+
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .order-id {
+      font-size: 13px;
+      color: #c7c7d8;
+      word-break: break-all;
+    }
+
+    .order-status {
+      display: inline-block;
+      padding: 6px 10px;
+      background: #34344d;
+      border-radius: 20px;
+      font-size: 12px;
+      text-transform: capitalize;
+    }
+
+    .order-items {
+      border-top: 1px solid #30304b;
+      margin-top: 16px;
+      padding-top: 12px;
+    }
+
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 8px 0;
+    }
+
+    .order-total {
+      text-align: right;
+      font-size: 19px;
+      font-weight: bold;
+      color: #f0a500;
+      margin-top: 15px;
+    }
+
+    .message {
+      padding: 20px;
+      text-align: center;
+      background: #17172b;
+      border-radius: 10px;
+      overflow-wrap: anywhere;
+    }
+
+    .retry-button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #f0a500;
+      color: #111;
+      font-weight: bold;
+    }
+
+    @media (max-width: 500px) {
+      body { padding: 12px; }
+      .order-card { padding: 14px; }
+      .item-row { font-size: 14px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="orders-container">
+    <header class="orders-header">
+      <div>
+        <h1>📦 My Orders</h1>
+        <p>Your ANANTMART purchase history</p>
+      </div>
+      <nav>
+        <a href="index.html">← Shop</a>
+        &nbsp; | &nbsp;
+        <a href="cart.html">My Cart</a>
+      </nav>
+    </header>
+
+    <p id="ordersMessage" class="message" role="status"
+       aria-live="polite">Loading your orders...</p>
+
+    <div id="ordersList"></div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+
+  <script>
+    const message = document.getElementById("ordersMessage");
+    const ordersList = document.getElementById("ordersList");
+
+    function showMessage(text, isError = false) {
+      message.replaceChildren();
+      message.style.color = isError ? "#ff8b8b" : "#ffffff";
+
+      const p = document.createElement("p");
+      p.textContent = text;
+      message.appendChild(p);
+
+      message.hidden = false;
+    }
+
+    function makeElement(tag, text, className) {
+      const el = document.createElement(tag);
+      el.textContent = text;
+
+      if (className) el.className = className;
+      return el;
+    }
+
+    function formatMoney(amount) {
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 2
+      }).format(Number(amount));
+    }
+
+    function formatDate(value) {
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) return "Date unavailable";
+
+      return date.toLocaleString("en-IN", {
+        dateStyle: "medium",
+        timeStyle: "short"
+      });
+    }
+
+    function displayOrder(order, items) {
+      const card = document.createElement("article");
+      card.className = "order-card";
+
+      const top = document.createElement("div");
+      top.className = "order-top";
+
+      const info = document.createElement("div");
+      info.appendChild(makeElement("h2", "Order details"));
+
+      info.appendChild(makeElement(
+        "p",
+        "Order ID: " + order.id,
+        "order-id"
+      ));
+
+      info.appendChild(makeElement(
+        "p",
+        "Placed: " + formatDate(order.created_at)
+      ));
+
+      const status = makeElement(
+        "span",
+        order.status || "pending",
+        "order-status"
+      );
+
+      top.append(info, status);
+      card.appendChild(top);
+
+      const itemsBox = document.createElement("div");
+      itemsBox.className = "order-items";
+      itemsBox.appendChild(makeElement("h3", "Products"));
+
+      if (!items.length) {
+        itemsBox.appendChild(
+          makeElement("p", "No item details are available for this order.")
+        );
+      }
+
+      items.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "item-row";
+
+        const description = makeElement(
+          "span",
+          `${item.product_name} × ${item.quantity}`
+        );
+
+        const amount = makeElement(
+          "span",
+          formatMoney(Number(item.unit_price) * Number(item.quantity))
+        );
+
+        row.append(description, amount);
+        itemsBox.appendChild(row);
+      });
+
+      card.appendChild(itemsBox);
+
+      card.appendChild(makeElement(
+        "p",
+        "Order Total: " + formatMoney(order.total_amount),
+        "order-total"
+      ));
+
+      ordersList.appendChild(card);
+    }
+
+    async function loadMyOrders() {
+      ordersList.replaceChildren();
+      showMessage("Loading your orders...");
+
+      const supabase = window.supabaseClient;
+
+      if (!supabase) {
+        showMessage(
+          "Supabase connection missing. Check js/supabase.js.",
+          true
+        );
+        return;
+      }
+
+      try {
+        const { data: authData, error: authError } =
+          await supabase.auth.getUser();
+
+        if (authError) throw authError;
+
+        const user = authData.user;
+
+        if (!user) {
+          showMessage("Please login to view your orders.");
+
+          const loginLink = document.createElement("a");
+          loginLink.href = "login.html";
+          loginLink.textContent = "Login";
+          loginLink.style.color = "#f0a500";
+          message.appendChild(loginLink);
+          return;
+        }
+
+        // Always filter by the authenticated user's ID.
+        // RLS must also enforce ownership in the database.
+        const { data: orders, error: ordersError } =
+          await supabase
+            .from("orders")
+            .select("id, user_id, total_amount, status, created_at")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false });
+
+        if (ordersError) throw ordersError;
+
+        if (!orders || orders.length === 0) {
+          showMessage("You haven't placed any orders yet.");
+
+          const shopLink = document.createElement("a");
+          shopLink.href = "index.html";
+          shopLink.textContent = "Start shopping";
+          shopLink.style.color = "#f0a500";
+          message.appendChild(shopLink);
+          return;
+        }
+
+        const orderIds = orders.map(order => order.id);
+
+        const { data: items, error: itemsError } =
+          await supabase
+            .from("order_items")
+            .select("order_id, product_name, unit_price, quantity")
+            .in("order_id", orderIds);
+
+        if (itemsError) throw itemsError;
+
+        const itemsByOrder = new Map();
+
+        for (const item of items || []) {
+          if (!itemsByOrder.has(item.order_id)) {
+            itemsByOrder.set(item.order_id, []);
+          }
+
+          itemsByOrder.get(item.order_id).push(item);
+        }
+
+        message.hidden = true;
+
+        for (const order of orders) {
+          displayOrder(order, itemsByOrder.get(order.id) || []);
+        }
+
+      } catch (error) {
+        console.error("My Orders error:", error);
+
+        showMessage(
+          error.message || "Orders load nahi ho paaye. Please try again.",
+          true
+        );
+
+        const retry = document.createElement("button");
+        retry.className = "retry-button";
+        retry.textContent = "Try Again";
+        retry.addEventListener("click", loadMyOrders);
+        message.appendChild(retry);
+      }
+    }
+
+    loadMyOrders();
+  </script>
+</body>
+</html>
