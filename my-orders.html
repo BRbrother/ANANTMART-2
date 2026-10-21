@@ -3,348 +3,723 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Orders | ANANTMART</title>
+  <meta name="theme-color" content="#0B3091">
+
+  <title>My Orders | Gram Mart</title>
+  <meta name="description" content="View your Gram Mart orders and purchase history.">
+
   <link rel="stylesheet" href="css/style.css">
 
   <style>
+    :root {
+      --gm-orange: #FF6A00;
+      --gm-blue: #0B3091;
+      --gm-bg: #F5F7FB;
+      --gm-white: #FFFFFF;
+      --gm-text: #182230;
+      --gm-muted: #667085;
+      --gm-border: #E2E8F0;
+      --gm-green: #16834A;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      padding: 20px;
-      background: #0b0b1a;
-      color: #fff;
-      font-family: Arial, sans-serif;
+      background: var(--gm-bg);
+      color: var(--gm-text);
+      font-family: Inter, Arial, sans-serif;
     }
 
-    .orders-container {
-      max-width: 850px;
-      margin: 30px auto;
-    }
-
-    .orders-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 25px;
-    }
-
-    .orders-header a {
-      color: #f0a500;
+    a {
       text-decoration: none;
     }
 
-    .order-card {
-      background: #17172b;
-      border: 1px solid #30304b;
+    button {
+      font: inherit;
+    }
+
+    .gm-header {
+      background: var(--gm-white);
+      border-bottom: 1px solid var(--gm-border);
+      box-shadow: 0 3px 15px rgba(11, 48, 145, 0.05);
+    }
+
+    .gm-header-inner {
+      max-width: 1120px;
+      margin: auto;
+      padding: 17px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .gm-logo {
+      color: var(--gm-blue);
+      font-size: 27px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .gm-logo span {
+      color: var(--gm-orange);
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      color: var(--gm-blue);
+      border: 1px solid var(--gm-border);
+      padding: 10px 13px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .nav-link:hover {
+      border-color: var(--gm-orange);
+      color: var(--gm-orange);
+    }
+
+    .orders-container {
+      width: min(100% - 32px, 1000px);
+      margin: 35px auto;
+      min-height: 55vh;
+    }
+
+    .orders-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 25px;
+    }
+
+    .orders-heading h1 {
+      margin: 0 0 8px;
+      color: var(--gm-blue);
+      font-size: clamp(27px, 4vw, 35px);
+      letter-spacing: -0.7px;
+    }
+
+    .orders-heading p {
+      margin: 0;
+      color: var(--gm-muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .order-count-label {
+      flex-shrink: 0;
+      padding: 10px 14px;
       border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
+      background: #FFF0E5;
+      color: #A84900;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    #ordersList {
+      display: grid;
+      gap: 20px;
+    }
+
+    .order-card {
+      background: var(--gm-white);
+      border: 1px solid var(--gm-border);
+      border-radius: 17px;
+      padding: 23px;
+      box-shadow: 0 5px 22px rgba(18, 38, 80, 0.04);
       overflow-wrap: anywhere;
+      min-width: 0;
     }
 
     .order-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
+      gap: 15px;
       flex-wrap: wrap;
-      gap: 12px;
+    }
+
+    .order-info h2 {
+      color: var(--gm-blue);
+      font-size: 19px;
+      margin: 0 0 11px;
     }
 
     .order-id {
-      font-size: 13px;
-      color: #c7c7d8;
+      color: var(--gm-muted);
+      font-size: 12px;
+      line-height: 1.7;
       word-break: break-all;
+      margin: 0 0 7px;
+    }
+
+    .order-date {
+      color: #475467;
+      font-size: 13px;
+      margin: 0;
     }
 
     .order-status {
-      display: inline-block;
-      padding: 6px 10px;
-      background: #34344d;
-      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 30px;
+      background: #FFF3D8;
+      color: #895700;
       font-size: 12px;
+      font-weight: 800;
       text-transform: capitalize;
+      white-space: nowrap;
     }
 
-    .order-items {
-      border-top: 1px solid #30304b;
-      margin-top: 16px;
-      padding-top: 12px;
+    .order-status::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .order-status.status-completed,
+    .order-status.status-delivered,
+    .order-status.status-confirmed {
+      background: #E7F7ED;
+      color: #167341;
+    }
+
+    .order-status.status-cancelled,
+    .order-status.status-failed {
+      background: #FFF0EF;
+      color: #B42318;
+    }
+
+    .order-status.status-shipped,
+    .order-status.status-processing,
+    .order-status.status-out-for-delivery {
+      background: #EAF1FF;
+      color: var(--gm-blue);
+    }
+
+    .order-divider {
+      height: 1px;
+      background: var(--gm-border);
+      margin: 19px 0;
+    }
+
+    .order-items h3 {
+      color: var(--gm-blue);
+      margin: 0 0 12px;
+      font-size: 15px;
     }
 
     .item-row {
       display: flex;
       justify-content: space-between;
+      align-items: flex-start;
       gap: 15px;
-      padding: 8px 0;
+      padding: 12px 0;
+      border-bottom: 1px solid #F0F2F6;
+      font-size: 14px;
+    }
+
+    .item-row:last-child {
+      border-bottom: 0;
+    }
+
+    .item-name {
+      color: #344054;
+      line-height: 1.6;
+      min-width: 0;
+    }
+
+    .item-price {
+      color: var(--gm-text);
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .order-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      border-top: 1px dashed #D0D8E5;
+      margin-top: 15px;
+      padding-top: 18px;
+    }
+
+    .total-label {
+      color: var(--gm-muted);
+      font-size: 13px;
+      margin: 0 0 5px;
     }
 
     .order-total {
-      text-align: right;
-      font-size: 19px;
-      font-weight: bold;
-      color: #f0a500;
-      margin-top: 15px;
+      margin: 0;
+      color: var(--gm-blue);
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    .order-total-caption {
+      color: var(--gm-muted);
+      font-size: 11px;
+      margin-top: 5px;
     }
 
     .message {
-      padding: 20px;
+      padding: 30px 20px;
       text-align: center;
-      background: #17172b;
-      border-radius: 10px;
+      background: var(--gm-white);
+      border: 1px solid var(--gm-border);
+      border-radius: 16px;
+      box-shadow: 0 5px 22px rgba(18, 38, 80, 0.035);
       overflow-wrap: anywhere;
+      color: var(--gm-muted);
+      line-height: 1.7;
+    }
+
+    .message p {
+      margin: 0 0 12px;
+    }
+
+    .message a {
+      display: inline-block;
+      margin-top: 6px;
+      color: var(--gm-blue);
+      font-weight: 800;
+    }
+
+    .message a:hover {
+      color: var(--gm-orange);
     }
 
     .retry-button {
-      padding: 10px 16px;
-      border: none;
-      border-radius: 6px;
+      margin-top: 12px;
+      padding: 11px 18px;
+      border: 0;
+      border-radius: 10px;
       cursor: pointer;
-      background: #f0a500;
-      color: #111;
-      font-weight: bold;
+      background: var(--gm-orange);
+      color: #FFFFFF;
+      font-weight: 800;
     }
 
-    @media (max-width: 500px) {
-      body { padding: 12px; }
-      .order-card { padding: 14px; }
-      .item-row { font-size: 14px; }
+    .retry-button:hover {
+      background: #E85F00;
+    }
+
+    .gm-footer {
+      margin-top: 45px;
+      padding: 24px 15px;
+      background: #FFFFFF;
+      border-top: 1px solid var(--gm-border);
+      text-align: center;
+      color: var(--gm-muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .gm-footer strong {
+      color: var(--gm-blue);
+    }
+
+    @media (max-width: 600px) {
+      .gm-header-inner {
+        padding: 15px;
+      }
+
+      .gm-logo {
+        font-size: 24px;
+      }
+
+      .header-nav {
+        gap: 6px;
+      }
+
+      .nav-link {
+        padding: 9px;
+        font-size: 12px;
+      }
+
+      .orders-container {
+        width: calc(100% - 24px);
+        margin: 25px auto;
+      }
+
+      .orders-heading {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .order-card {
+        padding: 17px;
+        border-radius: 14px;
+      }
+
+      .order-top {
+        flex-direction: column;
+      }
+
+      .order-status {
+        align-self: flex-start;
+      }
+
+      .item-row {
+        font-size: 13px;
+        gap: 10px;
+      }
+
+      .order-bottom {
+        align-items: flex-start;
+      }
+
+      .order-total {
+        font-size: 23px;
+      }
     }
   </style>
 </head>
 
 <body>
+
+  <header class="gm-header">
+    <div class="gm-header-inner">
+      <a href="index.html" class="gm-logo" aria-label="Gram Mart home">
+        Gram<span>Mart</span>
+      </a>
+
+      <nav class="header-nav">
+        <a href="index.html" class="nav-link">← Shop</a>
+        <a href="cart.html" class="nav-link">🛒 My Cart</a>
+      </nav>
+    </div>
+  </header>
+
   <main class="orders-container">
-    <header class="orders-header">
+
+    <header class="orders-heading">
       <div>
         <h1>📦 My Orders</h1>
-        <p>Your ANANTMART purchase history</p>
+        <p>Track your purchases and view your Gram Mart order history.</p>
       </div>
-      <nav>
-        <a href="index.html">← Shop</a>
-        &nbsp; | &nbsp;
-        <a href="cart.html">My Cart</a>
-      </nav>
+
+      <div class="order-count-label" id="orderCountLabel">
+        Your order history
+      </div>
     </header>
 
-    <p id="ordersMessage" class="message" role="status"
-       aria-live="polite">Loading your orders...</p>
+    <p id="ordersMessage" class="message" role="status" aria-live="polite">
+      Loading your orders...
+    </p>
 
     <div id="ordersList"></div>
+
   </main>
+
+  <footer class="gm-footer">
+    <strong>Gram Mart</strong> — Everyday essentials, made simple.
+    <br>
+    © <span id="currentYear"></span> Gram Mart. All rights reserved.
+  </footer>
+
+  <script>
+    document.getElementById("currentYear").textContent =
+      new Date().getFullYear();
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
 
   <script>
-    const message = document.getElementById("ordersMessage");
-    const ordersList = document.getElementById("ordersList");
+    (() => {
+      "use strict";
 
-    function showMessage(text, isError = false) {
-      message.replaceChildren();
-      message.style.color = isError ? "#ff8b8b" : "#ffffff";
+      const message = document.getElementById("ordersMessage");
+      const ordersList = document.getElementById("ordersList");
+      const orderCountLabel = document.getElementById("orderCountLabel");
 
-      const p = document.createElement("p");
-      p.textContent = text;
-      message.appendChild(p);
+      function showMessage(text, type = "info", link = null) {
+        message.replaceChildren();
+        message.className = "message";
+        message.hidden = false;
 
-      message.hidden = false;
-    }
+        const paragraph = document.createElement("p");
+        paragraph.textContent = text;
+        message.appendChild(paragraph);
 
-    function makeElement(tag, text, className) {
-      const el = document.createElement(tag);
-      el.textContent = text;
+        if (link) {
+          const anchor = document.createElement("a");
+          anchor.href = link.href;
+          anchor.textContent = link.text;
+          message.appendChild(anchor);
+        }
 
-      if (className) el.className = className;
-      return el;
-    }
-
-    function formatMoney(amount) {
-      return new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        maximumFractionDigits: 2
-      }).format(Number(amount));
-    }
-
-    function formatDate(value) {
-      const date = new Date(value);
-
-      if (Number.isNaN(date.getTime())) return "Date unavailable";
-
-      return date.toLocaleString("en-IN", {
-        dateStyle: "medium",
-        timeStyle: "short"
-      });
-    }
-
-    function displayOrder(order, items) {
-      const card = document.createElement("article");
-      card.className = "order-card";
-
-      const top = document.createElement("div");
-      top.className = "order-top";
-
-      const info = document.createElement("div");
-      info.appendChild(makeElement("h2", "Order details"));
-
-      info.appendChild(makeElement(
-        "p",
-        "Order ID: " + order.id,
-        "order-id"
-      ));
-
-      info.appendChild(makeElement(
-        "p",
-        "Placed: " + formatDate(order.created_at)
-      ));
-
-      const status = makeElement(
-        "span",
-        order.status || "pending",
-        "order-status"
-      );
-
-      top.append(info, status);
-      card.appendChild(top);
-
-      const itemsBox = document.createElement("div");
-      itemsBox.className = "order-items";
-      itemsBox.appendChild(makeElement("h3", "Products"));
-
-      if (!items.length) {
-        itemsBox.appendChild(
-          makeElement("p", "No item details are available for this order.")
-        );
+        if (type === "error") {
+          message.style.borderColor = "#FFD6D3";
+          message.style.color = "#B42318";
+        } else {
+          message.style.borderColor = "";
+          message.style.color = "";
+        }
       }
 
-      items.forEach(item => {
-        const row = document.createElement("div");
-        row.className = "item-row";
+      function makeElement(tag, text, className) {
+        const element = document.createElement(tag);
+        element.textContent = text;
 
-        const description = makeElement(
-          "span",
-          `${item.product_name} × ${item.quantity}`
-        );
-
-        const amount = makeElement(
-          "span",
-          formatMoney(Number(item.unit_price) * Number(item.quantity))
-        );
-
-        row.append(description, amount);
-        itemsBox.appendChild(row);
-      });
-
-      card.appendChild(itemsBox);
-
-      card.appendChild(makeElement(
-        "p",
-        "Order Total: " + formatMoney(order.total_amount),
-        "order-total"
-      ));
-
-      ordersList.appendChild(card);
-    }
-
-    async function loadMyOrders() {
-      ordersList.replaceChildren();
-      showMessage("Loading your orders...");
-
-      const supabase = window.supabaseClient;
-
-      if (!supabase) {
-        showMessage(
-          "Supabase connection missing. Check js/supabase.js.",
-          true
-        );
-        return;
+        if (className) element.className = className;
+        return element;
       }
 
-      try {
-        const { data: authData, error: authError } =
-          await supabase.auth.getUser();
+      function formatMoney(amount) {
+        const number = Number(amount);
 
-        if (authError) throw authError;
+        return new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR",
+          maximumFractionDigits: 2
+        }).format(Number.isFinite(number) ? number : 0);
+      }
 
-        const user = authData.user;
+      function formatDate(value) {
+        if (!value) return "Date unavailable";
 
-        if (!user) {
-          showMessage("Please login to view your orders.");
+        const date = new Date(value);
 
-          const loginLink = document.createElement("a");
-          loginLink.href = "login.html";
-          loginLink.textContent = "Login";
-          loginLink.style.color = "#f0a500";
-          message.appendChild(loginLink);
+        if (Number.isNaN(date.getTime())) {
+          return "Date unavailable";
+        }
+
+        return date.toLocaleString("en-IN", {
+          dateStyle: "medium",
+          timeStyle: "short"
+        });
+      }
+
+      function normalizeStatus(status) {
+        return String(status || "pending")
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-");
+      }
+
+      function displayOrder(order, items) {
+        const card = document.createElement("article");
+        card.className = "order-card";
+
+        const top = document.createElement("div");
+        top.className = "order-top";
+
+        const info = document.createElement("div");
+        info.className = "order-info";
+
+        info.appendChild(makeElement("h2", "Order details"));
+
+        info.appendChild(makeElement(
+          "p",
+          "Order ID: " + order.id,
+          "order-id"
+        ));
+
+        info.appendChild(makeElement(
+          "p",
+          "Placed on " + formatDate(order.created_at),
+          "order-date"
+        ));
+
+        const statusText = String(order.status || "pending")
+          .replace(/[_-]+/g, " ");
+
+        const status = makeElement(
+          "span",
+          statusText,
+          "order-status status-" + normalizeStatus(order.status)
+        );
+
+        top.append(info, status);
+        card.appendChild(top);
+
+        const divider = document.createElement("div");
+        divider.className = "order-divider";
+        card.appendChild(divider);
+
+        const itemsBox = document.createElement("div");
+        itemsBox.className = "order-items";
+        itemsBox.appendChild(makeElement("h3", "Products in this order"));
+
+        if (!items.length) {
+          itemsBox.appendChild(makeElement(
+            "p",
+            "Product details are not available for this order."
+          ));
+        }
+
+        items.forEach(item => {
+          const row = document.createElement("div");
+          row.className = "item-row";
+
+          const productName = item.product_name || "Product";
+
+          const description = makeElement(
+            "span",
+            `${productName} × ${Number(item.quantity || 0)}`,
+            "item-name"
+          );
+
+          const amount = makeElement(
+            "span",
+            formatMoney(
+              Number(item.unit_price || 0) *
+              Number(item.quantity || 0)
+            ),
+            "item-price"
+          );
+
+          row.append(description, amount);
+          itemsBox.appendChild(row);
+        });
+
+        card.appendChild(itemsBox);
+
+        const bottom = document.createElement("div");
+        bottom.className = "order-bottom";
+
+        const totalBox = document.createElement("div");
+        totalBox.appendChild(makeElement("p", "Order Total", "total-label"));
+        totalBox.appendChild(makeElement(
+          "p",
+          formatMoney(order.total_amount),
+          "order-total"
+        ));
+        totalBox.appendChild(makeElement(
+          "div",
+          "Final total recorded for this order",
+          "order-total-caption"
+        ));
+
+        bottom.appendChild(totalBox);
+        card.appendChild(bottom);
+
+        ordersList.appendChild(card);
+      }
+
+      async function loadMyOrders() {
+        ordersList.replaceChildren();
+        showMessage("Loading your orders...");
+        orderCountLabel.textContent = "Loading...";
+
+        const client = window.supabaseClient;
+
+        if (!client) {
+          orderCountLabel.textContent = "Connection issue";
+          showMessage(
+            "Supabase connection missing. Please check js/supabase.js.",
+            "error"
+          );
           return;
         }
 
-        // Always filter by the authenticated user's ID.
-        // RLS must also enforce ownership in the database.
-        const { data: orders, error: ordersError } =
-          await supabase
+        try {
+          const { data: authData, error: authError } =
+            await client.auth.getUser();
+
+          if (authError) throw authError;
+
+          const user = authData.user;
+
+          if (!user) {
+            orderCountLabel.textContent = "Login required";
+            showMessage(
+              "Please login to view your order history.",
+              "info",
+              { href: "login.html", text: "Login to Gram Mart →" }
+            );
+            return;
+          }
+
+          // Keep orders restricted to the currently authenticated user.
+          const { data: orders, error: ordersError } = await client
             .from("orders")
             .select("id, user_id, total_amount, status, created_at")
             .eq("user_id", user.id)
             .order("created_at", { ascending: false });
 
-        if (ordersError) throw ordersError;
+          if (ordersError) throw ordersError;
 
-        if (!orders || orders.length === 0) {
-          showMessage("You haven't placed any orders yet.");
+          if (!orders || orders.length === 0) {
+            orderCountLabel.textContent = "0 orders";
+            showMessage(
+              "You haven't placed any orders yet. Your purchases will appear here.",
+              "info",
+              { href: "index.html", text: "Start shopping →" }
+            );
+            return;
+          }
 
-          const shopLink = document.createElement("a");
-          shopLink.href = "index.html";
-          shopLink.textContent = "Start shopping";
-          shopLink.style.color = "#f0a500";
-          message.appendChild(shopLink);
-          return;
-        }
+          const orderIds = orders.map(order => order.id);
 
-        const orderIds = orders.map(order => order.id);
-
-        const { data: items, error: itemsError } =
-          await supabase
+          const { data: items, error: itemsError } = await client
             .from("order_items")
             .select("order_id, product_name, unit_price, quantity")
             .in("order_id", orderIds);
 
-        if (itemsError) throw itemsError;
+          if (itemsError) throw itemsError;
 
-        const itemsByOrder = new Map();
+          const itemsByOrder = new Map();
 
-        for (const item of items || []) {
-          if (!itemsByOrder.has(item.order_id)) {
-            itemsByOrder.set(item.order_id, []);
+          for (const item of items || []) {
+            if (!itemsByOrder.has(item.order_id)) {
+              itemsByOrder.set(item.order_id, []);
+            }
+
+            itemsByOrder.get(item.order_id).push(item);
           }
 
-          itemsByOrder.get(item.order_id).push(item);
+          for (const order of orders) {
+            displayOrder(order, itemsByOrder.get(order.id) || []);
+          }
+
+          orderCountLabel.textContent =
+            `${orders.length} ${orders.length === 1 ? "order" : "orders"}`;
+
+          message.hidden = true;
+
+        } catch (error) {
+          console.error("My Orders error:", error);
+
+          orderCountLabel.textContent = "Unable to load";
+
+          showMessage(
+            error.message || "Orders load nahi ho paaye. Please try again.",
+            "error"
+          );
+
+          const retry = document.createElement("button");
+          retry.className = "retry-button";
+          retry.type = "button";
+          retry.textContent = "Try Again";
+          retry.addEventListener("click", loadMyOrders);
+          message.appendChild(retry);
         }
-
-        message.hidden = true;
-
-        for (const order of orders) {
-          displayOrder(order, itemsByOrder.get(order.id) || []);
-        }
-
-      } catch (error) {
-        console.error("My Orders error:", error);
-
-        showMessage(
-          error.message || "Orders load nahi ho paaye. Please try again.",
-          true
-        );
-
-        const retry = document.createElement("button");
-        retry.className = "retry-button";
-        retry.textContent = "Try Again";
-        retry.addEventListener("click", loadMyOrders);
-        message.appendChild(retry);
       }
-    }
 
-    loadMyOrders();
+      loadMyOrders();
+    })();
   </script>
+
 </body>
 </html>

@@ -1,40 +1,424 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart - ANANTMART</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Shopping Cart | Gram Mart</title>
+  <meta name="theme-color" content="#0B3091">
+  <meta name="description" content="Review your Gram Mart shopping cart and proceed to checkout.">
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    :root {
+      --gm-orange: #FF6A00;
+      --gm-blue: #0B3091;
+      --gm-grey: #E9EDF3;
+      --gm-white: #FFFFFF;
+      --gm-text: #172033;
+      --gm-muted: #667085;
+      --gm-border: #E5EAF1;
+      --gm-green: #16834A;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #F5F7FB;
+      color: var(--gm-text);
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .gm-header {
+      background: var(--gm-white);
+      border-bottom: 1px solid var(--gm-border);
+      box-shadow: 0 3px 14px rgba(11, 48, 145, 0.05);
+    }
+
+    .gm-header-inner {
+      max-width: 1180px;
+      margin: auto;
+      padding: 17px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .gm-brand {
+      color: var(--gm-blue);
+      font-size: 27px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .gm-brand span {
+      color: var(--gm-orange);
+    }
+
+    .gm-back {
+      color: var(--gm-blue);
+      font-weight: 700;
+      font-size: 14px;
+      padding: 10px 14px;
+      border: 1px solid var(--gm-border);
+      border-radius: 10px;
+      background: white;
+    }
+
+    .gm-back:hover {
+      border-color: var(--gm-orange);
+      color: var(--gm-orange);
+    }
+
+    .cart-container {
+      max-width: 1180px;
+      margin: 35px auto;
+      padding: 0 22px;
+    }
+
+    .cart-heading {
+      margin-bottom: 25px;
+    }
+
+    .cart-heading h1 {
+      color: var(--gm-blue);
+      font-size: clamp(27px, 4vw, 36px);
+      margin: 0 0 8px;
+      letter-spacing: -0.8px;
+    }
+
+    .cart-heading p {
+      margin: 0;
+      color: var(--gm-muted);
+      font-size: 15px;
+    }
+
+    .cart-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .cart-main,
+    .order-summary {
+      background: var(--gm-white);
+      border: 1px solid var(--gm-border);
+      border-radius: 18px;
+      box-shadow: 0 6px 24px rgba(18, 38, 80, 0.045);
+    }
+
+    .cart-main {
+      min-height: 220px;
+      padding: 22px;
+    }
+
+    .cart-section-heading {
+      color: var(--gm-blue);
+      margin: 0 0 18px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    #cartItems {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Styling for common cart item elements */
+    #cartItems > * {
+      max-width: 100%;
+    }
+
+    #cartItems img {
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    #cartItems button {
+      cursor: pointer;
+    }
+
+    #cartItems input {
+      max-width: 90px;
+    }
+
+    .order-summary {
+      padding: 24px;
+      position: sticky;
+      top: 20px;
+    }
+
+    .order-summary h2 {
+      margin: 0 0 20px;
+      color: var(--gm-blue);
+      font-size: 21px;
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: 15px 0;
+      color: #475467;
+      font-size: 14px;
+    }
+
+    .summary-line strong {
+      color: var(--gm-text);
+    }
+
+    .summary-total {
+      border-top: 1px dashed #CBD3E0;
+      padding-top: 18px;
+      margin-top: 20px;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--gm-blue);
+    }
+
+    .summary-total strong {
+      color: var(--gm-blue);
+      font-size: 24px;
+    }
+
+    .delivery-note {
+      background: #FFF4EA;
+      color: #984300;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 18px 0;
+    }
+
+    .shop-btn,
+    .clear-cart-btn {
+      border: none;
+      border-radius: 11px;
+      padding: 14px 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .shop-btn {
+      width: 100%;
+      background: var(--gm-orange);
+      color: white;
+      box-shadow: 0 5px 13px rgba(255, 106, 0, 0.2);
+    }
+
+    .shop-btn:hover {
+      background: #E85F00;
+      transform: translateY(-1px);
+    }
+
+    .clear-cart-btn {
+      width: 100%;
+      background: #FFF0EF;
+      color: #C4322B;
+      border: 1px solid #FFD6D3;
+    }
+
+    .clear-cart-btn:hover {
+      background: #FFE4E1;
+    }
+
+    .continue-shopping {
+      display: inline-block;
+      margin-top: 18px;
+      color: var(--gm-blue);
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .continue-shopping:hover {
+      color: var(--gm-orange);
+    }
+
+    .cart-trust {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 22px;
+      margin-top: 22px;
+      color: var(--gm-muted);
+      font-size: 13px;
+    }
+
+    .cart-trust span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .gm-footer {
+      text-align: center;
+      padding: 24px 15px;
+      margin-top: 40px;
+      background: white;
+      border-top: 1px solid var(--gm-border);
+      color: var(--gm-muted);
+      font-size: 13px;
+    }
+
+    .gm-footer strong {
+      color: var(--gm-blue);
+    }
+
+    @media (max-width: 780px) {
+      .cart-container {
+        margin: 25px auto;
+        padding: 0 14px;
+      }
+
+      .cart-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .order-summary {
+        position: static;
+      }
+
+      .cart-main {
+        padding: 16px;
+      }
+
+      .gm-header-inner {
+        padding: 15px;
+      }
+
+      .gm-brand {
+        font-size: 24px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .gm-back {
+        padding: 9px;
+        font-size: 12px;
+      }
+
+      .cart-heading h1 {
+        font-size: 26px;
+      }
+    }
+
+  </style>
 </head>
-<body style="background-color: #0b0b1a; color: white; font-family: sans-serif; padding: 20px;">
 
-    <header style="margin-bottom: 30px;">
-        <a href="index.html" style="color: #ffffff; text-decoration: none; font-weight: bold;">← Back to Shop</a>
-    </header>
+<body>
 
-    <h1 class="cart-title" style="text-align: center; color: #ffffff; margin-bottom: 20px; letter-spacing: 1px;">
-        🛒 Your Shopping Cart
-    </h1>
+  <header class="gm-header">
+    <div class="gm-header-inner">
+      <a href="index.html" class="gm-brand" aria-label="Gram Mart home">
+        Gram<span>Mart</span>
+      </a>
 
-    <div id="cartItems" style="max-width: 600px; margin: 0 auto;"></div>
+      <a href="index.html" class="gm-back">← Continue Shopping</a>
+    </div>
+  </header>
 
-    <div style="text-align: center; margin-top: 20px;">
-        <h2>Grand Total: ₹<span id="cartTotal">0</span></h2>
+  <main class="cart-container">
+
+    <div class="cart-heading">
+      <h1>Your Shopping Cart 🛒</h1>
+      <p>Review your items before proceeding to checkout.</p>
     </div>
 
-    <div style="max-width: 600px; margin: 30px auto; display: flex; gap: 15px;">
-        <button id="checkoutBtn"
-    onclick="window.location.href='checkout.html'"
-    class="shop-btn"
-    style="flex: 2; background-color: #f0a500; color: #000; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 16px;">
-    Proceed to Checkout →
-</button>
-        <button class="clear-cart-btn" onclick="clearCartLocal()" style="flex: 1; background-color: #d9534f; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 4px; cursor: pointer;">
-            Clear Cart
+    <div class="cart-layout">
+
+      <section class="cart-main">
+        <h2 class="cart-section-heading">Cart Items</h2>
+
+        <!-- Existing cart.js renders items here -->
+        <div id="cartItems" aria-live="polite">
+          <p style="color:#667085;">Loading your cart...</p>
+        </div>
+
+        <div class="cart-trust">
+          <span>✓ Easy checkout</span>
+          <span>✓ Secure account access</span>
+        </div>
+      </section>
+
+      <aside class="order-summary">
+        <h2>Order Summary</h2>
+
+        <div class="summary-line">
+          <span>Items total</span>
+          <strong id="cartSubtotal">₹0</strong>
+        </div>
+
+        <div class="summary-line">
+          <span>Delivery charges</span>
+          <strong id="deliveryCharge">Calculated at checkout</strong>
+        </div>
+
+        <div class="summary-line summary-total">
+          <span>Grand Total</span>
+          <strong>₹<span id="cartTotal">0</span></strong>
+        </div>
+
+        <div class="delivery-note">
+          🛍️ Delivery charges and final payable amount may be confirmed at checkout.
+        </div>
+
+        <button
+          id="checkoutBtn"
+          class="shop-btn"
+          type="button"
+          onclick="window.location.href='checkout.html'">
+          Proceed to Checkout →
         </button>
+
+        <button
+          class="clear-cart-btn"
+          type="button"
+          onclick="clearCartLocal()"
+          style="margin-top:12px;">
+          Clear Cart
+        </button>
+
+        <a href="index.html" class="continue-shopping">
+          ← Continue shopping
+        </a>
+      </aside>
+
     </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase.js"></script>
-    <script src="js/cart.js"></script>
+  </main>
+
+  <footer class="gm-footer">
+    <strong>Gram Mart</strong> — Everyday essentials, made simple.
+    <br><br>
+    © <span id="currentYear"></span> Gram Mart. All rights reserved.
+  </footer>
+
+  <script>
+    document.getElementById("currentYear").textContent =
+      new Date().getFullYear();
+  </script>
+
+  <!-- Keep these scripts in this order -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/cart.js"></script>
+
 </body>
 </html>

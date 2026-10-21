@@ -3,116 +3,779 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checkout | Anantmart</title>
+  <meta name="theme-color" content="#0B3091">
+  <title>Checkout | Gram Mart</title>
+  <meta name="description" content="Complete your Gram Mart order and select your delivery location.">
+
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
   <style>
-    .checkout-container {
-      max-width: 700px;
-      margin: 35px auto;
-      padding: 24px;
-      background: #fff;
-      color: #222;
-      border-radius: 12px;
+    :root {
+      --orange: #FF6A00;
+      --blue: #0B3091;
+      --bg: #F5F7FB;
+      --text: #182230;
+      --muted: #667085;
+      --border: #E2E8F0;
     }
-    .checkout-container h1 { margin-top: 0; }
-    .checkout-form { display: grid; gap: 14px; }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    button, input, textarea { font: inherit; }
+    a { text-decoration: none; }
+
+    .gm-header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .gm-header-inner {
+      max-width: 1120px;
+      margin: auto;
+      padding: 17px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .gm-logo {
+      font-size: 27px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: var(--blue);
+    }
+
+    .gm-logo span { color: var(--orange); }
+
+    .back-cart {
+      color: var(--blue);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .checkout-container {
+      width: min(100% - 32px, 760px);
+      margin: 35px auto;
+    }
+
+    .checkout-intro { margin-bottom: 23px; }
+
+    .checkout-intro h1 {
+      margin: 0 0 9px;
+      color: var(--blue);
+      font-size: clamp(27px, 4vw, 36px);
+    }
+
+    .checkout-intro p, .section-title p {
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .checkout-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 8px 28px rgba(18,38,80,.05);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .section-icon {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: #FFF0E5;
+      font-size: 21px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      color: var(--blue);
+      font-size: 20px;
+    }
+
+    .section-title p {
+      margin: 4px 0 0;
+      font-size: 13px;
+    }
+
+    .checkout-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 19px 16px;
+    }
+
+    .form-field { min-width: 0; }
+    .full-width, .form-divider, .location-picker,
+    .address-note, .place-order-btn { grid-column: 1 / -1; }
+
+    .form-field label {
+      display: block;
+      color: #344054;
+      font-size: 13px;
+      font-weight: 750;
+      margin-bottom: 8px;
+    }
+
+    .required-star { color: var(--orange); }
+
     .checkout-form input, .checkout-form textarea {
       width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 7px;
-      box-sizing: border-box;
-      font: inherit;
+      display: block;
+      border: 1px solid #D0D8E5;
+      background: white;
+      color: var(--text);
+      border-radius: 10px;
+      padding: 13px 14px;
+      outline: none;
     }
-    .checkout-form button {
-      padding: 13px;
-      background: #f28c28;
+
+    .checkout-form input { min-height: 47px; }
+    .checkout-form textarea { min-height: 100px; resize: vertical; }
+
+    .checkout-form input:focus, .checkout-form textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(11,48,145,.09);
+    }
+
+    .field-help {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .form-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 3px 0;
+    }
+
+    .location-picker {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: white;
+    }
+
+    .location-picker h3 {
+      margin: 0 0 8px;
+      color: var(--blue);
+      font-size: 17px;
+    }
+
+    .location-picker p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .location-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .location-btn {
       border: 0;
-      border-radius: 7px;
+      border-radius: 9px;
+      padding: 11px 14px;
+      background: var(--blue);
+      color: white;
+      font-weight: 700;
       cursor: pointer;
-      font-weight: bold;
     }
-    #checkoutMessage { white-space: pre-wrap; }
+
+    .location-btn.secondary {
+      background: #FFF0E5;
+      color: #A84900;
+    }
+
+    .location-btn:disabled { opacity: .6; cursor: wait; }
+
+    #deliveryMap {
+      width: 100%;
+      height: 320px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      z-index: 1;
+      background: #EEF2F7;
+    }
+
+    #locationStatus {
+      margin: 10px 0 0;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-wrap: anywhere;
+    }
+
+    .success { color: #16834A; }
+    .error { color: #A12722; }
+
+    .address-note {
+      background: #F0F5FF;
+      color: #24447E;
+      border: 1px solid #DCE7FF;
+      border-radius: 11px;
+      padding: 13px 15px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .place-order-btn {
+      width: 100%;
+      min-height: 53px;
+      padding: 14px 18px;
+      background: var(--orange);
+      color: white;
+      border: 0;
+      border-radius: 11px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .place-order-btn:disabled { opacity: .65; cursor: wait; }
+
+    .security-note {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: 18px;
+    }
+
+    #checkoutMessage {
+      display: none;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      margin: 20px 0 0;
+      padding: 15px;
+      border-radius: 11px;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    #checkoutMessage.message-visible { display: block; }
+    #checkoutMessage.message-error {
+      color: #A12722;
+      background: #FFF0EF;
+      border: 1px solid #FFD6D3;
+    }
+
+    #checkoutMessage.message-success {
+      color: #11683A;
+      background: #EAF8EF;
+      border: 1px solid #BDE8CB;
+    }
+
+    #checkoutMessage.message-info {
+      color: #24447E;
+      background: #F0F5FF;
+      border: 1px solid #DCE7FF;
+    }
+
+    .success-actions {
+      display: none;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .success-actions.visible { display: flex; flex-wrap: wrap; }
+
+    .success-actions a {
+      padding: 11px 14px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .orders-link { background: var(--blue); color: white; }
+    .home-link { background: #FFF0E5; color: #A84900; }
+
+    .checkout-bottom { text-align: center; margin-top: 21px; }
+    .checkout-bottom a { color: var(--blue); font-weight: 750; }
+
+    .gm-footer {
+      text-align: center;
+      padding: 24px 15px;
+      background: white;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .gm-footer strong { color: var(--blue); }
+
+    @media (max-width: 600px) {
+      .gm-header-inner { padding: 15px; }
+      .gm-logo { font-size: 24px; }
+      .back-cart { font-size: 12px; padding: 9px 10px; }
+      .checkout-container { width: calc(100% - 24px); margin: 24px auto; }
+      .checkout-card { padding: 20px 16px; }
+      .checkout-form { grid-template-columns: 1fr; gap: 16px; }
+      .full-width, .form-divider, .location-picker,
+      .address-note, .place-order-btn { grid-column: 1; }
+      #deliveryMap { height: 280px; }
+      .location-actions button { flex: 1 1 100%; }
+    }
   </style>
 </head>
+
 <body>
+  <header class="gm-header">
+    <div class="gm-header-inner">
+      <a href="index.html" class="gm-logo" aria-label="Gram Mart home">
+        Gram<span>Mart</span>
+      </a>
+      <a href="cart.html" class="back-cart">← Back to Cart</a>
+    </div>
+  </header>
+
   <main class="checkout-container">
-    <h1>Secure Checkout</h1>
-    <p>Apna delivery address bharo.</p>
+    <div class="checkout-intro">
+      <h1>Complete Your Order 🛍️</h1>
+      <p>Delivery details bharo, taaki tumhara order sahi address par pahunch sake.</p>
+    </div>
 
-    <form id="checkoutForm" class="checkout-form">
-      <input name="full_name" placeholder="Full name" required>
-      <input name="phone" type="tel" placeholder="Mobile number"
-             pattern="[0-9]{10}" maxlength="10" required>
-      <textarea name="address_line1" placeholder="House / Street / Area"
-                required></textarea>
-      <input name="city" placeholder="City" required>
-      <input name="state" placeholder="State" required>
-      <input name="postal_code" placeholder="PIN code"
-             pattern="[0-9]{6}" maxlength="6" required>
+    <section class="checkout-card">
+      <div class="section-title">
+        <div class="section-icon" aria-hidden="true">📍</div>
+        <div>
+          <h2>Delivery Address</h2>
+          <p>Apni delivery details carefully fill karo.</p>
+        </div>
+      </div>
 
-      <button id="placeOrderButton" type="submit">
-        Place Order
-      </button>
-    </form>
+      <form id="checkoutForm" class="checkout-form">
+        <div class="form-field full-width">
+          <label for="full_name">Full Name <span class="required-star">*</span></label>
+          <input id="full_name" name="full_name" type="text"
+            placeholder="Enter receiver's full name" autocomplete="name"
+            maxlength="100" required>
+        </div>
 
-    <p id="checkoutMessage" role="status"></p>
-    <p><a href="cart.html">← Back to cart</a></p>
+        <div class="form-field full-width">
+          <label for="phone">Mobile Number <span class="required-star">*</span></label>
+          <input id="phone" name="phone" type="tel"
+            placeholder="10-digit mobile number" inputmode="numeric"
+            autocomplete="tel-national" pattern="[0-9]{10}"
+            minlength="10" maxlength="10"
+            title="Enter a valid 10-digit mobile number" required>
+          <small class="field-help">Enter 10 digits without +91 or spaces.</small>
+        </div>
+
+        <div class="form-divider"></div>
+
+        <div class="form-field full-width">
+          <label for="address_line1">House / Street / Area <span class="required-star">*</span></label>
+          <textarea id="address_line1" name="address_line1"
+            placeholder="House number, street, colony, landmark"
+            autocomplete="street-address" maxlength="500" required></textarea>
+        </div>
+
+        <div class="form-field">
+          <label for="city">City <span class="required-star">*</span></label>
+          <input id="city" name="city" type="text" placeholder="Your city"
+            autocomplete="address-level2" maxlength="100" required>
+        </div>
+
+        <div class="form-field">
+          <label for="state">State <span class="required-star">*</span></label>
+          <input id="state" name="state" type="text" placeholder="Your state"
+            autocomplete="address-level1" maxlength="100" required>
+        </div>
+
+        <div class="form-field full-width">
+          <label for="postal_code">PIN Code <span class="required-star">*</span></label>
+          <input id="postal_code" name="postal_code" type="text"
+            placeholder="6-digit PIN code" inputmode="numeric"
+            autocomplete="postal-code" pattern="[0-9]{6}"
+            minlength="6" maxlength="6"
+            title="Enter a valid 6-digit PIN code" required>
+        </div>
+
+        <div class="location-picker">
+          <h3>📍 Select Your Delivery Location</h3>
+          <p>
+            Map par apne ghar ya delivery point ki location select karo.
+            Pin ko drag karke sahi jagah par set kar sakte ho.
+            Order place karne ke liye map location zaroori hai.
+          </p>
+
+          <div class="location-actions">
+            <button type="button" id="useCurrentLocation" class="location-btn">
+              ◎ Use My Current Location
+            </button>
+            <button type="button" id="clearLocation" class="location-btn secondary">
+              Clear Location
+            </button>
+          </div>
+
+          <div id="deliveryMap" aria-label="Select delivery location on map"></div>
+          <p id="locationStatus" role="status" aria-live="polite">
+            Map par click karke delivery pin select karo.
+          </p>
+
+          <input type="hidden" id="latitude" name="latitude">
+          <input type="hidden" id="longitude" name="longitude">
+        </div>
+
+        <div class="address-note">
+          <strong>📦 Delivery tip:</strong>
+          Address mein landmark aur sahi PIN code zaroor likhna.
+          Order sirf Admin ke active delivery area ke andar accept hoga.
+        </div>
+
+        <button id="placeOrderButton" class="place-order-btn" type="submit">
+          Place Order →
+        </button>
+      </form>
+
+      <p id="checkoutMessage" role="status" aria-live="polite"></p>
+
+      <div id="successActions" class="success-actions">
+        <a href="my-orders.html" class="orders-link">View My Orders</a>
+        <a href="index.html" class="home-link">Continue Shopping</a>
+      </div>
+
+      <p class="security-note">
+        🔒 Order tumhare logged-in Gram Mart account ke through place hoga.
+      </p>
+    </section>
+
+    <div class="checkout-bottom">
+      <a href="cart.html">← Return to your shopping cart</a>
+    </div>
   </main>
+
+  <footer class="gm-footer">
+    <strong>Gram Mart</strong> — Everyday essentials, made simple.
+    <br>
+    © <span id="currentYear"></span> Gram Mart. All rights reserved.
+  </footer>
+
+  <script>
+    document.getElementById("currentYear").textContent = new Date().getFullYear();
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Map and location selection -->
   <script>
-    const form = document.getElementById("checkoutForm");
-    const message = document.getElementById("checkoutMessage");
-    const button = document.getElementById("placeOrderButton");
+    (() => {
+      "use strict";
 
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
+      const latInput = document.getElementById("latitude");
+      const lngInput = document.getElementById("longitude");
+      const status = document.getElementById("locationStatus");
+      const currentBtn = document.getElementById("useCurrentLocation");
+      const clearBtn = document.getElementById("clearLocation");
 
-      const supabase = window.supabaseClient;
-      if (!supabase) {
-        message.textContent = "Supabase connection missing.";
-        return;
+      function setStatus(text, type = "") {
+        status.textContent = text;
+        status.className = type;
       }
 
-      button.disabled = true;
-      message.textContent = "Checking login and placing order...";
+      if (!window.L) {
+        setStatus("Map load nahi hua. Internet check karke page reload karo.", "error");
+        currentBtn.disabled = true;
+        clearBtn.disabled = true;
+      } else {
+        // This is only the initial map view, not a selected customer location.
+        const map = L.map("deliveryMap").setView([26.5, 75.5], 6);
 
-      try {
-        const { data: userData, error: userError } =
-          await supabase.auth.getUser();
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
 
-        if (userError) throw userError;
+        let marker = null;
 
-        if (!userData.user) {
-          message.textContent = "Please login before checkout.";
-          window.location.href = "login.html";
+        function selectLocation(lat, lng) {
+          lat = Number(lat);
+          lng = Number(lng);
+
+          if (!Number.isFinite(lat) || !Number.isFinite(lng) ||
+              lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+            setStatus("Valid map location select nahi hui. Dobara try karo.", "error");
+            return;
+          }
+
+          latInput.value = lat.toFixed(7);
+          lngInput.value = lng.toFixed(7);
+
+          if (!marker) {
+            marker = L.marker([lat, lng], {
+              draggable: true,
+              autoPan: true
+            }).addTo(map);
+
+            marker.on("dragend", () => {
+              const point = marker.getLatLng();
+              selectLocation(point.lat, point.lng);
+            });
+          } else {
+            marker.setLatLng([lat, lng]);
+          }
+
+          setStatus(
+            "Location selected: " + lat.toFixed(6) + ", " +
+            lng.toFixed(6) + ". Pin drag karke adjust kar sakte ho.",
+            "success"
+          );
+        }
+
+        map.on("click", event => {
+          selectLocation(event.latlng.lat, event.latlng.lng);
+        });
+
+        currentBtn.addEventListener("click", () => {
+          if (!navigator.geolocation) {
+            setStatus("Browser location support nahi karta. Map par manually pin select karo.", "error");
+            return;
+          }
+
+          currentBtn.disabled = true;
+          currentBtn.textContent = "Finding Location...";
+
+          navigator.geolocation.getCurrentPosition(
+            position => {
+              const lat = position.coords.latitude;
+              const lng = position.coords.longitude;
+
+              map.setView([lat, lng], 17);
+              selectLocation(lat, lng);
+
+              currentBtn.disabled = false;
+              currentBtn.textContent = "◎ Use My Current Location";
+            },
+            error => {
+              let reason = "Current location nahi mil saki.";
+
+              if (error.code === 1) reason = "Location permission deny hui.";
+              if (error.code === 2) reason = "Device ki location unavailable hai.";
+              if (error.code === 3) reason = "Location request time out ho gayi.";
+
+              setStatus(
+                reason + " Permission allow karo ya map par manually pin select karo.",
+                "error"
+              );
+
+              currentBtn.disabled = false;
+              currentBtn.textContent = "◎ Use My Current Location";
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+          );
+        });
+
+        clearBtn.addEventListener("click", () => {
+          latInput.value = "";
+          lngInput.value = "";
+
+          if (marker) {
+            map.removeLayer(marker);
+            marker = null;
+          }
+
+          setStatus("Location clear ho gayi. Order ke liye dobara pin select karo.");
+        });
+
+        window.addEventListener("load", () => {
+          setTimeout(() => map.invalidateSize(), 150);
+        });
+      }
+    })();
+  </script>
+
+  <!-- Checkout, delivery-zone validation and order placement -->
+  <script>
+    (() => {
+      "use strict";
+
+      const form = document.getElementById("checkoutForm");
+      const message = document.getElementById("checkoutMessage");
+      const button = document.getElementById("placeOrderButton");
+      const successActions = document.getElementById("successActions");
+      const latInput = document.getElementById("latitude");
+      const lngInput = document.getElementById("longitude");
+      const locationStatus = document.getElementById("locationStatus");
+
+      let isSubmitting = false;
+
+      function showMessage(text, type) {
+        message.textContent = text;
+        message.className = "message-visible message-" + type;
+      }
+
+      function getFriendlyError(error) {
+        const raw = String(error?.message || "");
+
+        if (/delivery zone|outside.*delivery|delivery.*area|location.*delivery/i.test(raw)) {
+          return "Sorry! Is location par abhi GRAM MART delivery available nahi hai. Map par apni actual delivery location check karo.";
+        }
+
+        if (/delivery_zone_contains|function.*not found|could not find the function/i.test(raw)) {
+          return "Delivery-zone validation setup nahi hua hai. Admin ko Supabase SQL aur delivery zone configuration check karni hogi.";
+        }
+
+        if (/no active delivery zone|delivery zone.*not active/i.test(raw)) {
+          return "Abhi GRAM MART ka delivery area active nahi hai. Please baad mein try karo.";
+        }
+
+        return raw || "Order place nahi ho paya. Please dobara try karo.";
+      }
+
+      async function checkDeliveryZone(client, latitude, longitude) {
+        const lat = Number(latitude);
+        const lng = Number(longitude);
+
+        if (!latitude || !longitude ||
+            !Number.isFinite(lat) || !Number.isFinite(lng) ||
+            lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+          throw new Error("Pehle map par apni delivery location select karo.");
+        }
+
+        const { data, error } = await client.rpc("delivery_zone_contains", {
+          p_lat: lat,
+          p_lng: lng
+        });
+
+        if (error) {
+          console.error("Delivery zone RPC error:", error);
+          throw new Error(
+            "Delivery area verify nahi ho paya. Please thodi der baad dobara try karo."
+          );
+        }
+
+        if (data !== true) {
+          throw new Error(
+            "Sorry! Abhi aapke location par GRAM MART delivery available nahi hai."
+          );
+        }
+
+        return true;
+      }
+
+      form.addEventListener("submit", async event => {
+        event.preventDefault();
+
+        if (isSubmitting) return;
+        if (!form.reportValidity()) return;
+
+        const client = window.supabaseClient;
+
+        if (!client) {
+          showMessage("Supabase connection nahi mila. Page reload karke try karo.", "error");
           return;
         }
 
-        const formData = new FormData(form);
-        const address = Object.fromEntries(formData.entries());
+        // Do not proceed without a map-selected delivery location.
+        if (!latInput.value || !lngInput.value) {
+          showMessage("Order place karne se pehle map par apni delivery location select karo.", "error");
+          locationStatus.textContent = "Delivery location required hai. Map par click karo ya current location select karo.";
+          locationStatus.className = "error";
+          document.getElementById("deliveryMap").scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+          return;
+        }
 
-        const { data: orderId, error } = await supabase.rpc(
-          "place_order",
-          { p_shipping_address: address }
-        );
+        isSubmitting = true;
+        button.disabled = true;
+        button.textContent = "Checking Delivery Area...";
+        successActions.classList.remove("visible");
 
-        if (error) throw error;
+        showMessage("Login aur delivery availability check ho rahi hai...", "info");
 
-        message.textContent =
-          "Order placed successfully!\nOrder ID: " + orderId;
+        try {
+          const { data: userData, error: userError } = await client.auth.getUser();
 
-        form.reset();
-      } catch (error) {
-        console.error("Checkout error:", error);
-        message.textContent =
-          error.message || "Order place nahi ho paya.";
-      } finally {
-        button.disabled = false;
-      }
-    });
+          if (userError) throw userError;
+
+          if (!userData.user) {
+            showMessage("Checkout ke liye pehle login karo. Login page par bheja ja raha hai...", "error");
+
+            window.location.href =
+              "login.html?redirect=" + encodeURIComponent("checkout.html");
+            return;
+          }
+
+          // Step 1: Verify the selected coordinates against the saved active zone.
+          button.textContent = "Checking Delivery Area...";
+          await checkDeliveryZone(client, latInput.value, lngInput.value);
+
+          // Step 2: Build the existing address payload, including map coordinates.
+          const formData = new FormData(form);
+          const address = Object.fromEntries(formData.entries());
+
+          address.latitude = Number(latInput.value);
+          address.longitude = Number(lngInput.value);
+
+          // Step 3: Keep the existing order RPC and its parameter unchanged.
+          button.textContent = "Placing Your Order...";
+
+          const { data: orderId, error } = await client.rpc("place_order", {
+            p_shipping_address: address
+          });
+
+          if (error) throw error;
+
+          if (!orderId) {
+            throw new Error("Order confirmation ID nahi mila. My Orders page check karo.");
+          }
+
+          form.reset();
+          form.style.display = "none";
+
+          showMessage(
+            "🎉 Order successfully place ho gaya!\n\nOrder ID: " +
+            String(orderId) +
+            "\n\nTum My Orders page par apne order ka status check kar sakte ho.",
+            "success"
+          );
+
+          successActions.classList.add("visible");
+
+        } catch (error) {
+          console.error("Checkout error:", error);
+          showMessage(getFriendlyError(error), "error");
+
+        } finally {
+          isSubmitting = false;
+          button.disabled = false;
+
+          if (form.style.display !== "none") {
+            button.textContent = "Place Order →";
+          }
+        }
+      });
+    })();
   </script>
 </body>
 </html>

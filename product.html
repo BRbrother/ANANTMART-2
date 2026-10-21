@@ -1,158 +1,562 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details - ANANTMART</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        /* Ekdum sleek aur modern spacing product page ke liye */
-        .product-page {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 40px;
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-            justify-content: center;
-        }
-        .product-image {
-            flex: 1;
-            min-width: 300px;
-            max-width: 500px;
-        }
-        .product-image img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            object-fit: cover;
-        }
-        .product-info {
-            flex: 1;
-            min-width: 300px;
-            text-align: left;
-        }
-        .product-info h1 {
-            font-size: 2rem;
-            color: #1e293b;
-            margin-bottom: 10px;
-        }
-        .product-info h2 {
-            font-size: 1.8rem;
-            color: #ea580c; /* ANANTMART Premium Orange Accent */
-            margin-bottom: 20px;
-        }
-        .product-info p {
-            font-size: 1rem;
-            color: #475569;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
-        .quantity {
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .quantity input {
-            width: 60px;
-            padding: 8px;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            text-align: center;
-        }
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .cart-btn-big {
-            background: #ea580c;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: 0.2s;
-        }
-        .cart-btn-big:hover {
-            background: #c2410c;
-        }
-        .buy-btn {
-            background: #1e293b;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: 0.2s;
-        }
-        .buy-btn:hover {
-            background: #0f172a;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details | Gram Mart</title>
+  <meta name="description" content="Shop everyday groceries and essentials at Gram Mart.">
+  <meta name="theme-color" content="#0B3091">
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    :root {
+      --gm-orange: #FF6A00;
+      --gm-blue: #0B3091;
+      --gm-bg: #F6F8FC;
+      --gm-text: #18233A;
+      --gm-muted: #647084;
+      --gm-border: #DDE3EC;
+      --gm-white: #FFFFFF;
+      --gm-green: #16803C;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--gm-text);
+      background: var(--gm-white);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    button, input { font: inherit; }
+    a { text-decoration: none; }
+
+    .product-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--gm-white);
+      box-shadow: 0 3px 16px rgba(11,48,145,.08);
+    }
+
+    .product-navbar {
+      max-width: 1400px;
+      margin: auto;
+      padding: 14px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .product-brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--gm-blue);
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: -.8px;
+      white-space: nowrap;
+    }
+
+    .product-brand-icon {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px 12px 12px 4px;
+      background: var(--gm-orange);
+      color: white;
+    }
+
+    .product-brand .brand-mart { color: var(--gm-orange); }
+
+    .product-search {
+      flex: 1;
+      max-width: 430px;
+    }
+
+    .product-search input {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      border: 1px solid var(--gm-border);
+      border-radius: 10px;
+      outline: none;
+      background: var(--gm-bg);
+    }
+
+    .product-search input:focus { border-color: var(--gm-blue); }
+
+    .product-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .product-header-actions a,
+    .product-header-actions button {
+      padding: 10px 12px;
+      border: 1px solid var(--gm-border);
+      border-radius: 9px;
+      background: white;
+      color: var(--gm-blue);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .product-header-actions .header-cart {
+      border-color: var(--gm-orange);
+      background: var(--gm-orange);
+      color: white;
+    }
+
+    .product-breadcrumb {
+      max-width: 1200px;
+      margin: auto;
+      padding: 24px 24px 0;
+      color: var(--gm-muted);
+      font-size: 13px;
+    }
+
+    .product-breadcrumb a { color: var(--gm-blue); font-weight: 700; }
+
+    .product-layout {
+      max-width: 1200px;
+      margin: 22px auto 65px;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: start;
+      gap: 45px;
+    }
+
+    .product-gallery { min-width: 0; }
+
+    .product-image-panel {
+      position: relative;
+      padding: 18px;
+      border: 1px solid var(--gm-border);
+      border-radius: 18px;
+      background: var(--gm-bg);
+    }
+
+    #productImage {
+      display: block;
+      width: 100%;
+      height: 420px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: white;
+    }
+
+    .product-thumbnails {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      overflow-x: auto;
+    }
+
+    .product-thumbnail {
+      flex: 0 0 70px;
+      width: 70px;
+      height: 70px;
+      padding: 4px;
+      border: 1px solid var(--gm-border);
+      border-radius: 9px;
+      background: white;
+      cursor: pointer;
+    }
+
+    .product-thumbnail.active { border: 2px solid var(--gm-orange); }
+
+    .product-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .product-details { min-width: 0; padding: 10px 0; }
+
+    .product-kicker {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      background: #EEF2FF;
+      color: var(--gm-blue);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+
+    #productTitle {
+      margin: 0 0 12px;
+      color: var(--gm-blue);
+      font-size: clamp(27px, 3vw, 38px);
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .product-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      margin-bottom: 18px;
+      color: var(--gm-muted);
+      font-size: 13px;
+    }
+
+    .product-meta strong { color: var(--gm-text); }
+
+    .price-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 7px;
+    }
+
+    .product-price {
+      margin: 0;
+      color: var(--gm-orange);
+      font-size: 32px;
+      font-weight: 800;
+    }
+
+    .product-mrp {
+      color: var(--gm-muted);
+      font-size: 16px;
+    }
+
+    .product-mrp s { text-decoration-thickness: 1px; }
+
+    .discount-badge {
+      display: none;
+      padding: 6px 8px;
+      border-radius: 6px;
+      background: #E7F7EC;
+      color: var(--gm-green);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .tax-note {
+      margin: 0 0 20px;
+      color: var(--gm-muted);
+      font-size: 12px;
+    }
+
+    .stock-status {
+      margin: 0 0 18px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .stock-status.in-stock { color: var(--gm-green); }
+    .stock-status.out-of-stock { color: #C62828; }
+
+    .product-description {
+      margin: 0 0 22px;
+      color: var(--gm-muted);
+      font-size: 15px;
+      line-height: 1.8;
+      overflow-wrap: anywhere;
+      white-space: pre-line;
+    }
+
+    .product-separator {
+      height: 1px;
+      margin: 22px 0;
+      border: 0;
+      background: var(--gm-border);
+    }
+
+    .variant-section { margin: 18px 0; }
+
+    .variant-section label,
+    .quantity label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--gm-text);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    #variantOptions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .variant-chip {
+      padding: 9px 12px;
+      border: 1px solid var(--gm-border);
+      border-radius: 8px;
+      background: white;
+      color: var(--gm-text);
+      cursor: pointer;
+    }
+
+    .variant-chip.active {
+      border-color: var(--gm-blue);
+      background: #EEF2FF;
+      color: var(--gm-blue);
+      font-weight: 700;
+    }
+
+    .variant-chip:focus-visible,
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid var(--gm-orange);
+      outline-offset: 3px;
+    }
+
+    .quantity { margin: 20px 0; }
+
+    .quantity input {
+      width: 100px;
+      height: 44px;
+      padding: 8px;
+      border: 1px solid var(--gm-border);
+      border-radius: 9px;
+      text-align: center;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .cart-btn-big,
+    .buy-btn {
+      min-height: 49px;
+      padding: 13px 18px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .cart-btn-big {
+      flex: 1 1 180px;
+      background: var(--gm-orange);
+      color: white;
+    }
+
+    .buy-btn {
+      flex: 1 1 130px;
+      background: var(--gm-blue);
+      color: white;
+    }
+
+    .cart-btn-big:hover { background: var(--gm-blue); }
+    .buy-btn:hover { background: var(--gm-orange); }
+
+    .cart-btn-big:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .product-message {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .product-message.success { display: block; background: #E7F7EC; color: #176B35; }
+    .product-message.error { display: block; background: #FDECEC; color: #A52222; }
+    .product-message.info { display: block; background: #EEF2FF; color: var(--gm-blue); }
+
+    .product-benefits {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    .product-benefit {
+      padding: 13px;
+      border: 1px solid var(--gm-border);
+      border-radius: 10px;
+    }
+
+    .product-benefit strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--gm-blue);
+      font-size: 12px;
+    }
+
+    .product-benefit span {
+      color: var(--gm-muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .product-footer {
+      padding: 30px 20px;
+      background: var(--gm-blue);
+      color: white;
+      text-align: center;
+    }
+
+    .product-footer strong { font-size: 22px; }
+    .product-footer strong span { color: var(--gm-orange); }
+    .product-footer p { margin: 8px 0 0; color: #E9EDF3; font-size: 12px; }
+
+    .product-loading {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 24px;
+      color: var(--gm-muted);
+    }
+
+    @media (max-width: 800px) {
+      .product-navbar { flex-wrap: wrap; padding: 12px 16px; gap: 12px; }
+      .product-brand { font-size: 23px; }
+      .product-search { order: 3; flex: 1 1 100%; max-width: none; }
+      .product-header-actions { margin-left: auto; gap: 5px; }
+      .product-header-actions a, .product-header-actions button { padding: 8px; font-size: 11px; }
+      .product-layout { grid-template-columns: 1fr; gap: 22px; margin-top: 16px; padding: 0 16px; }
+      .product-breadcrumb { padding: 18px 16px 0; }
+      .product-image-panel { padding: 10px; }
+      #productImage { height: min(360px, 82vw); }
+      .product-details { padding: 4px 2px; }
+      .product-benefits { gap: 8px; }
+    }
+
+    @media (max-width: 400px) {
+      .product-header-actions a, .product-header-actions button { padding: 7px 6px; font-size: 10px; }
+      .product-brand { font-size: 20px; }
+      .product-benefits { grid-template-columns: 1fr; }
+      .action-buttons { flex-direction: column; }
+      .cart-btn-big, .buy-btn { width: 100%; flex-basis: auto; }
+    }
+  </style>
 </head>
 
 <body>
-<header>
-    <nav class="navbar">
-        <div class="logo" style="cursor: pointer;" onclick="window.location.href='index.html'">
-            ANANTMART
-        </div>
+<header class="product-header">
+  <nav class="product-navbar" aria-label="Main navigation">
+    <a href="index.html" class="product-brand" aria-label="Gram Mart Home">
+      <span class="product-brand-icon">G</span>
+      <span>Gram<span class="brand-mart">Mart</span></span>
+    </a>
 
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Search products...">
-        </div>
+    <div class="product-search">
+      <input type="search" id="searchInput"
+        placeholder="Search groceries and essentials..."
+        aria-label="Search products">
+    </div>
 
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="#">Categories</a></li>
-            <li><a href="#">Deals</a></li>
-            <li><a href="#">Sell</a></li>
-            <li><a href="#">Contact</a></li>
-        </ul>
-
-        <div class="actions">
-            <span id="welcomeUser" style="display: none; color: #1e293b; font-weight: bold; margin-right: 15px;"></span>
-            <a href="login.html" id="loginlink"><button class="login-btn">Login</button></a>
-            <button id="logoutBtn" class="login-btn" style="display: none; background: #ef4444; color: white; border: none;">Logout</button>
-
-            <a href="cart.html" style="text-decoration: none;">
-                <button class="cart-btn">Cart 🛒</button>
-            </a>
-        </div>
-    </nav>
+    <div class="product-header-actions">
+      <a href="index.html">Home</a>
+      <a href="login.html" id="loginlink">Login</a>
+      <span id="welcomeUser" style="display:none;color:#0B3091;font-weight:bold"></span>
+      <button id="logoutBtn" style="display:none" type="button">Logout</button>
+      <a href="my-orders.html">Orders</a>
+      <a href="cart.html" class="header-cart">🛒 Cart</a>
+    </div>
+  </nav>
 </header>
 
 <main>
-    <section class="product-page">
-        <div class="product-image">
-            <img src="https://via.placeholder.com/500" alt="Loading Product...">
+  <div class="product-breadcrumb">
+    <a href="index.html">Home</a>
+    <span> / </span>
+    <span id="breadcrumbCategory">Product Details</span>
+  </div>
+
+  <div id="pageStatus" class="product-loading" role="status" aria-live="polite">
+    Loading product details...
+  </div>
+
+  <section class="product-layout" id="productContent" hidden>
+    <div class="product-gallery">
+      <div class="product-image-panel">
+        <img id="productImage" src="" alt="Product image">
+      </div>
+      <div id="productThumbnails" class="product-thumbnails" aria-label="More product images"></div>
+    </div>
+
+    <div class="product-details">
+      <span class="product-kicker">GRAM MART • DAILY ESSENTIALS</span>
+      <h1 id="productTitle">Product name</h1>
+
+      <div class="product-meta">
+        <span id="productBrandWrap" hidden>Brand: <strong id="productBrand"></strong></span>
+        <span id="productCategoryWrap" hidden>Category: <strong id="productCategory"></strong></span>
+        <span id="productUnitWrap" hidden>Unit: <strong id="productUnit"></strong></span>
+        <span id="productSkuWrap" hidden>SKU: <strong id="productSku"></strong></span>
+      </div>
+
+      <div class="price-row">
+        <h2 class="product-price" id="productPrice">₹0</h2>
+        <span class="product-mrp" id="productMrpWrap" hidden>
+          MRP <s id="productMrp"></s>
+        </span>
+        <span class="discount-badge" id="productDiscount"></span>
+      </div>
+
+      <p class="tax-note">Price shown is the listed selling price.</p>
+      <p class="stock-status" id="productStock"></p>
+      <p class="product-description" id="productDescription"></p>
+
+      <hr class="product-separator">
+
+      <div class="variant-section" id="variantSection" hidden>
+        <label>Choose an option</label>
+        <div id="variantOptions"></div>
+      </div>
+
+      <div class="quantity">
+        <label for="productQty">Quantity</label>
+        <input type="number" id="productQty" value="1" min="1" step="1" inputmode="numeric">
+      </div>
+
+      <div class="action-buttons">
+        <button id="addToCart" class="cart-btn-big" type="button" disabled>
+          Add to Cart 🛒
+        </button>
+        <button id="goToCart" class="buy-btn" type="button">
+          Go to Cart →
+        </button>
+      </div>
+
+      <div id="productMessage" class="product-message" role="status" aria-live="polite"></div>
+
+      <div class="product-benefits">
+        <div class="product-benefit">
+          <strong>🛍️ Easy ordering</strong>
+          <span>Add your everyday essentials to your cart.</span>
         </div>
-
-        <div class="product-info">
-            <h1>Loading Title...</h1>
-            <h2>₹0</h2>
-            <p>Loading premium authentic quality product details from ANANTMART cloud database...</p>
-
-            <div class="quantity">
-                <label style="font-weight: bold; color: #475569;">Quantity:</label>
-                <input type="number" id="productQty" value="1" min="1">
-            </div>
-
-            <div class="action-buttons">
-                <button id="addToCart" class="cart-btn-big">Add To Cart 🛒</button>
-                <button class="buy-btn" onclick="window.location.href='cart.html'">Buy Now</button>
-            </div>
+        <div class="product-benefit">
+          <strong>📦 Order tracking</strong>
+          <span>View your orders from your account.</span>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 </main>
 
-<script src="js/product.js"></script>
+<footer class="product-footer">
+  <strong>Gram<span>Mart</span></strong>
+  <p>Your neighbourhood store for everyday essentials.</p>
+  <p>&copy; 2026 Gram Mart. All rights reserved.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./js/supabase.js"></script>
+<script src="./js/product.js"></script>
 </body>
 </html>

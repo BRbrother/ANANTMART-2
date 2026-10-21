@@ -1,293 +1,910 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - ANANTMART</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    
-    <style>
-        /* ANANTMART Strict Brand Theme Integration */
-        body {
-            background-color: #F8F9FC; /* Light Premium Background */
-            color: #222222; /* Dark Text */
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        .admin-panel {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: #FFFFFF;
-            padding: 30px;
-            border-radius: 8px;
-            border: 1px solid #E5E7EB;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
+  <title>GRAM MART | Admin Dashboard</title>
+  <meta name="theme-color" content="#0B3091">
+  <meta name="description" content="GRAM MART grocery store admin dashboard">
 
-        h1 {
-            color: #1E3A8A; /* Primary Royal Blue */
-            font-size: 28px;
-            font-weight: 700;
-            border-bottom: 3px solid #1E3A8A;
-            padding-bottom: 10px;
-            margin-top: 0;
-            margin-bottom: 25px;
-        }
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
 
-        h2 {
-            color: #1E3A8A;
-            font-size: 22px;
-            margin-top: 40px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #E5E7EB;
-            padding-bottom: 8px;
-        }
+  <style>
+    :root {
+      --orange: #FF6A00;
+      --orange-light: #FFF0E5;
+      --blue: #0B3091;
+      --blue-light: #EAF0FF;
+      --bg: #F5F7FC;
+      --text: #172033;
+      --muted: #778198;
+      --border: #E5EAF2;
+      --white: #FFFFFF;
+    }
 
-        /* Analytics Stats Counters Dashboard */
-        .stats-grid {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 35px;
-        }
+    * {
+      box-sizing: border-box;
+    }
 
-        .stat-card {
-            flex: 1;
-            background: #F8F9FC;
-            border: 1px solid #E5E7EB;
-            padding: 20px;
-            border-radius: 6px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
+    html {
+      scroll-behavior: smooth;
+    }
 
-        .stat-card h3 {
-            margin: 0;
-            font-size: 12px;
-            color: #666666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Poppins', sans-serif;
+    }
 
-        .stat-card p {
-            margin: 8px 0 0 0;
-            font-size: 26px;
-            font-weight: 700;
-            color: #F97316; /* Accent Orange */
-        }
+    button, input, select {
+      font-family: inherit;
+    }
 
-        /* Form Inputs Container & Layout */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+    .admin-shell {
+      display: flex;
+      min-height: 100vh;
+    }
 
-        .admin-panel input, .admin-panel select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #E5E7EB;
-            border-radius: 4px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 14px;
-            box-sizing: border-box;
-            background-color: #FFFFFF;
-        }
+    .sidebar {
+      width: 245px;
+      flex-shrink: 0;
+      background: var(--blue);
+      color: white;
+      padding: 26px 16px;
+    }
 
-        .admin-panel input:focus, .admin-panel select:focus {
-            border-color: #2563EB; /* Secondary Blue */
-            outline: none;
-        }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 0 8px 25px;
+      border-bottom: 1px solid rgba(255,255,255,.16);
+    }
 
-        .admin-panel button {
-            background-color: #F97316; /* Accent Orange */
-            color: #FFFFFF;
-            border: none;
-            padding: 14px 24px;
-            font-size: 15px;
-            font-weight: 600;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            max-width: 250px;
-            transition: background 0.2s;
-            display: block;
-        }
+    .brand-mark {
+      width: 43px;
+      height: 43px;
+      flex-shrink: 0;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: var(--orange);
+      font-size: 23px;
+      font-weight: 800;
+    }
 
-        .admin-panel button:hover {
-            background-color: #EA580C; /* Accent Hover */
-        }
+    .brand strong {
+      display: block;
+      font-size: 17px;
+    }
 
-        /* Products Inventory List Grid Layout */
-        #adminProducts {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
+    .brand small {
+      display: block;
+      opacity: .75;
+      font-size: 10px;
+    }
 
-        .admin-product {
-            background: #FFFFFF;
-            border: 1px solid #E5E7EB;
-            border-radius: 6px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
-        }
+    .nav-label {
+      margin: 28px 10px 10px;
+      color: #BAC8EF;
+      font-size: 10px;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+    }
 
-        .admin-product img {
-            width: 100%;
-            height: 140px;
-            object-fit: contain;
-            margin-bottom: 12px;
-            border-radius: 4px;
-        }
+    .nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
 
-        .admin-product h3 {
-            margin: 5px 0;
-            font-size: 15px;
-            color: #222222;
-            font-weight: 500;
-        }
+    .nav-link {
+      display: block;
+      color: #E5EBFF;
+      text-decoration: none;
+      padding: 12px 13px;
+      border-radius: 10px;
+      font-size: 13px;
+      transition: background .2s ease;
+    }
 
-        .admin-product p {
-            margin: 4px 0;
-            font-size: 14px;
-            color: #666666;
-        }
+    .nav-link.active,
+    .nav-link:hover {
+      background: rgba(255,255,255,.14);
+      color: white;
+    }
 
-        .admin-product p:nth-of-type(1) {
-            color: #F97316; /* Price text in Orange */
-            font-weight: 700;
-            font-size: 16px;
-        }
+    .nav-link.add-product-link {
+      background: var(--orange);
+      color: white;
+      font-weight: 600;
+    }
 
-        /* Action Edit/Delete Buttons Inside Inventory Cards */
-        .admin-product button {
-            display: inline-block;
-            width: 45%;
-            padding: 6px 10px;
-            margin: 8px 2% 0 2%;
-            font-size: 12px;
-            font-weight: 500;
-            max-width: 100px;
-        }
+    .nav-link.add-product-link:hover {
+      background: #E95F00;
+    }
 
-        .admin-product button:nth-of-type(1) { background-color: #2563EB; } /* Secondary Blue */
-        .admin-product button:nth-of-type(1):hover { background-color: #1E3A8A; }
-        .admin-product button:nth-of-type(2) { background-color: #FFFFFF; color: #DC2626; border: 1px solid #FCA5A5; }
-        .admin-product button:nth-of-type(2):hover { background-color: #FEF2F2; }
+    .main {
+      min-width: 0;
+      flex: 1;
+      padding: 28px;
+    }
 
-        /* Day 16: Live Orders Table Styling */
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-            border: 1px solid #E5E7EB;
-            border-radius: 6px;
-            background: #FFFFFF;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
-        }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 25px;
+    }
 
-        .order-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 14px;
-        }
+    .topbar h1 {
+      margin: 0;
+      font-size: 25px;
+      color: var(--blue);
+    }
 
-        .order-table th, .order-table td {
-            padding: 14px 16px;
-            border-bottom: 1px solid #E5E7EB;
-        }
+    .topbar p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
 
-        .order-table th {
-            background-color: #1E3A8A; /* Primary Royal Blue Header */
-            color: #FFFFFF;
-            font-weight: 500;
-        }
+    .top-actions {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
 
-        .order-table tr:hover {
-            background-color: #F8F9FC;
-        }
+    .btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 7px;
+      border: 0;
+      border-radius: 9px;
+      padding: 11px 15px;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform .15s ease, background .15s ease;
+    }
 
-        .status-badge {
-            background: #2563EB;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-    </style>
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--orange);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #E95F00;
+    }
+
+    .btn-secondary {
+      background: var(--blue-light);
+      color: var(--blue);
+    }
+
+    .btn-danger {
+      background: #FFF0F0;
+      color: #C62828;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .stat-card,
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      box-shadow: 0 4px 18px rgba(21,42,87,.035);
+    }
+
+    .stat-card {
+      padding: 20px;
+      min-width: 0;
+    }
+
+    .stat-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stat-icon {
+      width: 39px;
+      height: 39px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: var(--orange-light);
+      font-size: 19px;
+    }
+
+    .stat-value {
+      margin: 13px 0 3px;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--blue);
+      overflow-wrap: anywhere;
+    }
+
+    .stat-note {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .panel {
+      padding: 23px;
+      margin-bottom: 22px;
+      scroll-margin-top: 20px;
+      min-width: 0;
+    }
+
+    .panel-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .panel-heading h2 {
+      margin: 0;
+      font-size: 17px;
+      color: var(--blue);
+    }
+
+    .panel-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .field {
+      min-width: 0;
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 7px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      min-width: 0;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: white;
+      color: var(--text);
+      font: inherit;
+      font-size: 12px;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      outline: 2px solid rgba(11,48,145,.12);
+      border-color: var(--blue);
+    }
+
+    .form-actions {
+      margin-top: 18px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .form-actions .btn {
+      min-width: 145px;
+    }
+
+    .inventory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 15px;
+    }
+
+    .admin-product {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px;
+      min-width: 0;
+      background: white;
+    }
+
+    .admin-product img {
+      width: 100%;
+      height: 135px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #FAFBFE;
+    }
+
+    .admin-product h3 {
+      font-size: 13px;
+      margin: 12px 0 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .admin-product p {
+      font-size: 11px;
+      color: var(--muted);
+      margin: 5px 0;
+    }
+
+    .admin-product p:nth-of-type(1) {
+      font-weight: 700;
+      color: var(--orange);
+      font-size: 15px;
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .action-btns button {
+      flex: 1;
+      width: auto;
+      padding: 8px 5px;
+    }
+
+    .table-toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .table-toolbar input,
+    .table-toolbar select {
+      min-width: 0;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      font: inherit;
+      font-size: 12px;
+      background: white;
+    }
+
+    .table-toolbar input {
+      flex: 1;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    .order-table {
+      width: 100%;
+      min-width: 780px;
+      border-collapse: collapse;
+      font-size: 11px;
+      text-align: left;
+    }
+
+    .order-table th {
+      background: var(--blue);
+      color: white;
+      font-weight: 500;
+    }
+
+    .order-table th,
+    .order-table td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .order-table tbody tr:hover {
+      background: #F8FAFF;
+    }
+
+    .order-table td {
+      overflow-wrap: anywhere;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 30px;
+      font-size: 10px;
+      font-weight: 600;
+      background: var(--blue-light);
+      color: var(--blue);
+      white-space: nowrap;
+    }
+
+    .status-delivered {
+      background: #E7F8ED;
+      color: #18743A;
+    }
+
+    .status-cancelled {
+      background: #FDECEC;
+      color: #B42318;
+    }
+
+    .status-pending {
+      background: #FFF3D8;
+      color: #875900;
+    }
+
+    .status-shipped {
+      background: #E8F2FF;
+      color: #1756A9;
+    }
+
+    .empty-state {
+      color: var(--muted);
+      font-size: 12px;
+      padding: 20px 5px;
+    }
+
+    .section-anchor {
+      scroll-margin-top: 20px;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 10px;
+      color: var(--muted);
+      padding: 5px 0 18px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 1100px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .main {
+        padding: 20px;
+      }
+
+      .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .admin-shell {
+        display: block;
+      }
+
+      .sidebar {
+        width: 100%;
+        padding: 15px;
+      }
+
+      .brand {
+        padding: 0 4px 13px;
+      }
+
+      .nav-label {
+        display: none;
+      }
+
+      .nav-links {
+        flex-direction: row;
+        gap: 5px;
+        overflow-x: auto;
+        padding-top: 12px;
+      }
+
+      .nav-link {
+        white-space: nowrap;
+        padding: 10px 12px;
+        margin: 0;
+        font-size: 11px;
+      }
+
+      .main {
+        padding: 15px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .topbar h1 {
+        font-size: 21px;
+      }
+
+      .panel {
+        padding: 16px;
+      }
+
+      .stat-card {
+        padding: 14px;
+      }
+
+      .stat-value {
+        font-size: 21px;
+      }
+
+      .panel-heading {
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .form-grid,
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .stat-label {
+        font-size: 10px;
+      }
+
+      .stat-icon {
+        width: 32px;
+        height: 32px;
+      }
+
+      .panel-heading h2 {
+        font-size: 15px;
+      }
+
+      .field input,
+      .field select {
+        padding: 10px 8px;
+        font-size: 11px;
+      }
+
+      .top-actions {
+        width: 100%;
+      }
+
+      .top-actions .btn {
+        flex: 1;
+      }
+
+      .panel-heading {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
 </head>
+
 <body>
+  <div class="admin-shell">
 
-    <div class="admin-panel">
-        <h1>ANANTMART Admin Control Center</h1>
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">G</div>
+        <div>
+          <strong>GRAM MART</strong>
+          <small>ADMIN CONTROL CENTER</small>
+        </div>
+      </div>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Total Revenue</h3>
-                <p>₹<span id="revenueWidget">0</span></p>
-            </div>
-            <div class="stat-card">
-                <h3>Total Orders</h3>
-                <p id="ordersWidget">0</p>
-            </div>
-            <div class="stat-card">
-                <h3>Registered Users</h3>
-                <p id="usersWidget">0</p>
-            </div>
+      <div class="nav-label">Management</div>
+
+      <nav class="nav-links">
+        <a class="nav-link active" href="#dashboard">▦ Dashboard</a>
+        <a class="nav-link" href="#products">▣ Inventory</a>
+        <a class="nav-link add-product-link" href="./add-product.html">＋ Add Product</a>
+        <a class="nav-link" href="#orders">🛒 Orders</a>
+        <a class="nav-link" href="./index.html">↗ View Store</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+
+      <header class="topbar">
+        <div>
+          <h1>Welcome, Admin 👋</h1>
+          <p>Manage your grocery store, inventory and customer orders.</p>
         </div>
 
-        <div class="form-grid">
-            <input type="text" id="productName" placeholder="Product Name">
-            <input type="number" id="productPrice" placeholder="Product Price">
-            
-            <select id="productCategory">
+        <div class="top-actions">
+          <button class="btn btn-secondary" type="button" onclick="refreshAdmin()">
+            ↻ Refresh Data
+          </button>
+
+          <a class="btn btn-primary" href="./add-product.html">
+            ＋ Add New Product
+          </a>
+
+          <a class="btn btn-secondary" href="./index.html">
+            Visit Store ↗
+          </a>
+        </div>
+      </header>
+
+      <!-- DASHBOARD STATISTICS -->
+      <section id="dashboard" class="stats-grid">
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Delivered Sales Value</span>
+            <span class="stat-icon">₹</span>
+          </div>
+          <div class="stat-value" id="revenueWidget">₹0</div>
+          <div class="stat-note">Value of delivered orders, not confirmed cash receipts</div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Total Orders</span>
+            <span class="stat-icon">🛒</span>
+          </div>
+          <div class="stat-value" id="ordersWidget">0</div>
+          <div class="stat-note">All order statuses</div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Pending Orders</span>
+            <span class="stat-icon">⏳</span>
+          </div>
+          <div class="stat-value" id="pendingOrdersWidget">0</div>
+          <div class="stat-note">Waiting for processing</div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Delivered Orders</span>
+            <span class="stat-icon">✅</span>
+          </div>
+          <div class="stat-value" id="deliveredOrdersWidget">0</div>
+          <div class="stat-note">Successfully delivered</div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Total Products</span>
+            <span class="stat-icon">📦</span>
+          </div>
+          <div class="stat-value" id="productsWidget">0</div>
+          <div class="stat-note">Active products in catalogue</div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Registered Users</span>
+            <span class="stat-icon">👥</span>
+          </div>
+          <div class="stat-value" id="usersWidget">0</div>
+          <div class="stat-note">Profiles registered in the store</div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Low Stock Products</span>
+            <span class="stat-icon">⚠️</span>
+          </div>
+          <div class="stat-value" id="lowStockWidget">0</div>
+          <div class="stat-note">Active products with stock of 5 or less</div>
+        </article>
+
+        <article class="stat-card">
+          <div class="stat-top">
+            <span class="stat-label">Cancelled Orders</span>
+            <span class="stat-icon">✖</span>
+          </div>
+          <div class="stat-value" id="cancelledOrdersWidget">0</div>
+          <div class="stat-note">Orders marked cancelled</div>
+        </article>
+
+      </section>
+
+      <!-- QUICK PRODUCT ENTRY -->
+      <section class="panel section-anchor" id="products">
+
+        <div class="panel-heading">
+          <div>
+            <h2 id="productFormHeading">Quick Product Entry</h2>
+            <p>Basic product entry ya advanced product listing choose kar.</p>
+          </div>
+
+          <a class="btn btn-primary" href="./add-product.html">
+            ＋ Advanced Add Product
+          </a>
+        </div>
+
+        <form id="productForm">
+          <div class="form-grid">
+
+            <div class="field">
+              <label for="productName">Product Name *</label>
+              <input
+                id="productName"
+                type="text"
+                placeholder="e.g. Aashirvaad Atta 5kg"
+                required
+              >
+            </div>
+
+            <div class="field">
+              <label for="productPrice">Selling Price (₹) *</label>
+              <input
+                id="productPrice"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="e.g. 250"
+                required
+              >
+            </div>
+
+            <div class="field">
+              <label for="productCategory">Category *</label>
+              <select id="productCategory" required>
                 <option value="">Select Category</option>
-                <option value="Electronics">Electronics</option>
-                <option value="Fashion">Fashion</option>
-                <option value="Home & Kitchen">Home & Kitchen</option>
-                <option value="Beauty">Beauty</option>
+                <option value="Fruits & Vegetables">Fruits & Vegetables</option>
+                <option value="Dairy & Bakery">Dairy & Bakery</option>
+                <option value="Atta, Rice & Dal">Atta, Rice & Dal</option>
+                <option value="Oil & Ghee">Oil & Ghee</option>
+                <option value="Masala & Dry Fruits">Masala & Dry Fruits</option>
+                <option value="Snacks & Beverages">Snacks & Beverages</option>
+                <option value="Personal Care">Personal Care</option>
+                <option value="Household Essentials">Household Essentials</option>
+                <option value="Packaged Food">Packaged Food</option>
                 <option value="Groceries">Groceries</option>
-                <option value="Sports">Sports</option>
-                <option value="Home Decor">Home Decor</option>
-            </select>
-            
-            <input type="number" id="productStock" placeholder="Stock Quantity">
-            <input type="text" id="productImage" placeholder="Product Image URL">
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="productStock">Stock Quantity *</label>
+              <input
+                id="productStock"
+                type="number"
+                min="0"
+                step="1"
+                placeholder="e.g. 50"
+                required
+              >
+            </div>
+
+            <div class="field">
+              <label for="productImage">Product Image URL</label>
+              <input
+                id="productImage"
+                type="url"
+                placeholder="https://example.com/image.jpg"
+              >
+            </div>
+
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit" id="productSubmitBtn">
+              ＋ Add Product
+            </button>
+
+            <button class="btn btn-secondary" type="button" id="cancelEditBtn" hidden>
+              Cancel Edit
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- INVENTORY -->
+      <section class="panel">
+
+        <div class="panel-heading">
+          <div>
+            <h2>Grocery Inventory</h2>
+            <p>Review stock, prices and product availability.</p>
+          </div>
+
+          <button class="btn btn-secondary" type="button" onclick="loadProducts()">
+            ↻ Refresh
+          </button>
         </div>
 
-        <button onclick="addProduct()">Add Product</button>
+        <div id="adminProducts" class="inventory-grid">
+          <p class="empty-state">Loading products...</p>
+        </div>
+      </section>
 
-        <h2>All Products Inventory</h2>
-        <div id="adminProducts"></div>
+      <!-- CUSTOMER ORDERS -->
+      <section class="panel section-anchor" id="orders">
 
-        <h2>📦 Customer Live Orders</h2>
+        <div class="panel-heading">
+          <div>
+            <h2>Customer Orders</h2>
+            <p>View orders and track the existing delivery workflow.</p>
+          </div>
+
+          <button class="btn btn-secondary" type="button" onclick="loadAdminStatsAndOrders()">
+            ↻ Refresh
+          </button>
+        </div>
+
+        <div class="table-toolbar">
+          <input
+            type="search"
+            id="orderSearch"
+            placeholder="Search order, customer or item..."
+            aria-label="Search orders"
+          >
+
+          <select id="orderStatusFilter" aria-label="Filter orders by status">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="processing">Processing</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+
         <div class="table-container">
-            <table class="order-table">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer Email</th>
-                        <th>Items (Qty)</th>
-                        <th>Total Amount</th>
-                        <th>Date & Time</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="adminOrderTableBody">
-                    </tbody>
-            </table>
-        </div>
+          <table class="order-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer / Contact</th>
+                <th>Items (Qty)</th>
+                <th>Amount</th>
+                <th>Date &amp; Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
 
-    </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./js/supabase.js"></script>
-    <script src="js/admin.js"></script>
+            <tbody id="adminOrderTableBody">
+              <tr>
+                <td colspan="6">Loading orders...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="footer-note">
+        GRAM MART Admin · Har zarurat ek jagah, Infinite Choice One Mart
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Supabase and existing admin functionality -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./js/supabase.js"></script>
+  <script src="./js/admin.js"></script>
 </body>
 </html>

@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0B3091">
+  <title>Delivery Dashboard | Gram Mart</title>
+
+  <!-- Leaflet map -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    crossorigin=""
+  >
+
+  <style>
+    :root {
+      --blue: #0B3091;
+      --orange: #FF6A00;
+      --ink: #172033;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f4f7fb;
+      --white: #fff;
+      --green: #15803d;
+      --red: #b91c1c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    button, input { font: inherit; }
+
+    .topbar {
+      background: var(--blue);
+      color: white;
+      padding: 16px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -.5px;
+    }
+
+    .brand .brand-orange { color: #ffb17d; }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    #userEmail {
+      color: #e0e7ff;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .logout {
+      border: 1px solid #ffffff66;
+      background: transparent;
+      color: white;
+      border-radius: 9px;
+      padding: 9px 13px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      padding: 25px 16px 45px;
+      margin: auto;
+    }
+
+    .welcome h1 {
+      font-size: 27px;
+      margin: 0 0 7px;
+      letter-spacing: -.6px;
+    }
+
+    .welcome p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .status-card {
+      margin-top: 22px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .status-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .status-value {
+      margin-top: 7px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .pill::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .pill.available { background: #dcfce7; color: #166534; }
+    .pill.delivery { background: #ffedd5; color: #9a3412; }
+    .pill.off { background: #f1f5f9; color: #475569; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 18px;
+      margin-top: 18px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      min-width: 0;
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 19px;
+    }
+
+    .card-description {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 0 0 17px;
+    }
+
+    .primary, .secondary, .danger, .maps-button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      text-decoration: none;
+      border: 0;
+      border-radius: 10px;
+      min-height: 44px;
+      padding: 11px 14px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .primary {
+      background: var(--orange);
+      color: white;
+    }
+
+    .secondary {
+      background: #e8eefc;
+      color: var(--blue);
+    }
+
+    .danger {
+      background: #fee2e2;
+      color: var(--red);
+    }
+
+    .maps-button {
+      background: var(--blue);
+      color: white;
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .full { width: 100%; }
+
+    .scanner-wrap {
+      display: none;
+      margin-top: 15px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px;
+      background: #fff;
+    }
+
+    #qr-reader { width: 100%; }
+    #qr-reader video { border-radius: 8px; }
+
+    .scanner-help {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .message {
+      display: none;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .message.error {
+      display: block;
+      color: #991b1b;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+    }
+
+    .message.success {
+      display: block;
+      color: #166534;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+    }
+
+    .message.info {
+      display: block;
+      color: #1e40af;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+    }
+
+    .order-empty {
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 25px 15px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .order-number {
+      font-size: 12px;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+      margin-bottom: 8px;
+    }
+
+    .order-status {
+      display: inline-block;
+      padding: 6px 9px;
+      border-radius: 8px;
+      background: #ffedd5;
+      color: #9a3412;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    .order-total {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--blue);
+      margin: 14px 0;
+    }
+
+    .section-label {
+      margin: 17px 0 7px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--muted);
+      letter-spacing: .6px;
+    }
+
+    .detail {
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+      white-space: pre-line;
+    }
+
+    .items {
+      padding-left: 18px;
+      margin: 8px 0 16px;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .order-actions {
+      display: grid;
+      gap: 9px;
+      margin-top: 18px;
+    }
+
+    .muted-note {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .location-card {
+      margin-top: 15px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fbfcff;
+    }
+
+    .location-heading {
+      margin: 0 0 9px;
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    #customerMap {
+      width: 100%;
+      height: 260px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #eef2f7;
+      z-index: 1;
+    }
+
+    .coordinates {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+      margin-top: 9px;
+      overflow-wrap: anywhere;
+    }
+
+    footer {
+      text-align: center;
+      color: #8390a4;
+      font-size: 12px;
+      padding: 20px 10px;
+    }
+
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+      .topbar { padding: 14px 16px; }
+      .container { padding-top: 22px; }
+      .welcome h1 { font-size: 24px; }
+      .card { padding: 17px; }
+      #customerMap { height: 250px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      GRAM<span class="brand-orange">MART</span>
+      <span style="color:white;font-size:13px;font-weight:500">/ Delivery</span>
+    </div>
+
+    <div class="topbar-right">
+      <span id="userEmail">Checking login...</span>
+      <button class="logout" id="logoutButton" type="button">Log out</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="welcome">
+      <h1>Delivery Dashboard</h1>
+      <p>Namaste! Store par check-in karein, assigned order dekhein aur delivery status update karein.</p>
+    </section>
+
+    <section class="status-card">
+      <div>
+        <div class="status-label">Your duty status</div>
+        <div class="status-value" id="dutyText">Checking status...</div>
+      </div>
+      <span class="pill off" id="dutyPill">Loading</span>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Store check-in</h2>
+        <p class="card-description">
+          Store par physically pahunchne ke baad store ka QR code scan karein.
+          Valid QR ke bina naya order assign nahi hoga.
+        </p>
+
+        <button class="primary full" id="scanButton" type="button">
+          Scan Store QR
+        </button>
+
+        <div class="scanner-wrap" id="scannerWrap">
+          <div id="qr-reader"></div>
+          <button class="secondary full" id="stopScanButton" type="button" style="margin-top:10px">
+            Stop scanner
+          </button>
+        </div>
+
+        <div class="scanner-help">
+          Camera permission allow karein. QR scanner ke liye website HTTPS
+          par ya localhost par chalni chahiye.
+        </div>
+
+        <div id="checkinMessage" class="message" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="card">
+        <h2>My assigned order</h2>
+        <p class="card-description">
+          Yahan sirf aapke account ko assigned active order dikhaya jayega.
+        </p>
+
+        <div id="orderContent">
+          <div class="order-empty">Order details load ho rahi hain...</div>
+        </div>
+
+        <div id="orderMessage" class="message" role="status" aria-live="polite"></div>
+
+        <button class="secondary full" id="refreshButton" type="button" style="margin-top:14px">
+          Refresh dashboard
+        </button>
+      </section>
+    </div>
+  </main>
+
+  <footer>© <span id="year"></span> Gram Mart · Delivery Partner Portal</footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./js/supabase.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    crossorigin=""
+  ></script>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const $ = id => document.getElementById(id);
+
+      let db = null;
+      let currentUser = null;
+      let qrScanner = null;
+      let scannerRunning = false;
+      let busy = false;
+      let customerMap = null;
+      let customerMarker = null;
+
+      const ACTIVE_STATUSES = ["pending", "confirmed", "processing", "shipped"];
+
+      $("year").textContent = new Date().getFullYear();
+
+      function showMessage(id, text, type) {
+        const el = $(id);
+        el.textContent = text;
+        el.className = "message " + type;
+      }
+
+      function clearMessage(id) {
+        const el = $(id);
+        el.textContent = "";
+        el.className = "message";
+      }
+
+      function setDuty(state) {
+        const text = $("dutyText");
+        const pill = $("dutyPill");
+
+        pill.className = "pill";
+
+        if (state === "available_at_store") {
+          text.textContent = "Available at store";
+          pill.classList.add("available");
+          pill.textContent = "At store";
+        } else if (state === "on_delivery") {
+          text.textContent = "Out for delivery";
+          pill.classList.add("delivery");
+          pill.textContent = "On delivery";
+        } else {
+          text.textContent = "Off duty — scan store QR to check in";
+          pill.classList.add("off");
+          pill.textContent = "Off duty";
+        }
+      }
+
+      function formatMoney(value) {
+        const amount = Number(value);
+        if (!Number.isFinite(amount)) return "₹0.00";
+
+        return new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR",
+          maximumFractionDigits: 2
+        }).format(amount);
+      }
+
+      function getAddressObject(address) {
+        if (!address) return null;
+
+        if (typeof address === "string") {
+          try {
+            address = JSON.parse(address);
+          } catch {
+            return null;
+          }
+        }
+
+        return address && typeof address === "object" ? address : null;
+      }
+
+      function formatAddress(address) {
+        if (!address) return "No shipping address provided.";
+
+        if (typeof address === "string") {
+          try {
+            address = JSON.parse(address);
+          } catch {
+            return address;
+          }
+        }
+
+        if (typeof address !== "object") return String(address);
+
+        const preferredKeys = [
+          "full_name", "name", "phone", "mobile",
+          "address", "address_line", "address_line1",
+          "address_line2", "landmark", "area", "city",
+          "district", "state", "pincode", "postal_code"
+        ];
+
+        const parts = [];
+
+        for (const key of preferredKeys) {
+          const value = address[key];
+
+          if (
+            value !== undefined &&
+            value !== null &&
+            String(value).trim() !== "" &&
+            !parts.includes(String(value).trim())
+          ) {
+            parts.push(String(value).trim());
+          }
+        }
+
+        if (parts.length) return parts.join("\n");
+
+        return Object.entries(address)
+          .filter(([, value]) => value !== null && typeof value !== "object")
+          .map(([key, value]) => key.replaceAll("_", " ") + ": " + value)
+          .join("\n") || "Shipping address details unavailable.";
+      }
+
+      function getCoordinates(address) {
+        const obj = getAddressObject(address);
+        if (!obj) return null;
+
+        // Accept only finite geographic coordinates in valid ranges.
+        const lat = Number(obj.latitude);
+        const lng = Number(obj.longitude);
+
+        if (
+          obj.latitude === undefined ||
+          obj.latitude === null ||
+          obj.latitude === "" ||
+          obj.longitude === undefined ||
+          obj.longitude === null ||
+          obj.longitude === "" ||
+          !Number.isFinite(lat) ||
+          !Number.isFinite(lng) ||
+          lat < -90 || lat > 90 ||
+          lng < -180 || lng > 180
+        ) {
+          return null;
+        }
+
+        return { lat, lng };
+      }
+
+      function buildLocationHtml(address) {
+        const coords = getCoordinates(address);
+
+        if (!coords) {
+          return `
+            <div class="location-card">
+              <p class="location-heading">📍 Customer location</p>
+              <p class="muted-note">
+                Is order ke saath map coordinates save nahi hain.
+                Neeche diye gaye address ko use karein.
+                Purane orders mein location pin available nahi ho sakta.
+              </p>
+            </div>`;
+        }
+
+        const destination = `${coords.lat},${coords.lng}`;
+        const mapsUrl =
+          "https://www.google.com/maps/dir/?api=1&destination=" +
+          encodeURIComponent(destination);
+
+        return `
+          <div class="location-card">
+            <p class="location-heading">📍 Customer delivery location</p>
+            <div id="customerMap" aria-label="Customer delivery location map"></div>
+            <p class="coordinates">
+              Latitude: ${escapeHtml(coords.lat)}<br>
+              Longitude: ${escapeHtml(coords.lng)}
+            </p>
+            <a
+              class="maps-button full"
+              href="${mapsUrl}"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="margin-top:10px"
+            >🧭 Open in Google Maps</a>
+          </div>`;
+      }
+
+      function initCustomerMap(address) {
+        const coords = getCoordinates(address);
+        const mapElement = $("customerMap");
+
+        if (!coords || !mapElement || !window.L) return;
+
+        if (customerMap) {
+          customerMap.remove();
+          customerMap = null;
+          customerMarker = null;
+        }
+
+        customerMap = L.map(mapElement).setView([coords.lat, coords.lng], 16);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(customerMap);
+
+        customerMarker = L.marker([coords.lat, coords.lng])
+          .addTo(customerMap)
+          .bindPopup("Customer delivery location")
+          .openPopup();
+
+        setTimeout(() => {
+          if (customerMap) customerMap.invalidateSize();
+        }, 150);
+      }
+
+      async function requireDeliveryLogin() {
+        if (!window.supabaseClient) {
+          throw new Error("Supabase client load nahi hua. js/supabase.js check karein.");
+        }
+
+        db = window.supabaseClient;
+
+        const { data: sessionData, error: sessionError } =
+          await db.auth.getSession();
+
+        if (sessionError) throw sessionError;
+
+        if (!sessionData.session) {
+          window.location.replace("./delivery-login.html");
+          return false;
+        }
+
+        currentUser = sessionData.session.user;
+        $("userEmail").textContent = currentUser.email || "Delivery partner";
+
+        const { data: profile, error: profileError } = await db
+          .from("profiles")
+          .select("role")
+          .eq("id", currentUser.id)
+          .maybeSingle();
+
+        if (profileError) throw profileError;
+
+        if (!profile || profile.role !== "delivery_boy") {
+          await db.auth.signOut();
+          window.location.replace("./delivery-login.html");
+          return false;
+        }
+
+        return true;
+      }
+
+      async function loadDuty() {
+        const { data, error } = await db
+          .from("delivery_presence")
+          .select("duty_state,is_available")
+          .eq("user_id", currentUser.id)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        setDuty(data?.duty_state || "off_duty");
+        return data?.duty_state || "off_duty";
+      }
+
+      async function loadOrder() {
+        clearMessage("orderMessage");
+
+        const { data: orders, error } = await db
+          .from("orders")
+          .select("id,total_amount,status,shipping_address,created_at")
+          .eq("delivery_boy_id", currentUser.id)
+          .in("status", ACTIVE_STATUSES)
+          .order("created_at", { ascending: true })
+          .limit(1);
+
+        if (error) throw error;
+
+        if (!orders || orders.length === 0) {
+          if (customerMap) {
+            customerMap.remove();
+            customerMap = null;
+            customerMarker = null;
+          }
+
+          $("orderContent").innerHTML =
+            '<div class="order-empty">Abhi koi active order assigned nahi hai.<br>Store par QR scan karke check-in karein.</div>';
+          return;
+        }
+
+        const order = orders[0];
+
+        const { data: items, error: itemsError } = await db
+          .from("order_items")
+          .select("product_name,unit_price,quantity")
+          .eq("order_id", order.id);
+
+        if (itemsError) throw itemsError;
+
+        renderOrder(order, items || []);
+      }
+
+      function renderOrder(order, items) {
+        const safeId = String(order.id);
+        const statusLabel = {
+          pending: "Pending",
+          confirmed: "Confirmed",
+          processing: "Processing",
+          shipped: "Out for delivery",
+          delivered: "Delivered",
+          cancelled: "Cancelled"
+        }[order.status] || order.status;
+
+        const itemsHtml = items.length
+          ? items.map(item => {
+              const name = escapeHtml(item.product_name || "Product");
+              const qty = Number(item.quantity) || 0;
+              const price = escapeHtml(formatMoney(item.unit_price));
+              return `<li>${name} × ${qty} — ${price}</li>`;
+            }).join("")
+          : "<li>Order item details unavailable.</li>";
+
+        const address = escapeHtml(formatAddress(order.shipping_address));
+        const total = escapeHtml(formatMoney(order.total_amount));
+        const locationHtml = buildLocationHtml(order.shipping_address);
+
+        let actionHtml = "";
+
+        if (order.status === "confirmed") {
+          actionHtml = `
+            <button class="primary full" data-next-status="processing">
+              Start Processing
+            </button>`;
+        } else if (order.status === "processing") {
+          actionHtml = `
+            <button class="primary full" data-next-status="shipped">
+              Out for Delivery
+            </button>`;
+        } else if (order.status === "shipped") {
+          actionHtml = `
+            <button class="primary full" data-next-status="delivered">
+              Mark as Delivered
+            </button>
+            <p class="muted-note">
+              Delivery confirm karne ke baad agla order lene ke liye
+              store par lautkar QR dobara scan karna hoga.
+            </p>`;
+        } else {
+          actionHtml = `
+            <p class="muted-note">
+              Order status update karne ke liye store/admin se sampark karein.
+            </p>`;
+        }
+
+        // Escape all database text before inserting it into HTML.
+        $("orderContent").innerHTML = `
+          <div class="order-number">Order ID: ${escapeHtml(safeId)}</div>
+          <span class="order-status">${escapeHtml(statusLabel)}</span>
+          <div class="order-total">${total}</div>
+
+          <div class="section-label">Order items</div>
+          <ul class="items">${itemsHtml}</ul>
+
+          <div class="section-label">Delivery address</div>
+          <div class="detail">${address}</div>
+
+          ${locationHtml}
+
+          <div class="order-actions">${actionHtml}</div>
+        `;
+
+        initCustomerMap(order.shipping_address);
+
+        $("orderContent").querySelectorAll("[data-next-status]").forEach(button => {
+          button.addEventListener("click", async () => {
+            const nextStatus = button.getAttribute("data-next-status");
+            await updateOrderStatus(order.id, nextStatus, button);
+          });
+        });
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;"
+        })[char]);
+      }
+
+      async function updateOrderStatus(orderId, nextStatus, button) {
+        if (busy) return;
+
+        const confirmationText = {
+          processing: "Kya aap order processing shuru karna chahte hain?",
+          shipped: "Kya aap order ko Out for Delivery mark kar rahe hain?",
+          delivered: "Sirf customer ko order handover karne ke baad Delivered confirm karein. Kya order deliver ho gaya?"
+        }[nextStatus];
+
+        if (!window.confirm(confirmationText || "Order status update karein?")) return;
+
+        busy = true;
+        button.disabled = true;
+        button.textContent = "Updating...";
+
+        try {
+          const { data, error } = await db.rpc("delivery_update_order_status", {
+            p_order_id: orderId,
+            p_new_status: nextStatus
+          });
+
+          if (error) throw error;
+
+          if (data && data.success === false) {
+            throw new Error(data.message || "Status update nahi hua.");
+          }
+
+          showMessage(
+            "orderMessage",
+            "Order status update ho gaya: " + nextStatus,
+            "success"
+          );
+
+          await refreshDashboard();
+
+        } catch (error) {
+          console.error("Order status update failed:", error);
+          showMessage(
+            "orderMessage",
+            error.message || "Order status update nahi ho paya.",
+            "error"
+          );
+        } finally {
+          busy = false;
+          if (button.isConnected) button.disabled = false;
+        }
+      }
+
+      async function startScanner() {
+        clearMessage("checkinMessage");
+
+        if (scannerRunning) return;
+
+        if (!window.Html5Qrcode) {
+          showMessage(
+            "checkinMessage",
+            "QR scanner library load nahi hui. Internet connection check karein.",
+            "error"
+          );
+          return;
+        }
+
+        $("scannerWrap").style.display = "block";
+        $("scanButton").disabled = true;
+
+        try {
+          qrScanner = new Html5Qrcode("qr-reader");
+
+          await qrScanner.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 230, height: 230 } },
+            async decodedText => {
+              if (!scannerRunning) return;
+
+              scannerRunning = false;
+
+              try {
+                await qrScanner.stop();
+              } catch (stopError) {
+                console.warn("QR scanner stop:", stopError);
+              }
+
+              $("scannerWrap").style.display = "none";
+              $("scanButton").disabled = false;
+
+              await submitCheckin(decodedText);
+            },
+            () => {}
+          );
+
+          scannerRunning = true;
+
+          showMessage(
+            "checkinMessage",
+            "Camera ready hai. Store QR code ko frame ke andar rakhein.",
+            "info"
+          );
+
+        } catch (error) {
+          console.error("Could not start QR scanner:", error);
+          $("scannerWrap").style.display = "none";
+          $("scanButton").disabled = false;
+
+          showMessage(
+            "checkinMessage",
+            "Camera start nahi hua. Browser camera permission aur HTTPS connection check karein.",
+            "error"
+          );
+        }
+      }
+
+      async function stopScanner() {
+        if (qrScanner && scannerRunning) {
+          try {
+            await qrScanner.stop();
+          } catch (error) {
+            console.warn("Could not stop QR scanner:", error);
+          }
+        }
+
+        scannerRunning = false;
+        $("scannerWrap").style.display = "none";
+        $("scanButton").disabled = false;
+      }
+
+      async function submitCheckin(scannedText) {
+        clearMessage("checkinMessage");
+
+        const token = String(scannedText || "").trim();
+        const uuidPattern =
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+        if (!uuidPattern.test(token)) {
+          showMessage(
+            "checkinMessage",
+            "QR code ka format sahi nahi hai. Store QR mein valid UUID token hona chahiye.",
+            "error"
+          );
+          return;
+        }
+
+        $("scanButton").disabled = true;
+
+        try {
+          const { data, error } = await db.rpc("delivery_store_checkin", {
+            p_qr_token: token
+          });
+
+          if (error) throw error;
+
+          if (data && data.success === false) {
+            throw new Error(data.message || "Store check-in fail ho gaya.");
+          }
+
+          showMessage(
+            "checkinMessage",
+            data?.message || "Store check-in successful.",
+            "success"
+          );
+
+          await refreshDashboard();
+
+        } catch (error) {
+          console.error("Store check-in failed:", error);
+          showMessage(
+            "checkinMessage",
+            error.message || "Check-in fail ho gaya. Store QR dobara scan karein.",
+            "error"
+          );
+        } finally {
+          $("scanButton").disabled = false;
+        }
+      }
+
+      async function refreshDashboard() {
+        try {
+          await loadDuty();
+          await loadOrder();
+        } catch (error) {
+          console.error("Dashboard refresh failed:", error);
+          showMessage(
+            "orderMessage",
+            error.message || "Dashboard refresh nahi hua. Dobara try karein.",
+            "error"
+          );
+        }
+      }
+
+      $("scanButton").addEventListener("click", startScanner);
+      $("stopScanButton").addEventListener("click", stopScanner);
+
+      $("refreshButton").addEventListener("click", async () => {
+        $("refreshButton").disabled = true;
+        $("refreshButton").textContent = "Refreshing...";
+
+        await refreshDashboard();
+
+        $("refreshButton").disabled = false;
+        $("refreshButton").textContent = "Refresh dashboard";
+      });
+
+      $("logoutButton").addEventListener("click", async () => {
+        $("logoutButton").disabled = true;
+
+        try {
+          await stopScanner();
+
+          const { error } = await db.auth.signOut();
+          if (error) throw error;
+
+          window.location.replace("./delivery-login.html");
+        } catch (error) {
+          console.error("Logout failed:", error);
+          $("logoutButton").disabled = false;
+          alert("Logout nahi ho paya. Dobara try karein.");
+        }
+      });
+
+      async function init() {
+        try {
+          const allowed = await requireDeliveryLogin();
+          if (!allowed) return;
+
+          await refreshDashboard();
+        } catch (error) {
+          console.error("Delivery dashboard initialization failed:", error);
+
+          $("dutyText").textContent = "Dashboard load nahi hua";
+
+          showMessage(
+            "orderMessage",
+            error.message || "Page load nahi hua. Supabase setup check karein.",
+            "error"
+          );
+        }
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>

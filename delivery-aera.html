@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GRAM MART | Delivery Area Editor</title>
+
+  <link rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet"
+    href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+
+  <style>
+    :root {
+      --orange: #FF6A00;
+      --blue: #0B3091;
+      --bg: #f4f6fb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: #182033;
+    }
+
+    header {
+      background: var(--blue);
+      color: white;
+      padding: 18px 22px;
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    header span { color: #ffb16f; }
+
+    main {
+      max-width: 1150px;
+      margin: 22px auto;
+      padding: 0 14px 30px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 3px 15px #14203a0c;
+    }
+
+    h2 { font-size: 18px; margin: 0 0 14px; }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      align-items: end;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    select, input[type="number"] {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #d8deea;
+      border-radius: 8px;
+      font-size: 15px;
+      background: white;
+    }
+
+    input[type="range"] { width: 100%; accent-color: var(--orange); }
+
+    button {
+      padding: 12px 15px;
+      border: 0;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .primary { background: var(--orange); color: white; }
+    .secondary { background: var(--blue); color: white; }
+    .light { background: #edf1fa; color: var(--blue); }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+
+    #map {
+      height: min(65vh, 580px);
+      min-height: 350px;
+      border-radius: 12px;
+      border: 1px solid #dbe0eb;
+      z-index: 1;
+    }
+
+    #message {
+      padding: 12px;
+      border-radius: 8px;
+      background: #f0f3fa;
+      margin-top: 12px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .hint { color: #59647a; font-size: 13px; line-height: 1.5; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .coords { font-size: 13px; color: #59647a; margin-top: 8px; }
+    .danger { color: #a32222; }
+
+    @media(max-width: 600px) {
+      header { font-size: 18px; }
+      .card { padding: 13px; }
+      #map { min-height: 400px; }
+    }
+  </style>
+</head>
+
+<body>
+<header>GRAM <span>MART</span> · Delivery Area Editor</header>
+
+<main>
+  <section class="card">
+    <h2>1. Delivery zone settings</h2>
+
+    <div class="controls">
+      <div>
+        <label for="zoneType">Boundary type</label>
+        <select id="zoneType">
+          <option value="circle">Circle radius</option>
+          <option value="polygon">Custom polygon</option>
+        </select>
+      </div>
+
+      <div id="radiusBox">
+        <label for="radius">Radius (km)</label>
+        <input id="radius" type="number" min="0.1" max="100"
+          step="0.1" value="5" />
+        <input id="radiusSlider" type="range"
+          min="0.1" max="20" step="0.1" value="5" />
+      </div>
+
+      <div>
+        <label>Zone activation</label>
+        <select id="active">
+          <option value="false">Inactive — block new orders</option>
+          <option value="true">Active — accept in-zone orders</option>
+        </select>
+      </div>
+    </div>
+
+    <p class="hint" id="instructions">
+      Circle mode: map par apne actual store/delivery starting point par click kar.
+      Phir radius set kar aur Save Zone dabaa.
+    </p>
+    <div class="coords" id="coordinates">Center not set.</div>
+  </section>
+
+  <section class="card">
+    <h2>2. Draw your delivery area</h2>
+    <div id="map"></div>
+    <p class="hint">
+      Circle mode mein map click center select karta hai. Polygon mode mein
+      map ke drawing tools se polygon draw kar. Polygon ko close karne ke
+      liye first point par click kar. Existing polygon ko edit bhi kar sakta hai.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>3. Save settings</h2>
+    <div class="actions">
+      <button class="primary" id="saveBtn">Save Zone</button>
+      <button class="secondary" id="loadBtn">Reload Saved Zone</button>
+      <button class="light" id="clearBtn">Clear Unsaved Drawing</button>
+      <button class="light" id="logoutBtn">Logout</button>
+    </div>
+    <div id="message">Checking admin access…</div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+
+<script>
+(() => {
+  "use strict";
+
+  const db = window.supabaseClient;
+  const $ = id => document.getElementById(id);
+
+  if (!db) {
+    alert("Supabase client nahi mila. js/supabase.js check karo.");
+    return;
+  }
+
+  const map = L.map("map").setView([26.9124, 75.7873], 11);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap contributors"
+  }).addTo(map);
+
+  const drawings = new L.FeatureGroup();
+  map.addLayer(drawings);
+
+  let centerMarker = null;
+  let circleLayer = null;
+  let currentCenter = null;
+  let authorized = false;
+  let loading = false;
+
+  const drawControl = new L.Control.Draw({
+    position: "topright",
+    draw: {
+      polyline: false,
+      rectangle: false,
+      marker: false,
+      circlemarker: false,
+      circle: false,
+      polygon: {
+        allowIntersection: false,
+        showArea: true,
+        shapeOptions: { color: "#FF6A00", weight: 3 }
+      }
+    },
+    edit: { featureGroup: drawings, remove: true }
+  });
+
+  map.addControl(drawControl);
+
+  function message(text, isError = false) {
+    $("message").textContent = text;
+    $("message").style.color = isError ? "#a32222" : "#182033";
+  }
+
+  function updateCenterText() {
+    $("coordinates").textContent = currentCenter
+      ? "Center: " + currentCenter.lat.toFixed(6) + ", " +
+        currentCenter.lng.toFixed(6)
+      : "Center not set.";
+  }
+
+  function setCenter(latlng, moveMap = false) {
+    currentCenter = { lat: latlng.lat, lng: latlng.lng };
+
+    if (centerMarker) map.removeLayer(centerMarker);
+    centerMarker = L.marker(latlng, { draggable: true }).addTo(map);
+
+    centerMarker.on("dragend", () => {
+      setCenter(centerMarker.getLatLng());
+    });
+
+    updateCenterText();
+    renderCircle();
+
+    if (moveMap) map.setView(latlng, 14);
+  }
+
+  function renderCircle() {
+    if (circleLayer) {
+      map.removeLayer(circleLayer);
+      circleLayer = null;
+    }
+
+    if ($("zoneType").value !== "circle" || !currentCenter) return;
+
+    const radius = Number($("radius").value);
+    if (!Number.isFinite(radius) || radius <= 0 || radius > 100) return;
+
+    circleLayer = L.circle(
+      [currentCenter.lat, currentCenter.lng],
+      {
+        radius: radius * 1000,
+        color: "#FF6A00",
+        fillColor: "#FF6A00",
+        fillOpacity: 0.16,
+        weight: 3
+      }
+    ).addTo(map);
+  }
+
+  function setMode() {
+    const isCircle = $("zoneType").value === "circle";
+    $("radiusBox").style.display = isCircle ? "block" : "none";
+    $("instructions").textContent = isCircle
+      ? "Circle mode: map par actual store/delivery starting point select kar. Radius set kar."
+      : "Polygon mode: map ke top-right polygon tool se boundary draw/edit kar.";
+    renderCircle();
+  }
+
+  map.on("click", event => {
+    if (loading) return;
+    if ($("zoneType").value === "circle") {
+      setCenter(event.latlng);
+    }
+  });
+
+  map.on(L.Draw.Event.CREATED, event => {
+    drawings.clearLayers();
+    drawings.addLayer(event.layer);
+  });
+
+  $("zoneType").addEventListener("change", setMode);
+  $("radius").addEventListener("input", () => {
+    $("radiusSlider").value = $("radius").value;
+    renderCircle();
+  });
+  $("radiusSlider").addEventListener("input", () => {
+    $("radius").value = $("radiusSlider").value;
+    renderCircle();
+  });
+
+  function polygonCoordinates(layer) {
+    const rings = layer.getLatLngs();
+    const points = Array.isArray(rings[0]) ? rings[0] : rings;
+
+    return points.map(p => ({ lat: p.lat, lng: p.lng }));
+  }
+
+  async function checkAdmin() {
+    const { data: sessionData, error: sessionError } =
+      await db.auth.getSession();
+
+    if (sessionError || !sessionData.session) {
+      location.href = "login.html?redirect=delivery-area.html";
+      return false;
+    }
+
+    const { data, error } = await db.rpc("is_admin");
+
+    if (error || data !== true) {
+      message("Access denied: sirf authorized admin ye page use kar sakta hai.", true);
+      $("saveBtn").disabled = true;
+      $("loadBtn").disabled = true;
+      return false;
+    }
+
+    authorized = true;
+    message("Admin verified. Ab apna actual delivery area select karo.");
+    return true;
+  }
+
+  async function loadSaved() {
+    if (!authorized) return;
+
+    loading = true;
+    message("Loading saved delivery zone…");
+
+    const { data, error } = await db
+      .from("delivery_zone_settings")
+      .select("*")
+      .eq("id", 1)
+      .maybeSingle();
+
+    if (error) {
+      loading = false;
+      message("Load error: " + error.message, true);
+      return;
+    }
+
+    drawings.clearLayers();
+
+    if (centerMarker) map.removeLayer(centerMarker);
+    centerMarker = null;
+    currentCenter = null;
+
+    if (circleLayer) map.removeLayer(circleLayer);
+    circleLayer = null;
+
+    if (!data) {
+      loading = false;
+      message("No saved zone. Map par apna actual area select karo.");
+      return;
+    }
+
+    $("zoneType").value = data.zone_type;
+    $("radius").value = data.radius_km;
+    $("radiusSlider").value = Math.min(20, data.radius_km);
+    $("active").value = String(data.is_active);
+
+    if (data.center_lat != null && data.center_lng != null) {
+      setCenter(L.latLng(data.center_lat, data.center_lng), true);
+    }
+
+    if (data.zone_type === "polygon" && Array.isArray(data.polygon)
+        && data.polygon.length >= 3) {
+      const layer = L.polygon(
+        data.polygon.map(p => [Number(p.lat), Number(p.lng)]),
+        { color: "#FF6A00", fillOpacity: 0.16, weight: 3 }
+      );
+      drawings.addLayer(layer);
+      map.fitBounds(layer.getBounds(), { padding: [20, 20] });
+    } else if (circleLayer) {
+      map.fitBounds(circleLayer.getBounds(), { padding: [20, 20] });
+    }
+
+    setMode();
+    loading = false;
+    message("Saved zone loaded. Changes ko Save Zone se save karna.");
+  }
+
+  async function saveZone() {
+    if (!authorized) {
+      message("Admin access required.", true);
+      return;
+    }
+
+    const zoneType = $("zoneType").value;
+    const radius = Number($("radius").value);
+    const isActive = $("active").value === "true";
+
+    if (!Number.isFinite(radius) || radius <= 0 || radius > 100) {
+      message("Radius 0 se zyada aur maximum 100 km hona chahiye.", true);
+      return;
+    }
+
+    let polygon = [];
+
+    if (zoneType === "circle") {
+      if (!currentCenter) {
+        message("Circle ke liye map par actual center location select karo.", true);
+        return;
+      }
+    } else {
+      const layers = drawings.getLayers();
+      if (layers.length !== 1 || !layers[0].getLatLngs) {
+        message("Custom boundary draw karne ke liye polygon tool use karo.", true);
+        return;
+      }
+
+      polygon = polygonCoordinates(layers[0]);
+
+      if (polygon.length < 3) {
+        message("Polygon mein kam se kam 3 points hone chahiye.", true);
+        return;
+      }
+    }
+
+    const payload = {
+      id: 1,
+      zone_type: zoneType,
+      center_lat: currentCenter ? currentCenter.lat : null,
+      center_lng: currentCenter ? currentCenter.lng : null,
+      radius_km: radius,
+      polygon: zoneType === "polygon" ? polygon : [],
+      is_active: isActive,
+      updated_at: new Date().toISOString()
+    };
+
+    $("saveBtn").disabled = true;
+    message("Saving delivery zone…");
+
+    const { error } = await db
+      .from("delivery_zone_settings")
+      .upsert(payload, { onConflict: "id" });
+
+    $("saveBtn").disabled = false;
+
+    if (error) {
+      message("Save failed: " + error.message +
+        "\nCheck SQL, admin policy and public.is_admin().", true);
+      return;
+    }
+
+    message(
+      "Delivery zone saved successfully.\n" +
+      "Mode: " + zoneType +
+      "\nActive: " + isActive +
+      (zoneType === "circle" ? "\nRadius: " + radius + " km" :
+        "\nBoundary points: " + polygon.length) +
+      "\nNew orders will be checked by the database."
+    );
+  }
+
+  $("saveBtn").addEventListener("click", saveZone);
+  $("loadBtn").addEventListener("click", loadSaved);
+
+  $("clearBtn").addEventListener("click", () => {
+    drawings.clearLayers();
+
+    if (circleLayer) map.removeLayer(circleLayer);
+    circleLayer = null;
+
+    if (centerMarker) map.removeLayer(centerMarker);
+    centerMarker = null;
+    currentCenter = null;
+    updateCenterText();
+    message("Unsaved drawing cleared. Database settings unchanged.");
+  });
+
+  $("logoutBtn").addEventListener("click", async () => {
+    await db.auth.signOut();
+    location.href = "login.html";
+  });
+
+  (async () => {
+    if (await checkAdmin()) await loadSaved();
+  })();
+})();
+</script>
+</body>
+</html>

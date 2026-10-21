@@ -1,102 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ANANTMART - India's Infinite Marketplace</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="css/style.css">
+    <title>Gram Mart | Everyday Groceries, Made Easy</title>
+    <meta name="description" content="Shop groceries and daily essentials at Gram Mart. Explore products, add to cart and order online.">
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<header>
+<header class="site-header">
     <nav class="navbar">
+        <a href="index.html" class="logo" aria-label="Gram Mart Home">
+            <span class="logo-icon">G</span>
+            <span>Gram<span class="logo-accent">Mart</span></span>
+        </a>
 
-        <div class="logo">
-            ANANTMART
+        <div class="delivery-location">
+            <span class="location-icon">⌖</span>
+            <div>
+                <small>DELIVER TO</small>
+                <strong>Select your location</strong>
+            </div>
         </div>
-<div class="search-box">
+
+        <div class="search-box">
+            <span class="search-icon">⌕</span>
             <input
-             type="text" 
-             id="searchInput"
-            placeholder="Search for products...">
+                type="search"
+                id="searchInput"
+                placeholder="Search atta, milk, fruits..."
+                aria-label="Search products">
         </div>
-        <ul class="nav-links">
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Categories</a></li>
-            <li><a href="#">Deals</a></li>
-            <li><a href="#">Sell</a></li>
-            <li><a href="#">Contact</a></li>
-        </ul>
 
         <div class="actions">
-    <a href="login.html" id="loginlink" class="login-btn">Login</a>
+            <a href="login.html" id="loginlink" class="login-btn">Login</a>
 
-    <span id="welcomeUser" style="display:none;" class="user-name-tag"></span>
+            <span id="welcomeUser"
+                  style="display:none;"
+                  class="user-name-tag"></span>
 
-    <button id="logoutBtn" style="display:none;" class="logout-btn">
-        Logout
-    </button>
+            <button id="logoutBtn"
+                    style="display:none;"
+                    class="logout-btn">
+                Logout
+            </button>
 
-    <a href="./my-orders.html" class="login-btn">My Orders</a>
+            <a href="./my-orders.html" class="orders-link">
+                My Orders
+            </a>
 
-    <a href="./cart.html">
-        <button class="cart-btn">Cart</button>
-    </a>
-</div>
+            <a href="./cart.html" class="cart-btn">
+                <span aria-hidden="true">🛒</span>
+                Cart
+            </a>
+        </div>
     </nav>
 </header>
 
-<section class="hero">
-    <h1>India's Infinite Marketplace</h1>
-    <p>Everything You Need, In One Place</p>
+<main>
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-label">YOUR NEIGHBOURHOOD GROCERY STORE</span>
 
-    <button class="shop-btn">
-        Shop Now
-    </button>
-</section>
-<!-- Categories Section -->
+            <h1>
+                Everyday essentials.<br>
+                <span>Delivered with care.</span>
+            </h1>
 
-<section class="categories">
+            <p>
+                From kitchen staples to daily favourites,
+                shop your essentials in one convenient place.
+            </p>
 
-    <h2>Shop By Categories</h2>
+            <a href="#featured-products" class="shop-btn">
+                Shop groceries <span aria-hidden="true">→</span>
+            </a>
 
-    <div class="category-grid">
+            <div class="hero-trust">
+                <span>✓ Easy online shopping</span>
+                <span>✓ Convenient ordering</span>
+            </div>
+        </div>
 
-        <div class="category-card">Electronics</div>
-        <div class="category-card">Fashion</div>
-        <div class="category-card">Home & Kitchen</div>
-        <div class="category-card">Beauty</div>
-        <div class="category-card">Groceries</div>
-        <div class="category-card">Toys</div>
-        <div class="category-card">Home Decor</div>
+        <div class="hero-visual" aria-label="Fresh grocery illustration">
+            <div class="hero-circle"></div>
+            <div class="hero-emoji" aria-hidden="true">🥬 🍅 🥑</div>
+            <div class="hero-note">
+                <span>🥦</span>
+                <div>
+                    <strong>Fresh picks</strong>
+                    <small>For your everyday needs</small>
+                </div>
+            </div>
+        </div>
+    </section>
 
+    <section class="categories section-container" id="categories">
+        <div class="section-heading">
+            <div>
+                <span class="section-eyebrow">EXPLORE OUR STORE</span>
+                <h2>What do you need today?</h2>
+                <p>Find everyday essentials by category.</p>
+            </div>
+        </div>
+
+        <div class="category-grid">
+            <a href="#featured-products" class="category-card">
+                <span class="category-icon">🥦</span>
+                <strong>Fruits & Vegetables</strong>
+            </a>
+
+            <a href="#featured-products" class="category-card">
+                <span class="category-icon">🥛</span>
+                <strong>Dairy & Eggs</strong>
+            </a>
+
+            <a href="#featured-products" class="category-card">
+                <span class="category-icon">🌾</span>
+                <strong>Atta, Rice & Dal</strong>
+            </a>
+
+            <a href="#featured-products" class="category-card">
+                <span class="category-icon">🫒</span>
+                <strong>Oil & Spices</strong>
+            </a>
+
+            <a href="#featured-products" class="category-card">
+                <span class="category-icon">🍪</span>
+                <strong>Snacks & Biscuits</strong>
+            </a>
+
+            <a href="#featured-products" class="category-card">
+                <span class="category-icon">🧴</span>
+                <strong>Home Essentials</strong>
+            </a>
+        </div>
+    </section>
+
+    <section class="products section-container" id="featured-products">
+        <div class="section-heading">
+            <div>
+                <span class="section-eyebrow">HANDPICKED FOR YOU</span>
+                <h2>Popular products</h2>
+                <p>Your everyday essentials, all in one place.</p>
+            </div>
+        </div>
+
+        <div class="product-grid" id="productGrid">
+            <!-- Products will load through the existing JavaScript. -->
+        </div>
+    </section>
+
+    <section class="benefits section-container">
+        <div class="benefit-item">
+            <span>🛍️</span>
+            <div>
+                <strong>Easy ordering</strong>
+                <p>Shop from the comfort of home.</p>
+            </div>
+        </div>
+
+        <div class="benefit-item">
+            <span>📦</span>
+            <div>
+                <strong>Order updates</strong>
+                <p>Check your orders online.</p>
+            </div>
+        </div>
+
+        <div class="benefit-item">
+            <span>🏡</span>
+            <div>
+                <strong>Your local store</strong>
+                <p>Everyday essentials made convenient.</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-content">
+        <a href="index.html" class="logo footer-logo">
+            <span class="logo-icon">G</span>
+            <span>Gram<span class="logo-accent">Mart</span></span>
+        </a>
+
+        <p>Your neighbourhood store for everyday essentials.</p>
+
+        <div class="footer-links">
+            <a href="#categories">Categories</a>
+            <a href="./my-orders.html">My Orders</a>
+            <a href="./cart.html">Cart</a>
+            <a href="./login.html">My Account</a>
+        </div>
+
+        <p class="copyright">
+            &copy; 2026 Gram Mart. All rights reserved.
+        </p>
     </div>
+</footer>
 
-</section>
-
-
-<!-- Featured Products -->
-
-<section class="products">
-
-    <h2>Featured Products</h2>
-
-    <div class="product-grid"
-        id="productGrid">
-
-    </div>
-
-</section>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./js/supabase.js"></script>
 <script src="./js/script.js"></script>
+
 </body>
 </html>
-<footer>
-    <h3>ANANTMART</h3>
-    <P>India's Infinite Marketplace</P>
-    <p>&copy; 2024 ANANTMART. All rights reserved.</p>
-</footer>
-
-

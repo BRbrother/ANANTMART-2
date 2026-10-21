@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Product | GRAM MART</title>
+
+  <style>
+    :root {
+      --orange: #FF6A00;
+      --blue: #0B3091;
+      --bg: #f4f7fb;
+      --text: #172033;
+      --muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: var(--blue);
+      color: white;
+      padding: 18px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand {
+      font-size: 23px;
+      font-weight: 900;
+    }
+
+    .brand span { color: #ffb36f; }
+
+    header a {
+      color: white;
+      text-decoration: none;
+      border: 1px solid #ffffff70;
+      border-radius: 8px;
+      padding: 10px 14px;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 28px auto;
+      padding: 0 16px 45px;
+    }
+
+    h1 { margin-bottom: 8px; font-size: 30px; }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 25px;
+    }
+
+    .panel {
+      background: white;
+      padding: 22px;
+      margin-bottom: 18px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 5px 20px #0b30910a;
+    }
+
+    .panel h2 {
+      font-size: 19px;
+      margin: 0 0 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .field { min-width: 0; }
+    .full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 7px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background: white;
+      font: inherit;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: 2px solid #0b309125;
+      border-color: var(--blue);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: 6px;
+    }
+
+    .images {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .image-slot {
+      padding: 12px;
+      border: 1px dashed #b8c3d4;
+      border-radius: 10px;
+      min-width: 0;
+    }
+
+    .image-slot input {
+      margin-bottom: 9px;
+      font-size: 12px;
+    }
+
+    .preview {
+      height: 115px;
+      background: #f1f5f9;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    .preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .variant-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .variant-row input { min-width: 0; }
+
+    .checkrow {
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+    }
+
+    .checkrow label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checkrow input { width: auto; }
+
+    .btn {
+      border: 0;
+      border-radius: 9px;
+      padding: 13px 18px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .primary {
+      color: white;
+      background: var(--orange);
+    }
+
+    .secondary {
+      color: var(--text);
+      background: #e8edf5;
+    }
+
+    .remove {
+      color: #991b1b;
+      background: #fee2e2;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    #status {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 650px) {
+      .grid { grid-template-columns: 1fr; }
+      .full { grid-column: auto; }
+      .images { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .variant-row { grid-template-columns: 1fr 1fr; }
+      .panel { padding: 16px; }
+      h1 { font-size: 25px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">GRAM <span>MART</span> / ADMIN</div>
+  <a href="./admin.html">← Back to Admin</a>
+</header>
+
+<main>
+  <h1>Add New Product</h1>
+  <p class="subtitle">
+    Create a complete product listing for your GRAM MART store.
+  </p>
+
+  <form id="addProductForm">
+
+    <!-- 1. PRODUCT INFORMATION -->
+    <section class="panel">
+      <h2>1. Basic Product Information</h2>
+
+      <div class="grid">
+        <div class="field full">
+          <label for="name">Product Title *</label>
+          <input id="name" required maxlength="180"
+                 placeholder="e.g. Premium Basmati Rice 1 kg">
+        </div>
+
+        <div class="field full">
+          <label for="description">Product Description *</label>
+          <textarea id="description" required
+            placeholder="Product features, quality, usage, ingredients, specifications..."></textarea>
+        </div>
+
+        <div class="field">
+          <label for="brand">Brand Name</label>
+          <input id="brand" placeholder="e.g. GRAM MART">
+        </div>
+
+        <div class="field">
+          <label for="sku">SKU / Product Code</label>
+          <input id="sku" placeholder="e.g. GM-RICE-001">
+        </div>
+
+        <div class="field">
+          <label for="barcode">Barcode</label>
+          <input id="barcode" placeholder="Optional barcode">
+        </div>
+
+        <div class="field">
+          <label for="unit">Pack Size / Unit</label>
+          <input id="unit" placeholder="e.g. 1 kg, 500 g, Pack of 6">
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. PRICING -->
+    <section class="panel">
+      <h2>2. Pricing & Inventory</h2>
+
+      <div class="grid">
+        <div class="field">
+          <label for="mrp">MRP (₹) *</label>
+          <input id="mrp" type="number" min="0"
+                 step="0.01" required placeholder="199">
+        </div>
+
+        <div class="field">
+          <label for="price">Selling Price (₹) *</label>
+          <input id="price" type="number" min="0"
+                 step="0.01" required placeholder="149">
+        </div>
+
+        <div class="field">
+          <label for="stock">Available Stock *</label>
+          <input id="stock" type="number" min="0"
+                 step="1" required value="0">
+        </div>
+
+        <div class="field">
+          <label for="discount">Discount (%)</label>
+          <input id="discount" type="number" min="0"
+                 max="100" step="0.01"
+                 placeholder="Auto calculated">
+        </div>
+      </div>
+
+      <p class="hint" id="priceHint">
+        Selling price MRP se zyada nahi honi chahiye.
+      </p>
+    </section>
+
+    <!-- 3. CATEGORY -->
+    <section class="panel">
+      <h2>3. Category & Search Keywords</h2>
+
+      <div class="grid">
+        <div class="field">
+          <label for="category">Category *</label>
+          <input id="category" required list="categoryOptions"
+                 placeholder="Select or type category">
+
+          <datalist id="categoryOptions">
+            <option value="Fruits & Vegetables">
+            <option value="Dairy & Eggs">
+            <option value="Atta, Rice & Dal">
+            <option value="Oil, Ghee & Masala">
+            <option value="Snacks & Beverages">
+            <option value="Personal Care">
+            <option value="Household">
+            <option value="Dry Fruits">
+            <option value="Bakery">
+            <option value="Frozen Foods">
+          </datalist>
+        </div>
+
+        <div class="field">
+          <label for="subcategory">Sub-category *</label>
+          <input id="subcategory" required
+                 placeholder="e.g. Rice Products">
+        </div>
+
+        <div class="field full">
+          <label for="keywords">Search Keywords</label>
+          <input id="keywords"
+                 placeholder="basmati rice, long grain rice, premium rice">
+          <p class="hint">
+            Keywords ko comma se separate karo.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. VARIANTS -->
+    <section class="panel">
+      <h2>4. Product Variants</h2>
+
+      <p class="hint">
+        Size, flavour, colour ya pack options add kar sakte ho.
+        Example: 500 g, 1 kg, 2 kg.
+      </p>
+
+      <div id="variants"></div>
+
+      <button class="btn secondary" type="button" id="addVariant">
+        + Add Variant
+      </button>
+    </section>
+
+    <!-- 5. IMAGES -->
+    <section class="panel">
+      <h2>5. Product Images</h2>
+
+      <p class="hint">
+        Maximum 6 images. Har slot mein image URL ya file upload use karo.
+        Supported: JPG, PNG, WEBP, AVIF. Maximum 5 MB per image.
+      </p>
+
+      <div class="images" id="imageSlots"></div>
+    </section>
+
+    <!-- 6. PUBLISHING -->
+    <section class="panel">
+      <h2>6. Publishing Settings</h2>
+
+      <div class="checkrow">
+        <label>
+          <input id="active" type="checkbox" checked>
+          Publish product
+        </label>
+
+        <label>
+          <input id="featured" type="checkbox">
+          Feature on homepage
+        </label>
+      </div>
+    </section>
+
+    <!-- BUTTONS -->
+    <div class="actions">
+      <button class="btn primary" id="saveBtn" type="submit">
+        Save Product
+      </button>
+
+      <button class="btn secondary" type="reset">
+        Clear Form
+      </button>
+
+      <span id="status" role="status"></span>
+    </div>
+
+  </form>
+</main>
+
+<!-- Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- Existing Supabase configuration -->
+<script src="./js/supabase.js"></script>
+
+<!-- Product form logic -->
+<script src="./js/add-product.js"></script>
+
+</body>
+</html>
