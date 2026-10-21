@@ -1,34 +1,324 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Register - ANANTMART</title>
-<link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Gram Mart</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .auth-container {
+            max-width: 420px;
+            margin: 40px auto;
+            padding: 28px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 22px rgba(0,0,0,.08);
+        }
+
+        .auth-container h1 {
+            text-align: center;
+            color: #FF6A00;
+            margin-bottom: 8px;
+        }
+
+        .auth-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .auth-container input {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 13px;
+            margin: 12px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .auth-container button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 12px;
+            background: #FF6A00;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .auth-container button:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        #registerMessage {
+            margin-top: 14px;
+            text-align: center;
+            font-size: 14px;
+            overflow-wrap: anywhere;
+        }
+
+        .auth-container a {
+            color: #0B3091;
+        }
+
+        #otpSection {
+            display: none;
+        }
+    </style>
 </head>
+
 <body>
+    <div class="auth-container">
+        <h1>Gram Mart</h1>
+        <p class="auth-subtitle">Create your customer account</p>
 
-<div class="auth-container">
+        <form id="registerForm">
+            <input
+                type="text"
+                id="name"
+                placeholder="Full Name"
+                autocomplete="name"
+                maxlength="100"
+                required
+            >
 
-<h1>Create Account</h1>
+            <input
+                type="tel"
+                id="mobile"
+                placeholder="10-digit Mobile Number"
+                autocomplete="tel"
+                inputmode="numeric"
+                pattern="[6-9][0-9]{9}"
+                maxlength="10"
+                title="Enter a valid 10-digit Indian mobile number"
+                required
+            >
 
-<input type="text" id="name" placeholder="Full Name">
+            <input
+                type="email"
+                id="email"
+                placeholder="Email Address"
+                autocomplete="email"
+                maxlength="254"
+                required
+            >
 
-<input type="email" id="email" placeholder="Email">
+            <input
+                type="password"
+                id="password"
+                placeholder="Create Password (minimum 8 characters)"
+                autocomplete="new-password"
+                minlength="8"
+                required
+            >
 
-<input type="password" id="password" placeholder="Password">
+            <input
+                type="password"
+                id="confirmPassword"
+                placeholder="Confirm Password"
+                autocomplete="new-password"
+                minlength="8"
+                required
+            >
 
-<button onclick="registerUser()">
-Register
-</button>
+            <button type="submit" id="registerButton">
+                Create Account
+            </button>
+        </form>
 
-<p>
-Already have an account?
-<a href="login.html">Login</a>
-</p>
+        <section id="otpSection">
+            <h3>Verify Your Email</h3>
+            <p>Enter the verification code sent to your email.</p>
 
-</div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase.js"></script>
-<script src="js/auth.js"></script>
+            <form id="otpForm">
+                <input
+                    type="text"
+                    id="emailOtp"
+                    placeholder="Enter email OTP"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    pattern="[0-9]{6}"
+                    maxlength="6"
+                    required
+                >
 
+                <button type="submit" id="verifyOtpButton">
+                    Verify Email
+                </button>
+            </form>
+
+            <button type="button" id="resendOtpButton">
+                Resend OTP
+            </button>
+        </section>
+
+        <p id="registerMessage" role="status" aria-live="polite"></p>
+
+        <p style="text-align:center; margin-top:20px;">
+            Already have an account?
+            <a href="login.html">Login</a>
+        </p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        (() => {
+            const form = document.getElementById("registerForm");
+            const otpForm = document.getElementById("otpForm");
+            const otpSection = document.getElementById("otpSection");
+            const message = document.getElementById("registerMessage");
+
+            function showMessage(text, isError = false) {
+                message.textContent = text;
+                message.style.color = isError ? "#c62828" : "#16803c";
+            }
+
+            form.addEventListener("submit", async (event) => {
+                event.preventDefault();
+
+                const name = document.getElementById("name").value.trim();
+                const mobile = document.getElementById("mobile").value.trim();
+                const email = document.getElementById("email").value.trim();
+                const password = document.getElementById("password").value;
+                const confirmPassword =
+                    document.getElementById("confirmPassword").value;
+
+                if (password !== confirmPassword) {
+                    showMessage("Passwords do not match.", true);
+                    return;
+                }
+
+                if (!/^[6-9]\d{9}$/.test(mobile)) {
+                    showMessage("Enter a valid 10-digit Indian mobile number.", true);
+                    return;
+                }
+
+                if (typeof window.registerUser !== "function") {
+                    showMessage(
+                        "Registration function is missing. Please check js/auth.js.",
+                        true
+                    );
+                    return;
+                }
+
+                const button = document.getElementById("registerButton");
+                button.disabled = true;
+                showMessage("Creating your account...");
+
+                try {
+                    // auth.js must send the OTP and return a successful result.
+                    const result = await window.registerUser({
+                        name, mobile, email, password
+                    });
+
+                    if (result === false || result?.error) {
+                        showMessage(
+                            result?.error?.message ||
+                            "Registration failed. Please try again.",
+                            true
+                        );
+                        return;
+                    }
+
+                    form.style.display = "none";
+                    otpSection.style.display = "block";
+                    showMessage("Check your email for the verification code.");
+                } catch (error) {
+                    showMessage(error.message || "Registration failed.", true);
+                } finally {
+                    button.disabled = false;
+                }
+            });
+
+            otpForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
+
+                const client = window.supabaseClient;
+                if (!client) {
+                    showMessage("Authentication service is unavailable.", true);
+                    return;
+                }
+
+                const email = document.getElementById("email").value.trim();
+                const token = document.getElementById("emailOtp").value.trim();
+                const button = document.getElementById("verifyOtpButton");
+
+                button.disabled = true;
+                showMessage("Verifying email...");
+
+                try {
+                    const { data, error } = await client.auth.verifyOtp({
+                        email,
+                        token,
+                        type: "signup"
+                    });
+
+                    if (error) throw error;
+
+                    if (!data.user) {
+                        throw new Error("Email verification could not be completed.");
+                    }
+
+                    const { error: profileError } = await client.auth.updateUser({
+                        data: {
+                            full_name: document.getElementById("name").value.trim(),
+                            phone: document.getElementById("mobile").value.trim()
+                        }
+                    });
+
+                    if (profileError) {
+                        console.error("Profile metadata update failed:", profileError);
+                    }
+
+                    showMessage("Email verified! Your account is ready.");
+                    window.location.href = "index.html";
+                } catch (error) {
+                    showMessage(
+                        error.message || "Invalid or expired OTP. Try again.",
+                        true
+                    );
+                } finally {
+                    button.disabled = false;
+                }
+            });
+
+            document.getElementById("resendOtpButton")
+                .addEventListener("click", async () => {
+                    const client = window.supabaseClient;
+                    const email = document.getElementById("email").value.trim();
+
+                    if (!client) {
+                        showMessage("Authentication service is unavailable.", true);
+                        return;
+                    }
+
+                    const button = document.getElementById("resendOtpButton");
+                    button.disabled = true;
+
+                    try {
+                        const { error } = await client.auth.resend({
+                            type: "signup",
+                            email
+                        });
+
+                        if (error) throw error;
+                        showMessage("A new verification code has been requested.");
+                    } catch (error) {
+                        showMessage(error.message || "Could not resend OTP.", true);
+                    } finally {
+                        button.disabled = false;
+                    }
+                });
+        })();
+    </script>
 </body>
 </html>

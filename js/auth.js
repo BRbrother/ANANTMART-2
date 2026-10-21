@@ -1,108 +1,140 @@
-/* ANANTMART — Supabase Authentication */
 
 function showAuthMessage(message) {
-  const el = document.getElementById("message");
-  if (el) {
-    el.textContent = message;
-  } else {
-    alert(message);
-  }
+    const el =
+        document.getElementById("registerMessage") ||
+        document.getElementById("message");
+
+    if (el) {
+        el.textContent = message;
+    } else {
+        alert(message);
+    }
 }
 
-// REGISTER
-async function registerUser() {
-  const name = document.getElementById("name")?.value.trim();
-  const email = document.getElementById("email")?.value.trim();
-  const password = document.getElementById("password")?.value;
+// REGISTER: Send signup verification code to email
+async function registerUser(details = null) {
+    const name = details?.name ??
+        document.getElementById("name")?.value.trim();
 
-  if (!name || !email || !password) {
-    showAuthMessage("Please fill all fields.");
-    return;
-  }
+    const mobile = details?.mobile ??
+        document.getElementById("mobile")?.value.trim();
 
-  if (password.length < 6) {
-    showAuthMessage("Password must be at least 6 characters.");
-    return;
-  }
+    const email = (details?.email ??
+        document.getElementById("email")?.value.trim())?.toLowerCase();
 
-  const client = window.supabaseClient;
+    const password = details?.password ??
+        document.getElementById("password")?.value;
 
-  if (!client) {
-    showAuthMessage("Supabase connection missing. Check js/supabase.js.");
-    return;
-  }
+    const confirmPassword =
+        document.getElementById("confirmPassword")?.value;
 
-  showAuthMessage("Creating your account...");
-
-  try {
-    const { data, error } = await client.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: name }
-      }
-    });
-
-    if (error) throw error;
-
-    if (data.session) {
-      showAuthMessage("Account created successfully!");
-      window.location.href = "index.html";
-    } else {
-      showAuthMessage(
-        "Account request successful. Check your email to confirm your account, then log in."
-      );
+    if (!name || !mobile || !email || !password) {
+        const error = new Error("Please fill in all required fields.");
+        showAuthMessage(error.message);
+        return { error };
     }
-  } catch (error) {
-    console.error("Registration error:", error);
-    showAuthMessage(error.message || "Registration failed.");
-  }
+
+    if (!/^[6-9]\d{9}$/.test(mobile)) {
+        const error = new Error("Enter a valid 10-digit Indian mobile number.");
+        showAuthMessage(error.message);
+        return { error };
+    }
+
+    if (password.length < 8) {
+        const error = new Error("Password must be at least 8 characters.");
+        showAuthMessage(error.message);
+        return { error };
+    }
+
+    if (confirmPassword !== undefined && password !== confirmPassword) {
+        const error = new Error("Passwords do not match.");
+        showAuthMessage(error.message);
+        return { error };
+    }
+
+    const client = window.supabaseClient;
+
+    if (!client) {
+        const error = new Error(
+            "Supabase connection missing. Check js/supabase.js."
+        );
+        showAuthMessage(error.message);
+        return { error };
+    }
+
+    try {
+        const { data, error } = await client.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    full_name: name,
+                    phone: mobile
+                }
+            }
+        });
+
+        if (error) throw error;
+
+        // Do not bypass OTP verification if confirmation is required.
+        if (data.session && data.user?.email_confirmed_at) {
+            showAuthMessage("Account created successfully!");
+            window.location.href = "index.html";
+            return data;
+        }
+
+        // Supabase normally sends the signup confirmation code/link
+        // when email confirmations are enabled.
+        return data;
+
+    } catch (error) {
+        console.error("Registration error:", error);
+        showAuthMessage(error.message || "Registration failed.");
+        return { error };
+    }
 }
 
 // LOGIN
 async function loginUser() {
-  const email =
-    document.getElementById("loginEmail")?.value.trim() ||
-    document.getElementById("email")?.value.trim();
+    const email = (
+        document.getElementById("loginEmail")?.value ||
+        document.getElementById("email")?.value ||
+        ""
+    ).trim().toLowerCase();
 
-  const password =
-    document.getElementById("loginPassword")?.value ||
-    document.getElementById("password")?.value;
+    const password =
+        document.getElementById("loginPassword")?.value ??
+        document.getElementById("password")?.value;
 
-  if (!email || !password) {
-    showAuthMessage("Please enter your email and password.");
-    return;
-  }
-
-  const client = window.supabaseClient;
-
-  if (!client) {
-    showAuthMessage("Supabase connection missing. Check js/supabase.js.");
-    return;
-  }
-
-  showAuthMessage("Logging in...");
-
-  try {
-    const { data, error } = await client.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error) throw error;
-
-    if (data.session) {
-      showAuthMessage("Login successful!");
-      window.location.href = "index.html";
+    if (!email || !password) {
+        showAuthMessage("Please enter your email and password.");
+        return;
     }
-  } catch (error) {
-    console.error("Login error:", error);
-    showAuthMessage(error.message || "Login failed.");
-  }
-}
 
-// Supports the register form shown in register.html
-document.getElementById("registerForm")?.addEventListener("submit", (event) => {
-  event.preventDefault();
-  registerUser();
-});
+    const client = window.supabaseClient;
+
+    if (!client) {
+        showAuthMessage("Supabase connection missing. Check js/supabase.js.");
+        return;
+    }
+
+    try {
+        showAuthMessage("Logging in...");
+
+        const { data, error } = await client.auth.signInWithPassword({
+            email,
+            password
+        });
+
+        if (error) throw error;
+
+        if (data.session) {
+            showAuthMessage("Login successful!");
+            window.location.href = "index.html";
+        }
+
+    } catch (error) {
+        console.error("Login error:", error);
+        showAuthMessage(error.message || "Login failed.");
+    }
+}

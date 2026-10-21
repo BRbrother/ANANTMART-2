@@ -8,6 +8,59 @@
     <meta name="description" content="Shop groceries and daily essentials at Gram Mart. Explore products, add to cart and order online.">
 
     <link rel="stylesheet" href="css/style.css">
+    <style>
+    .delivery-location {
+        font: inherit;
+        font-family: inherit;
+        text-align: left;
+        color: inherit;
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+        border-radius: 8px;
+        padding: 6px;
+    }
+
+    .delivery-location:focus-visible {
+        outline: 2px solid #0B3091;
+        outline-offset: 3px;
+    }
+
+    .delivery-location:disabled {
+        cursor: wait;
+        opacity: 0.7;
+    }
+
+    .delivery-location-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.5;
+    }
+
+    .delivery-location-status {
+        display: block;
+        max-width: 220px;
+        font-size: 11px;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    .delivery-location-status:empty {
+        display: none;
+    }
+
+    .delivery-location-status[data-state="success"] {
+        color: #167A35;
+    }
+
+    .delivery-location-status[data-state="error"] {
+        color: #C62828;
+    }
+
+    .delivery-location-status[data-state="checking"] {
+        color: #0B3091;
+    }
+</style>
 </head>
 <body>
 
@@ -18,13 +71,24 @@
             <span>Gram<span class="logo-accent">Mart</span></span>
         </a>
 
-        <div class="delivery-location">
-            <span class="location-icon">⌖</span>
-            <div>
-                <small>DELIVER TO</small>
-                <strong>Select your location</strong>
-            </div>
-        </div>
+        <button
+    type="button"
+    class="delivery-location"
+    id="deliveryLocationBtn"
+    aria-describedby="deliveryLocationStatus"
+>
+    <span class="location-icon" aria-hidden="true">⌖</span>
+    <span class="delivery-location-text">
+        <small>DELIVER TO</small>
+        <strong id="deliveryLocationLabel">Select your location</strong>
+        <span
+            id="deliveryLocationStatus"
+            class="delivery-location-status"
+            role="status"
+            aria-live="polite"
+        ></span>
+    </span>
+</button>
 
         <div class="search-box">
             <span class="search-icon">⌕</span>
@@ -97,48 +161,47 @@
             </div>
         </div>
     </section>
-
-    <section class="categories section-container" id="categories">
-        <div class="section-heading">
-            <div>
-                <span class="section-eyebrow">EXPLORE OUR STORE</span>
-                <h2>What do you need today?</h2>
-                <p>Find everyday essentials by category.</p>
-            </div>
+<section class="categories section-container" id="categories">
+    <div class="section-heading">
+        <div>
+            <span class="section-eyebrow">EXPLORE OUR STORE</span>
+            <h2>What do you need today?</h2>
+            <p>Find everyday essentials by category.</p>
         </div>
+    </div>
 
-        <div class="category-grid">
-            <a href="#featured-products" class="category-card">
-                <span class="category-icon">🥦</span>
-                <strong>Fruits & Vegetables</strong>
-            </a>
+    <div class="category-grid">
+        <a href="category.html?cat=fruits-vegetables" class="category-card">
+            <span class="category-icon">🥦</span>
+            <strong>Fruits &amp; Vegetables</strong>
+        </a>
 
-            <a href="#featured-products" class="category-card">
-                <span class="category-icon">🥛</span>
-                <strong>Dairy & Eggs</strong>
-            </a>
+        <a href="category.html?cat=dairy-eggs" class="category-card">
+            <span class="category-icon">🥛</span>
+            <strong>Dairy &amp; Eggs</strong>
+        </a>
 
-            <a href="#featured-products" class="category-card">
-                <span class="category-icon">🌾</span>
-                <strong>Atta, Rice & Dal</strong>
-            </a>
+        <a href="category.html?cat=atta-rice-dal" class="category-card">
+            <span class="category-icon">🌾</span>
+            <strong>Atta, Rice &amp; Dal</strong>
+        </a>
 
-            <a href="#featured-products" class="category-card">
-                <span class="category-icon">🫒</span>
-                <strong>Oil & Spices</strong>
-            </a>
+        <a href="category.html?cat=oil-ghee-masala" class="category-card">
+            <span class="category-icon">🫒</span>
+            <strong>Oil &amp; Spices</strong>
+        </a>
 
-            <a href="#featured-products" class="category-card">
-                <span class="category-icon">🍪</span>
-                <strong>Snacks & Biscuits</strong>
-            </a>
+        <a href="category.html?cat=snacks-beverages" class="category-card">
+            <span class="category-icon">🍪</span>
+            <strong>Snacks &amp; Biscuits</strong>
+        </a>
 
-            <a href="#featured-products" class="category-card">
-                <span class="category-icon">🧴</span>
-                <strong>Home Essentials</strong>
-            </a>
-        </div>
-    </section>
+        <a href="category.html?cat=household" class="category-card">
+            <span class="category-icon">🧴</span>
+            <strong>Home Essentials</strong>
+        </a>
+    </div>
+</section>
 
     <section class="products section-container" id="featured-products">
         <div class="section-heading">
@@ -206,6 +269,155 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./js/supabase.js"></script>
 <script src="./js/script.js"></script>
+<script>
+(() => {
+    const button = document.getElementById("deliveryLocationBtn");
+    const label = document.getElementById("deliveryLocationLabel");
+    const status = document.getElementById("deliveryLocationStatus");
 
+    if (!button || !label || !status) return;
+
+    let isChecking = false;
+
+    function showStatus(message, state) {
+        status.textContent = message;
+        status.dataset.state = state || "";
+    }
+
+    button.addEventListener("click", async () => {
+        if (isChecking) return;
+
+        if (!window.isSecureContext || !navigator.geolocation) {
+            showStatus(
+                "Location access unavailable. Please open the secure website and try again.",
+                "error"
+            );
+            return;
+        }
+
+        const client = window.supabaseClient;
+
+        if (!client || typeof client.rpc !== "function") {
+            showStatus(
+                "Service temporarily unavailable. Please try again.",
+                "error"
+            );
+            return;
+        }
+
+        isChecking = true;
+        button.disabled = true;
+        label.textContent = "Checking location...";
+        showStatus("Please allow location access.", "checking");
+
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                try {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+
+                    const { data, error } = await client.rpc(
+                        "delivery_zone_contains",
+                        {
+                            p_lat: latitude,
+                            p_lng: longitude
+                        }
+                    );
+
+                    if (error) {
+                        console.error("Delivery zone check failed:", error);
+                        label.textContent = "Select your location";
+                        showStatus(
+                            "Could not check delivery availability. Please try again.",
+                            "error"
+                        );
+                        return;
+                    }
+
+                    if (data === true) {
+                        label.textContent = "Location checked ✓";
+                        showStatus(
+                            "Good news! Delivery is available in your area.",
+                            "success"
+                        );
+                    } else if (data === false) {
+                        label.textContent = "Select your location";
+                        showStatus(
+                            "Sorry, delivery is not available in your area yet.",
+                            "error"
+                        );
+                    } else {
+                        label.textContent = "Select your location";
+                        showStatus(
+                            "Could not confirm delivery availability. Please try again.",
+                            "error"
+                        );
+                    }
+                } catch (err) {
+                    console.error("Location check error:", err);
+                    label.textContent = "Select your location";
+                    showStatus(
+                        "Something went wrong. Please try again.",
+                        "error"
+                    );
+                } finally {
+                    isChecking = false;
+                    button.disabled = false;
+                }
+            },
+            (error) => {
+                label.textContent = "Select your location";
+
+                if (error.code === error.PERMISSION_DENIED) {
+                    showStatus(
+                        "Location permission denied. Allow it in your browser settings and try again.",
+                        "error"
+                    );
+                } else if (error.code === error.TIMEOUT) {
+                    showStatus(
+                        "Location request timed out. Please try again.",
+                        "error"
+                    );
+                } else {
+                    showStatus(
+                        "Unable to get your location. Check GPS/location settings and try again.",
+                        "error"
+                    );
+                }
+
+                isChecking = false;
+                button.disabled = false;
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 0
+            }
+        );
+    });
+})();
+</script>
+<script>
+(() => {
+    const welcomeUser = document.getElementById("welcomeUser");
+    if (!welcomeUser) return;
+
+    welcomeUser.style.cursor = "pointer";
+    welcomeUser.setAttribute("role", "link");
+    welcomeUser.setAttribute("tabindex", "0");
+    welcomeUser.setAttribute("title", "Open your profile");
+
+    welcomeUser.addEventListener("click", () => {
+        window.location.href = "profile.html";
+    });
+
+    welcomeUser.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            window.location.href = "profile.html";
+        }
+    });
+})();
+</script>
 </body>
 </html>

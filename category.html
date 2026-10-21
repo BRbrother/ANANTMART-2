@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Shop Category - Gram Mart</title>
+    <meta name="description" content="Shop your daily essentials at Gram Mart.">
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/category.css">
+</head>
+<body>
+
+<header class="category-header">
+    <a href="index.html" class="category-brand">Gram<span>Mart</span></a>
+
+    <div class="category-header-links">
+        <a href="index.html">Home</a>
+        <a href="cart.html">🛒 Cart</a>
+        <a href="my-orders.html">My Orders</a>
+    </div>
+</header>
+
+<main class="category-main">
+    <nav class="category-breadcrumb" aria-label="Breadcrumb">
+        <a href="index.html">Home</a>
+        <span>/</span>
+        <span id="breadcrumbCategory">Categories</span>
+    </nav>
+
+    <section class="category-hero">
+        <p class="category-eyebrow">GRAM MART • DAILY ESSENTIALS</p>
+        <h1 id="categoryTitle">Shop by Category</h1>
+        <p id="categoryDescription">
+            Everything you need, all in one place.
+        </p>
+    </section>
+
+    <section class="category-toolbar">
+        <label class="category-search">
+            <span aria-hidden="true">🔎</span>
+            <input
+                type="search"
+                id="categorySearch"
+                placeholder="Search in this category..."
+                aria-label="Search category products">
+        </label>
+
+        <p id="productCount" role="status">Loading products...</p>
+    </section>
+
+    <section
+        id="categoryProductGrid"
+        class="category-product-grid"
+        aria-live="polite">
+        <p>Loading products...</p>
+    </section>
+
+    <div class="category-back">
+        <a href="index.html">← Back to Home</a>
+    </div>
+</main>
+
+<footer class="category-footer">
+    <strong>Gram<span>Mart</span></strong>
+    <p>Your neighbourhood store for everyday essentials.</p>
+    <p>© 2026 Gram Mart. All rights reserved.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/category.js"></script>
+
+</body>
+</html>
