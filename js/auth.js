@@ -1,4 +1,3 @@
-
 function showAuthMessage(message) {
     const el =
         document.getElementById("registerMessage") ||
@@ -11,7 +10,9 @@ function showAuthMessage(message) {
     }
 }
 
-// REGISTER: Send signup verification code to email
+// REGISTER
+// Registration is handled directly by register.html.
+// This function remains available for any older page using registerUser().
 async function registerUser(details = null) {
     const name = details?.name ??
         document.getElementById("name")?.value.trim();
@@ -29,37 +30,27 @@ async function registerUser(details = null) {
         document.getElementById("confirmPassword")?.value;
 
     if (!name || !mobile || !email || !password) {
-        const error = new Error("Please fill in all required fields.");
-        showAuthMessage(error.message);
-        return { error };
+        return { error: new Error("Please fill in all required fields.") };
     }
 
     if (!/^[6-9]\d{9}$/.test(mobile)) {
-        const error = new Error("Enter a valid 10-digit Indian mobile number.");
-        showAuthMessage(error.message);
-        return { error };
+        return { error: new Error("Enter a valid 10-digit Indian mobile number.") };
     }
 
     if (password.length < 8) {
-        const error = new Error("Password must be at least 8 characters.");
-        showAuthMessage(error.message);
-        return { error };
+        return { error: new Error("Password must be at least 8 characters.") };
     }
 
     if (confirmPassword !== undefined && password !== confirmPassword) {
-        const error = new Error("Passwords do not match.");
-        showAuthMessage(error.message);
-        return { error };
+        return { error: new Error("Passwords do not match.") };
     }
 
     const client = window.supabaseClient;
 
     if (!client) {
-        const error = new Error(
-            "Supabase connection missing. Check js/supabase.js."
-        );
-        showAuthMessage(error.message);
-        return { error };
+        return {
+            error: new Error("Supabase connection missing. Check js/supabase.js.")
+        };
     }
 
     try {
@@ -76,20 +67,18 @@ async function registerUser(details = null) {
 
         if (error) throw error;
 
-        // Do not bypass OTP verification if confirmation is required.
-        if (data.session && data.user?.email_confirmed_at) {
-            showAuthMessage("Account created successfully!");
-            window.location.href = "index.html";
-            return data;
+        if (!data.session) {
+            return {
+                error: new Error(
+                    "Account created, but no active session was returned. " +
+                    "Check Supabase Email Confirmations settings."
+                )
+            };
         }
 
-        // Supabase normally sends the signup confirmation code/link
-        // when email confirmations are enabled.
         return data;
-
     } catch (error) {
         console.error("Registration error:", error);
-        showAuthMessage(error.message || "Registration failed.");
         return { error };
     }
 }
@@ -132,9 +121,11 @@ async function loginUser() {
             showAuthMessage("Login successful!");
             window.location.href = "index.html";
         }
-
     } catch (error) {
         console.error("Login error:", error);
         showAuthMessage(error.message || "Login failed.");
     }
 }
+
+window.registerUser = registerUser;
+window.loginUser = loginUser;

@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Account - Gram Mart</title>
+
     <link rel="stylesheet" href="css/style.css">
-    <!-- Gram Mart Favicon -->
-<link rel="icon" type="image/png" href="images/gram-mart-icon.png">
-<link rel="apple-touch-icon" href="images/gram-mart-icon.png">
+    <link rel="icon" type="image/png" href="images/gram-mart-icon.png">
+    <link rel="apple-touch-icon" href="images/gram-mart-icon.png">
 
     <style>
         .auth-container {
@@ -70,27 +70,24 @@
         .auth-container a {
             color: #0B3091;
         }
-
-        #otpSection {
-            display: none;
-        }
     </style>
 </head>
 
 <body>
     <div class="auth-container">
         <div class="auth-brand">
-    <a href="index.html" aria-label="Gram Mart Home">
-        <img
-            src="images/gram-mart-logo.png"
-            alt="Gram Mart"
-            class="auth-wordmark"
-        >
-    </a>
-    <p>Everyday Groceries, Made Easy</p>
-</div>
-        <h1>Register</h1>
-        <p class="auth-subtitle">Create your customer account</p>
+            <a href="index.html" aria-label="Gram Mart Home">
+                <img
+                    src="images/gram-mart-logo.png"
+                    alt="Gram Mart"
+                    class="auth-wordmark"
+                >
+            </a>
+            <p>Everyday Groceries, Made Easy</p>
+        </div>
+
+        <h1>Create Account</h1>
+        <p class="auth-subtitle">Join Gram Mart today</p>
 
         <form id="registerForm">
             <input
@@ -146,32 +143,6 @@
             </button>
         </form>
 
-        <section id="otpSection">
-            <h3>Verify Your Email</h3>
-            <p>Enter the verification code sent to your email.</p>
-
-            <form id="otpForm">
-                <input
-                    type="text"
-                    id="emailOtp"
-                    placeholder="Enter email OTP"
-                    inputmode="numeric"
-                    autocomplete="one-time-code"
-                    pattern="[0-9]{6}"
-                    maxlength="6"
-                    required
-                >
-
-                <button type="submit" id="verifyOtpButton">
-                    Verify Email
-                </button>
-            </form>
-
-            <button type="button" id="resendOtpButton">
-                Resend OTP
-            </button>
-        </section>
-
         <p id="registerMessage" role="status" aria-live="polite"></p>
 
         <p style="text-align:center; margin-top:20px;">
@@ -182,12 +153,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/supabase.js"></script>
-    <script src="js/auth.js"></script>
+
     <script>
         (() => {
             const form = document.getElementById("registerForm");
-            const otpForm = document.getElementById("otpForm");
-            const otpSection = document.getElementById("otpSection");
+            const button = document.getElementById("registerButton");
             const message = document.getElementById("registerMessage");
 
             function showMessage(text, isError = false) {
@@ -211,126 +181,76 @@
                 }
 
                 if (!/^[6-9]\d{9}$/.test(mobile)) {
-                    showMessage("Enter a valid 10-digit Indian mobile number.", true);
-                    return;
-                }
-
-                if (typeof window.registerUser !== "function") {
                     showMessage(
-                        "Registration function is missing. Please check js/auth.js.",
+                        "Enter a valid 10-digit Indian mobile number.",
                         true
                     );
                     return;
                 }
 
-                const button = document.getElementById("registerButton");
+                const supabase = window.supabaseClient;
+
+                if (!supabase) {
+                    showMessage(
+                        "Connection error. Please check js/supabase.js.",
+                        true
+                    );
+                    return;
+                }
+
                 button.disabled = true;
                 showMessage("Creating your account...");
 
                 try {
-                    // auth.js must send the OTP and return a successful result.
-                    const result = await window.registerUser({
-                        name, mobile, email, password
-                    });
-
-                    if (result === false || result?.error) {
-                        showMessage(
-                            result?.error?.message ||
-                            "Registration failed. Please try again.",
-                            true
-                        );
-                        return;
-                    }
-
-                    form.style.display = "none";
-                    otpSection.style.display = "block";
-                    showMessage("Check your email for the verification code.");
-                } catch (error) {
-                    showMessage(error.message || "Registration failed.", true);
-                } finally {
-                    button.disabled = false;
-                }
-            });
-
-            otpForm.addEventListener("submit", async (event) => {
-                event.preventDefault();
-
-                const client = window.supabaseClient;
-                if (!client) {
-                    showMessage("Authentication service is unavailable.", true);
-                    return;
-                }
-
-                const email = document.getElementById("email").value.trim();
-                const token = document.getElementById("emailOtp").value.trim();
-                const button = document.getElementById("verifyOtpButton");
-
-                button.disabled = true;
-                showMessage("Verifying email...");
-
-                try {
-                    const { data, error } = await client.auth.verifyOtp({
+                    const { data, error } = await supabase.auth.signUp({
                         email,
-                        token,
-                        type: "signup"
+                        password,
+                        options: {
+                            data: {
+                                full_name: name,
+                                phone: mobile
+                            }
+                        }
                     });
 
                     if (error) throw error;
 
                     if (!data.user) {
-                        throw new Error("Email verification could not be completed.");
+                        throw new Error(
+                            "Account could not be created. Please try again."
+                        );
                     }
 
-                    const { error: profileError } = await client.auth.updateUser({
-                        data: {
-                            full_name: document.getElementById("name").value.trim(),
-                            phone: document.getElementById("mobile").value.trim()
-                        }
-                    });
-
-                    if (profileError) {
-                        console.error("Profile metadata update failed:", profileError);
+                    if (!data.session) {
+                        showMessage(
+                            "Account created, but automatic login is unavailable. " +
+                            "Check that email confirmation is OFF in Supabase, " +
+                            "then try logging in.",
+                            true
+                        );
+                        return;
                     }
 
-                    showMessage("Email verified! Your account is ready.");
-                    window.location.href = "index.html";
+                    showMessage("Account created successfully! Redirecting...");
+
+                    window.location.replace("index.html");
+
                 } catch (error) {
-                    showMessage(
-                        error.message || "Invalid or expired OTP. Try again.",
-                        true
-                    );
+                    console.error("Registration error:", error);
+
+                    let errorMessage =
+                        error.message || "Registration failed. Please try again.";
+
+                    if (errorMessage.toLowerCase().includes("already registered")) {
+                        errorMessage =
+                            "This email is already registered. Please log in.";
+                    }
+
+                    showMessage(errorMessage, true);
                 } finally {
                     button.disabled = false;
                 }
             });
-
-            document.getElementById("resendOtpButton")
-                .addEventListener("click", async () => {
-                    const client = window.supabaseClient;
-                    const email = document.getElementById("email").value.trim();
-
-                    if (!client) {
-                        showMessage("Authentication service is unavailable.", true);
-                        return;
-                    }
-
-                    const button = document.getElementById("resendOtpButton");
-                    button.disabled = true;
-
-                    try {
-                        const { error } = await client.auth.resend({
-                            type: "signup",
-                            email
-                        });
-
-                        if (error) throw error;
-                        showMessage("A new verification code has been requested.");
-                    } catch (error) {
-                        showMessage(error.message || "Could not resend OTP.", true);
-                    } finally {
-                        button.disabled = false;
-                    }
-                });
         })();
     </script>
 </body>
