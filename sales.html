@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Dashboard | GRAM MART</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./js/supabase.js"></script>
+
+  <style>
+    :root {
+      --blue: #0B3091;
+      --orange: #FF6A00;
+      --bg: #f4f6fb;
+      --text: #172033;
+      --muted: #697386;
+      --border: #e6eaf1;
+      --green: #168553;
+      --red: #d33b43;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button, select, input { font: inherit; }
+
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      width: 230px;
+      padding: 25px 16px;
+      background: var(--blue);
+      color: white;
+      z-index: 10;
+    }
+
+    .brand {
+      font-size: 25px;
+      font-weight: 800;
+      margin: 4px 8px 8px;
+      letter-spacing: .4px;
+    }
+
+    .brand span { color: var(--orange); }
+
+    .brand-sub {
+      color: #d8e2ff;
+      font-size: 12px;
+      margin: 0 8px 32px;
+    }
+
+    .nav-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #b8c8f6;
+      margin: 20px 10px 10px;
+    }
+
+    .nav-link {
+      display: block;
+      text-decoration: none;
+      color: #eaf0ff;
+      padding: 12px 13px;
+      margin: 5px 0;
+      border-radius: 9px;
+      font-size: 14px;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background: rgba(255,255,255,.15);
+      color: white;
+    }
+
+    .main {
+      margin-left: 230px;
+      padding: 28px;
+      max-width: 1700px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    h1 { font-size: 27px; margin: 0 0 7px; }
+
+    .subtitle { color: var(--muted); font-size: 13px; }
+
+    .actions { display: flex; gap: 9px; flex-wrap: wrap; }
+
+    .btn {
+      border: 0;
+      padding: 11px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .btn-primary { background: var(--blue); color: white; }
+    .btn-orange { background: var(--orange); color: white; }
+    .btn-light { background: white; border: 1px solid var(--border); color: var(--text); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .filters {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: end;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 12px; color: var(--muted); font-weight: 700; }
+
+    select, input[type="date"] {
+      border: 1px solid #dce2ec;
+      border-radius: 8px;
+      background: white;
+      padding: 10px;
+      min-height: 39px;
+      color: var(--text);
+    }
+
+    .period-note { color: var(--muted); font-size: 12px; margin-left: auto; }
+
+    .notice {
+      display: none;
+      padding: 13px 15px;
+      border-radius: 9px;
+      margin-bottom: 18px;
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .notice.error { display: block; color: #8f1f28; background: #fff0f0; border: 1px solid #ffd4d4; }
+    .notice.info { display: block; color: #244b88; background: #edf4ff; border: 1px solid #d2e3ff; }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 25px 0 14px;
+    }
+
+    .section-heading h2 { font-size: 17px; margin: 0; }
+    .section-heading span { font-size: 12px; color: var(--muted); }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 15px;
+    }
+
+    .metric {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 19px;
+      min-width: 0;
+      box-shadow: 0 3px 12px rgba(15, 35, 80, .025);
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 13px;
+    }
+
+    .metric-value {
+      font-size: 25px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .metric-foot {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .metric.highlight { border-top: 3px solid var(--orange); }
+    .metric.primary { border-top: 3px solid var(--blue); }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 17px;
+      margin-top: 17px;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 20px;
+      min-width: 0;
+    }
+
+    .panel h3 { margin: 0 0 5px; font-size: 16px; }
+    .panel-sub { color: var(--muted); font-size: 12px; margin-bottom: 20px; }
+
+    .chart {
+      height: 230px;
+      display: flex;
+      align-items: stretch;
+      gap: 7px;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 0 0;
+      overflow-x: auto;
+    }
+
+    .bar-item {
+      flex: 1;
+      min-width: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: end;
+      gap: 7px;
+    }
+
+    .bar-value {
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .bar {
+      width: min(34px, 75%);
+      min-height: 2px;
+      background: var(--blue);
+      border-radius: 5px 5px 0 0;
+    }
+
+    .bar.orange { background: var(--orange); }
+
+    .bar-label {
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      white-space: nowrap;
+      margin-bottom: 8px;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      min-width: 480px;
+    }
+
+    th, td {
+      padding: 13px 10px;
+      border-bottom: 1px solid #edf0f5;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .35px;
+      background: #fafbfe;
+    }
+
+    td.right, th.right { text-align: right; }
+    .product-name { font-weight: 700; }
+    .rank { color: var(--orange); font-weight: 800; width: 35px; }
+    .empty { color: var(--muted); text-align: center; padding: 30px 10px; }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: 105px 1fr 50px;
+      gap: 10px;
+      align-items: center;
+      margin: 15px 0;
+      font-size: 12px;
+    }
+
+    .status-track {
+      height: 8px;
+      border-radius: 20px;
+      background: #eef1f7;
+      overflow: hidden;
+    }
+
+    .status-fill { height: 100%; border-radius: 20px; background: var(--blue); }
+    .status-count { text-align: right; font-weight: 700; }
+
+    .footnote {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+      margin-top: 18px;
+    }
+
+    .loading { opacity: .6; pointer-events: none; }
+
+    @media (max-width: 1100px) {
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .two-col { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .sidebar {
+        position: static;
+        width: 100%;
+        padding: 15px;
+      }
+      .brand { font-size: 22px; }
+      .brand-sub { margin-bottom: 14px; }
+      .nav-label { display: none; }
+      .sidebar nav { display: flex; gap: 5px; overflow-x: auto; }
+      .nav-link { white-space: nowrap; font-size: 12px; padding: 10px; }
+      .main { margin-left: 0; padding: 18px 13px; }
+      h1 { font-size: 23px; }
+      .cards { gap: 10px; }
+      .metric { padding: 14px; }
+      .metric-value { font-size: 20px; }
+      .filters { align-items: stretch; }
+      .field { flex: 1 1 130px; }
+      .period-note { margin-left: 0; width: 100%; }
+      .panel { padding: 14px; }
+    }
+  </style>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div class="brand">GRAM <span>MART</span></div>
+    <div class="brand-sub">Admin Control Center</div>
+
+    <nav>
+      <div class="nav-label">Management</div>
+      <a class="nav-link" href="./admin.html">📊 Admin Dashboard</a>
+      <a class="nav-link active" href="./sales.html">₹ Sales Value</a>
+      <a class="nav-link" href="./inventory.html">📦 Products</a>
+      <a class="nav-link" href="./orders.html">🛒 Orders</a>
+      <a class="nav-link" href="./index.html">🏠 View Store</a>
+    </nav>
+  </aside>
+
+  <main class="main" id="dashboard">
+    <header class="topbar">
+      <div>
+        <h1>Sales Value Dashboard</h1>
+        <div class="subtitle">GRAM MART · Sales, orders and product performance</div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-light" id="refreshBtn">↻ Refresh</button>
+        <button class="btn btn-orange" id="exportBtn">↓ Export CSV</button>
+      </div>
+    </header>
+
+    <div id="notice" class="notice" role="status"></div>
+
+    <section class="filters">
+      <div class="field">
+        <label for="period">Report period</label>
+        <select id="period">
+          <option value="today">Today</option>
+          <option value="yesterday">Yesterday</option>
+          <option value="thisWeek">This Week</option>
+          <option value="lastWeek">Last Week</option>
+          <option value="thisMonth" selected>This Month</option>
+          <option value="lastMonth">Last Month</option>
+          <option value="thisYear">This Year</option>
+          <option value="lastYear">Last Year</option>
+          <option value="allTime">All Time</option>
+          <option value="custom">Custom Range</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="startDate">From date</label>
+        <input type="date" id="startDate">
+      </div>
+
+      <div class="field">
+        <label for="endDate">To date</label>
+        <input type="date" id="endDate">
+      </div>
+
+      <button class="btn btn-primary" id="applyBtn">Apply Filter</button>
+      <div class="period-note" id="periodLabel">Loading report…</div>
+    </section>
+
+    <div class="section-heading">
+      <h2>Sales Overview</h2>
+      <span>Currency: Indian Rupees (₹)</span>
+    </div>
+
+    <section class="cards">
+      <article class="metric highlight">
+        <div class="metric-label">Delivered Sales Value</div>
+        <div class="metric-value" id="deliveredSales">₹0</div>
+        <div class="metric-foot">Total value of delivered orders in the selected period</div>
+      </article>
+
+      <article class="metric primary">
+        <div class="metric-label">Delivered Orders</div>
+        <div class="metric-value" id="deliveredOrders">0</div>
+        <div class="metric-foot">Orders marked delivered</div>
+      </article>
+
+      <article class="metric">
+        <div class="metric-label">Average Order Value</div>
+        <div class="metric-value" id="averageOrder">₹0</div>
+        <div class="metric-foot">Delivered sales ÷ delivered orders</div>
+      </article>
+
+      <article class="metric">
+        <div class="metric-label">Units Sold</div>
+        <div class="metric-value" id="unitsSold">0</div>
+        <div class="metric-foot">Quantity in delivered order items</div>
+      </article>
+
+      <article class="metric">
+        <div class="metric-label">All Orders</div>
+        <div class="metric-value" id="allOrders">0</div>
+        <div class="metric-foot">Orders created in the selected period</div>
+      </article>
+
+      <article class="metric">
+        <div class="metric-label">Pending / Processing</div>
+        <div class="metric-value" id="pendingOrders">0</div>
+        <div class="metric-foot">Orders not yet completed or cancelled</div>
+      </article>
+
+      <article class="metric">
+        <div class="metric-label">Cancelled Orders</div>
+        <div class="metric-value" id="cancelledOrders">0</div>
+        <div class="metric-foot">Orders with cancelled status</div>
+      </article>
+
+      <article class="metric">
+        <div class="metric-label">Non-delivered Order Value</div>
+        <div class="metric-value" id="openValue">₹0</div>
+        <div class="metric-foot">Non-delivered, non-cancelled order value; not confirmed revenue</div>
+      </article>
+    </section>
+
+    <section class="two-col">
+      <article class="panel">
+        <h3>Daily Delivered Sales</h3>
+        <div class="panel-sub">Delivered order value by order creation date</div>
+        <div class="chart" id="dailyChart">
+          <div class="empty">Loading chart…</div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h3>Order Status</h3>
+        <div class="panel-sub">Breakdown of orders in the selected period</div>
+        <div id="statusChart">
+          <div class="empty">Loading statuses…</div>
+        </div>
+      </article>
+    </section>
+
+    <section class="two-col">
+      <article class="panel">
+        <h3>Top-Selling Products</h3>
+        <div class="panel-sub">Ranked by units sold in delivered orders</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Product</th>
+                <th class="right">Units</th>
+                <th class="right">Item Value</th>
+              </tr>
+            </thead>
+            <tbody id="topProducts">
+              <tr><td colspan="4" class="empty">Loading products…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h3>Sales Insights</h3>
+        <div class="panel-sub">Calculated from the selected period</div>
+        <div id="insights">
+          <div class="empty">Calculating insights…</div>
+        </div>
+        <div class="footnote">
+          Product item value is calculated using unit price × quantity.
+          Delivered sales use the order's total_amount, which can differ from
+          item value if shipping charges, discounts or other charges are included.
+        </div>
+      </article>
+    </section>
+
+    <div class="footnote">
+      Note: this report uses orders.created_at, not the actual delivery date.
+      It does not represent profit or confirmed cash received because the current
+      schema does not include product cost, payment status or delivered_at.
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const $ = (id) => document.getElementById(id);
+      const money = (value) => new Intl.NumberFormat("en-IN", {
+        style: "currency", currency: "INR", maximumFractionDigits: 2
+      }).format(Number(value) || 0);
+
+      const integer = (value) => new Intl.NumberFormat("en-IN", {
+        maximumFractionDigits: 0
+      }).format(Number(value) || 0);
+
+      const state = {
+        allOrders: [],
+        filteredOrders: [],
+        allItems: [],
+        isReady: false
+      };
+
+      let db = null;
+
+      function showNotice(message, type = "info") {
+        const notice = $("notice");
+        notice.textContent = message;
+        notice.className = "notice " + type;
+      }
+
+      function clearNotice() {
+        $("notice").textContent = "";
+        $("notice").className = "notice";
+      }
+
+      function escapeHTML(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;",
+          '"': "&quot;", "'": "&#39;"
+        })[char]);
+      }
+
+      function dateString(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        const d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+      }
+
+      function startOfDay(date) {
+        const d = new Date(date);
+        d.setHours(0, 0, 0, 0);
+        return d;
+      }
+
+      function addDays(date, days) {
+        const d = new Date(date);
+        d.setDate(d.getDate() + days);
+        return d;
+      }
+
+      function getRange(period) {
+        const today = startOfDay(new Date());
+        let start, end;
+
+        switch (period) {
+          case "today":
+            start = today; end = addDays(today, 1); break;
+          case "yesterday":
+            start = addDays(today, -1); end = today; break;
+          case "thisWeek": {
+            const day = (today.getDay() + 6) % 7;
+            start = addDays(today, -day); end = addDays(start, 7); break;
+          }
+          case "lastWeek": {
+            const day = (today.getDay() + 6) % 7;
+            end = addDays(today, -day); start = addDays(end, -7); break;
+          }
+          case "thisMonth":
+            start = new Date(today.getFullYear(), today.getMonth(), 1);
+            end = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+            break;
+          case "lastMonth":
+            start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            end = new Date(today.getFullYear(), today.getMonth(), 1);
+            break;
+          case "thisYear":
+            start = new Date(today.getFullYear(), 0, 1);
+            end = new Date(today.getFullYear() + 1, 0, 1);
+            break;
+          case "lastYear":
+            start = new Date(today.getFullYear() - 1, 0, 1);
+            end = new Date(today.getFullYear(), 0, 1);
+            break;
+          case "allTime":
+            return { start: null, end: null, label: "All available order history" };
+          case "custom": {
+            const startValue = $("startDate").value;
+            const endValue = $("endDate").value;
+            if (!startValue || !endValue) {
+              throw new Error("Custom range ke liye From aur To dono dates select karo.");
+            }
+            start = new Date(startValue + "T00:00:00");
+            end = addDays(new Date(endValue + "T00:00:00"), 1);
+            if (start > end || startValue > endValue) {
+              throw new Error("From date, To date se baad nahi ho sakti.");
+            }
+            break;
+          }
+          default:
+            start = new Date(today.getFullYear(), today.getMonth(), 1);
+            end = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+        }
+
+        return {
+          start,
+          end,
+          label: `${dateString(start)} to ${dateString(addDays(end, -1))}`
+        };
+      }
+
+      async function fetchAllRows(table, columns, orderColumn) {
+        const result = [];
+        const pageSize = 1000;
+
+        for (let from = 0; ; from += pageSize) {
+          let query = db.from(table).select(columns)
+            .range(from, from + pageSize - 1);
+
+          if (orderColumn) query = query.order(orderColumn, { ascending: true });
+
+          const { data, error } = await query;
+          if (error) throw new Error(`${table}: ${error.message}`);
+
+          result.push(...(data || []));
+          if (!data || data.length < pageSize) break;
+        }
+
+        return result;
+      }
+
+      async function fetchItemsForOrders(orders) {
+        const ids = orders.map(order => order.id);
+        const all = [];
+
+        for (let i = 0; i < ids.length; i += 150) {
+          const batch = ids.slice(i, i + 150);
+          if (!batch.length) continue;
+
+          const { data, error } = await db
+            .from("order_items")
+            .select("order_id, product_id, product_name, unit_price, quantity, created_at")
+            .in("order_id", batch);
+
+          if (error) throw new Error("order_items: " + error.message);
+          all.push(...(data || []));
+        }
+
+        return all;
+      }
+
+      async function init() {
+        db = window.supabaseClient;
+
+        if (!db) {
+          showNotice(
+            "Supabase client nahi mila. Check karo ki ./js/supabase.js sahi load ho rahi hai.",
+            "error"
+          );
+          return;
+        }
+
+        try {
+          const { data: sessionData, error: sessionError } = await db.auth.getSession();
+          if (sessionError) throw sessionError;
+
+          if (!sessionData.session) {
+            window.location.href = "./login.html";
+            return;
+          }
+
+          const { data: isAdmin, error: adminError } = await db.rpc("is_admin");
+          if (adminError) {
+            throw new Error("Admin permission verify nahi ho saki: " + adminError.message);
+          }
+
+          if (isAdmin !== true) {
+            showNotice("Access denied: ye page sirf authorized admin ke liye hai.", "error");
+            return;
+          }
+
+          await loadReport();
+        } catch (error) {
+          console.error(error);
+          showNotice(
+            "Dashboard load nahi hua: " + (error.message || "Unknown error"),
+            "error"
+          );
+        }
+      }
+
+      async function loadReport() {
+        clearNotice();
+        $("dashboard").classList.add("loading");
+        $("refreshBtn").disabled = true;
+        $("applyBtn").disabled = true;
+
+        try {
+          const [orders] = await Promise.all([
+            fetchAllRows(
+              "orders",
+              "id, user_id, total_amount, status, created_at",
+              "created_at"
+            )
+          ]);
+
+          state.allOrders = orders;
+          const range = getRange($("period").value);
+
+          state.filteredOrders = orders.filter(order => {
+            const created = new Date(order.created_at);
+            if (Number.isNaN(created.getTime())) return false;
+            if (range.start && created < range.start) return false;
+            if (range.end && created >= range.end) return false;
+            return true;
+          });
+
+          state.allItems = await fetchItemsForOrders(state.filteredOrders);
+          state.isReady = true;
+
+          $("periodLabel").textContent = range.label;
+          renderReport();
+        } catch (error) {
+          console.error(error);
+          showNotice(
+            "Sales report load nahi hui.\n" +
+            (error.message || "Unknown error") +
+            "\nSupabase table names, permissions aur RLS policies check karo.",
+            "error"
+          );
+        } finally {
+          $("dashboard").classList.remove("loading");
+          $("refreshBtn").disabled = false;
+          $("applyBtn").disabled = false;
+        }
+      }
+
+      function normalizeStatus(status) {
+        return String(status || "unknown").trim().toLowerCase();
+      }
+
+      function isDelivered(order) {
+        return normalizeStatus(order.status) === "delivered";
+      }
+
+      function isCancelled(order) {
+        return normalizeStatus(order.status).includes("cancel");
+      }
+
+      function renderReport() {
+        const orders = state.filteredOrders;
+        const delivered = orders.filter(isDelivered);
+        const cancelled = orders.filter(isCancelled);
+        const pending = orders.filter(o => !isDelivered(o) && !isCancelled(o));
+
+        const deliveredIds = new Set(delivered.map(o => o.id));
+        const deliveredSales = delivered.reduce(
+          (sum, o) => sum + (Number(o.total_amount) || 0), 0
+        );
+        const openValue = pending.reduce(
+          (sum, o) => sum + (Number(o.total_amount) || 0), 0
+        );
+
+        const deliveredItems = state.allItems.filter(
+          item => deliveredIds.has(item.order_id)
+        );
+        const units = deliveredItems.reduce(
+          (sum, item) => sum + (Number(item.quantity) || 0), 0
+        );
+
+        $("deliveredSales").textContent = money(deliveredSales);
+        $("deliveredOrders").textContent = integer(delivered.length);
+        $("averageOrder").textContent = money(delivered.length ? deliveredSales / delivered.length : 0);
+        $("unitsSold").textContent = integer(units);
+        $("allOrders").textContent = integer(orders.length);
+        $("pendingOrders").textContent = integer(pending.length);
+        $("cancelledOrders").textContent = integer(cancelled.length);
+        $("openValue").textContent = money(openValue);
+
+        renderProducts(deliveredItems);
+        renderDailyChart(delivered);
+        renderStatuses(orders);
+        renderInsights(orders, delivered, cancelled, deliveredItems, deliveredSales);
+      }
+
+      function renderProducts(items) {
+        const products = new Map();
+
+        items.forEach(item => {
+          const key = item.product_id || item.product_name || "unknown";
+          const name = item.product_name || "Unnamed product";
+          if (!products.has(key)) {
+            products.set(key, { name, quantity: 0, value: 0 });
+          }
+          const product = products.get(key);
+          product.quantity += Number(item.quantity) || 0;
+          product.value += (Number(item.unit_price) || 0) * (Number(item.quantity) || 0);
+        });
+
+        const sorted = [...products.values()].sort((a, b) => b.quantity - a.quantity);
+        const body = $("topProducts");
+
+        if (!sorted.length) {
+          body.innerHTML = '<tr><td colspan="4" class="empty">Is period mein delivered product sales nahi mili.</td></tr>';
+          return;
+        }
+
+        body.innerHTML = sorted.slice(0, 10).map((p, index) => `
+          <tr>
+            <td class="rank">${index + 1}</td>
+            <td class="product-name">${escapeHTML(p.name)}</td>
+            <td class="right">${integer(p.quantity)}</td>
+            <td class="right">${money(p.value)}</td>
+          </tr>
+        `).join("");
+      }
+
+      function renderDailyChart(delivered) {
+        const daily = new Map();
+
+        delivered.forEach(order => {
+          const date = dateString(new Date(order.created_at));
+          daily.set(date, (daily.get(date) || 0) + (Number(order.total_amount) || 0));
+        });
+
+        let entries = [...daily.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+
+        const range = getRange($("period").value);
+        if (range.start && range.end) {
+          const days = Math.round((range.end - range.start) / 86400000);
+          if (days <= 31) {
+            const full = new Map(entries);
+            entries = [];
+            for (let i = 0; i < days; i++) {
+              const d = dateString(addDays(range.start, i));
+              entries.push([d, full.get(d) || 0]);
+            }
+          }
+        }
+
+        entries = entries.slice(-31);
+        const chart = $("dailyChart");
+
+        if (!entries.length) {
+          chart.innerHTML = '<div class="empty">No daily sales data found.</div>';
+          return;
+        }
+
+        const max = Math.max(...entries.map(entry => entry[1]), 1);
+        chart.innerHTML = entries.map(([date, value]) => {
+          const height = Math.max(value > 0 ? 3 : 1, (value / max) * 150);
+          const label = date.slice(5);
+          return `
+            <div class="bar-item" title="${escapeHTML(date)}: ${money(value)}">
+              <div class="bar-value">${value ? escapeHTML(money(value)) : "₹0"}</div>
+              <div class="bar ${value === max ? "orange" : ""}" style="height:${height}px"></div>
+              <div class="bar-label">${escapeHTML(label)}</div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function renderStatuses(orders) {
+        const counts = new Map();
+
+        orders.forEach(order => {
+          const status = normalizeStatus(order.status);
+          counts.set(status, (counts.get(status) || 0) + 1);
+        });
+
+        const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+        const max = Math.max(...sorted.map(item => item[1]), 1);
+
+        if (!sorted.length) {
+          $("statusChart").innerHTML = '<div class="empty">No orders found.</div>';
+          return;
+        }
+
+        $("statusChart").innerHTML = sorted.map(([status, count]) => `
+          <div class="status-row">
+            <div>${escapeHTML(status.replace(/_/g, " "))}</div>
+            <div class="status-track">
+              <div class="status-fill" style="width:${(count / max) * 100}%"></div>
+            </div>
+            <div class="status-count">${integer(count)}</div>
+          </div>
+        `).join("");
+      }
+
+      function renderInsights(orders, delivered, cancelled, items, sales) {
+        const units = items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+        const itemValue = items.reduce(
+          (sum, item) => sum + (Number(item.unit_price) || 0) * (Number(item.quantity) || 0), 0
+        );
+        const cancellationRate = orders.length ? cancelled.length / orders.length * 100 : 0;
+        const deliveryRate = orders.length ? delivered.length / orders.length * 100 : 0;
+
+        $("insights").innerHTML = `
+          <div class="status-row">
+            <div>Delivery rate</div>
+            <div class="status-track"><div class="status-fill" style="width:${deliveryRate}%"></div></div>
+            <div class="status-count">${deliveryRate.toFixed(1)}%</div>
+          </div>
+          <div class="status-row">
+            <div>Cancellation</div>
+            <div class="status-track"><div class="status-fill" style="width:${cancellationRate}%;background:var(--red)"></div></div>
+            <div class="status-count">${cancellationRate.toFixed(1)}%</div>
+          </div>
+          <div class="status-row">
+            <div>Delivered units</div>
+            <div></div>
+            <div class="status-count">${integer(units)}</div>
+          </div>
+          <div class="status-row">
+            <div>Item value</div>
+            <div></div>
+            <div class="status-count">${escapeHTML(money(itemValue))}</div>
+          </div>
+          <div class="status-row">
+            <div>Delivered order value</div>
+            <div></div>
+            <div class="status-count">${escapeHTML(money(sales))}</div>
+          </div>
+          <div class="footnote">
+            Item value and order value may differ. This dashboard does not calculate profit.
+          </div>
+        `;
+      }
+
+      function exportCSV() {
+        if (!state.isReady) {
+          showNotice("Pehle report load hone do, phir export karo.", "info");
+          return;
+        }
+
+        const orders = state.filteredOrders;
+        const delivered = orders.filter(isDelivered);
+        const deliveredIds = new Set(delivered.map(o => o.id));
+        const items = state.allItems.filter(i => deliveredIds.has(i.order_id));
+
+        const rows = [
+          ["Report", "GRAM MART Sales Value"],
+          ["Period", $("periodLabel").textContent],
+          [],
+          ["Metric", "Value"],
+          ["Delivered Sales Value", delivered.reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0)],
+          ["Delivered Orders", delivered.length],
+          ["All Orders", orders.length],
+          ["Cancelled Orders", orders.filter(isCancelled).length],
+          [],
+          ["Order ID", "Created At", "Status", "Order Total"],
+          ...orders.map(o => [o.id, o.created_at, o.status, o.total_amount]),
+          [],
+          ["Product", "Units Sold", "Item Value"]
+        ];
+
+        const productMap = new Map();
+        items.forEach(item => {
+          const name = item.product_name || "Unnamed product";
+          if (!productMap.has(name)) productMap.set(name, { quantity: 0, value: 0 });
+          const p = productMap.get(name);
+          p.quantity += Number(item.quantity) || 0;
+          p.value += (Number(item.unit_price) || 0) * (Number(item.quantity) || 0);
+        });
+
+        [...productMap.entries()].forEach(([name, p]) => {
+          rows.push([name, p.quantity, p.value]);
+        });
+
+        const csv = rows.map(row => row.map(value => {
+          let cell = String(value ?? "");
+          if (/^[=+\-@]/.test(cell)) cell = "'" + cell;
+          return '"' + cell.replace(/"/g, '""') + '"';
+        }).join(",")).join("\r\n");
+
+        const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `gram-mart-sales-${dateString(new Date())}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      $("period").addEventListener("change", () => {
+        const custom = $("period").value === "custom";
+        $("startDate").disabled = !custom;
+        $("endDate").disabled = !custom;
+      });
+
+      $("applyBtn").addEventListener("click", loadReport);
+      $("refreshBtn").addEventListener("click", loadReport);
+      $("exportBtn").addEventListener("click", exportCSV);
+
+      // Initialize date inputs to the current month.
+      const now = new Date();
+      $("startDate").value = dateString(new Date(now.getFullYear(), now.getMonth(), 1));
+      $("endDate").value = dateString(now);
+      $("startDate").disabled = true;
+      $("endDate").disabled = true;
+
+      init();
+    })();
+  </script>
+</body>
+</html>

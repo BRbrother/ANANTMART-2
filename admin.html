@@ -622,10 +622,10 @@
 
       <nav class="nav-links">
         <a class="nav-link active" href="#dashboard">▦ Dashboard</a>
-        <a class="nav-link" href="#products">▣ Inventory</a>
+        <a class="nav-link" href="./inventory.html">▣ Products</a>
         <a class="nav-link add-product-link" href="./add-product.html">＋ Add Product</a>
-        <a class="nav-link" href="#orders">🛒 Orders</a>
-        <a class="nav-link" href="./index.html">↗ View Store</a>
+        <a class="nav-link" href="./orders.html">🛒 Orders</a>
+        <a class="nav-link" href="./sales.html">📊 Sales</a>
       </nav>
     </aside>
 
@@ -655,14 +655,17 @@
       <!-- DASHBOARD STATISTICS -->
       <section id="dashboard" class="stats-grid">
 
-        <article class="stat-card">
+        <a href="./sales.html" class="stat-card stat-card-link"
+        aria-label="Open Sales Value Dashboard"
+        style="text-decoration: none; color: inherit; display: block; cursor: pointer;">
+
           <div class="stat-top">
             <span class="stat-label">Delivered Sales Value</span>
             <span class="stat-icon">₹</span>
           </div>
           <div class="stat-value" id="revenueWidget">₹0</div>
           <div class="stat-note">Value of delivered orders, not confirmed cash receipts</div>
-        </article>
+        </a>
 
         <article class="stat-card">
           <div class="stat-top">
@@ -691,7 +694,9 @@
           <div class="stat-note">Successfully delivered</div>
         </article>
 
-        <article class="stat-card">
+        <article class="stat-card"
+          onclick="window.location.href='./inventory.html'"
+          style="cursor: pointer;">
           <div class="stat-top">
             <span class="stat-label">Total Products</span>
             <span class="stat-icon">📦</span>
@@ -700,7 +705,10 @@
           <div class="stat-note">Active products in catalogue</div>
         </article>
 
-        <article class="stat-card">
+        <article class="stat-card"
+        onclick="window.location.href='./users.html'"
+        style="cursor: pointer;">
+
           <div class="stat-top">
             <span class="stat-label">Registered Users</span>
             <span class="stat-icon">👥</span>

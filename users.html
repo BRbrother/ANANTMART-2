@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Management | GRAM MART</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./js/supabase.js"></script>
+
+  <style>
+    :root {
+      --blue: #0B3091;
+      --orange: #FF6A00;
+      --bg: #f4f6fb;
+      --text: #172033;
+      --muted: #697386;
+      --border: #e5e9f2;
+      --white: #ffffff;
+      --green: #13864b;
+      --red: #c0392b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    button, input, select { font: inherit; }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 235px;
+      flex-shrink: 0;
+      background: var(--blue);
+      color: white;
+      padding: 25px 15px;
+    }
+
+    .brand {
+      font-size: 23px;
+      font-weight: 800;
+      padding: 0 10px 28px;
+    }
+
+    .brand span { color: var(--orange); }
+
+    .nav a {
+      display: block;
+      padding: 12px 13px;
+      margin: 5px 0;
+      color: #e8edff;
+      text-decoration: none;
+      border-radius: 9px;
+      font-size: 14px;
+    }
+
+    .nav a:hover, .nav a.active {
+      background: rgba(255,255,255,.15);
+      color: white;
+    }
+
+    main {
+      min-width: 0;
+      flex: 1;
+      padding: 28px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+
+    h1 { margin: 0 0 7px; font-size: 27px; }
+    .subtitle { color: var(--muted); font-size: 14px; }
+
+    .btn {
+      border: 0;
+      padding: 11px 15px;
+      border-radius: 8px;
+      background: var(--blue);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn.orange { background: var(--orange); }
+    .btn.secondary { background: #e9edf7; color: var(--blue); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 15px;
+      margin-bottom: 22px;
+    }
+
+    .stat, .panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      box-shadow: 0 3px 12px rgba(18,36,77,.035);
+    }
+
+    .stat { padding: 19px; }
+    .stat-label { color: var(--muted); font-size: 13px; }
+    .stat-value { font-size: 27px; font-weight: 800; margin: 12px 0 5px; }
+    .stat-note { color: var(--muted); font-size: 12px; }
+
+    .panel { overflow: hidden; }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 17px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .toolbar input, .toolbar select {
+      min-width: 160px;
+      flex: 1;
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      color: var(--text);
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      white-space: nowrap;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      background: #fafbfe;
+    }
+
+    tbody tr:hover { background: #f9faff; }
+
+    .customer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: #e9efff;
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    .customer-name { font-weight: 700; }
+    .muted { color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+    .pill {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      background: #edf1f8;
+      color: #45516b;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .pill.customer-role { background: #e8efff; color: var(--blue); }
+    .pill.admin-role { background: #fff0e5; color: #b64c00; }
+    .pill.delivery-role { background: #e6f8ee; color: #137744; }
+
+    .link-btn {
+      border: 0;
+      padding: 6px 0;
+      color: var(--blue);
+      background: transparent;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .message {
+      padding: 22px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .message.error { color: var(--red); }
+    .message.success { color: var(--green); }
+
+    .footer {
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .footer-actions { display: flex; gap: 8px; }
+
+    dialog {
+      width: min(760px, calc(100% - 24px));
+      max-height: 85vh;
+      border: 0;
+      border-radius: 14px;
+      padding: 0;
+      box-shadow: 0 20px 70px #1114;
+    }
+
+    dialog::backdrop { background: #10182b80; }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-body { padding: 20px; overflow: auto; }
+    .modal-body h3 { margin-top: 22px; font-size: 15px; }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .detail {
+      background: #f7f8fc;
+      padding: 13px;
+      border-radius: 9px;
+      overflow-wrap: anywhere;
+    }
+
+    .detail-label { color: var(--muted); font-size: 12px; }
+    .detail-value { font-weight: 700; margin-top: 7px; font-size: 14px; }
+
+    .close-btn {
+      border: 0;
+      background: #edf0f7;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 1050px) {
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .sidebar { width: 190px; }
+      main { padding: 20px; }
+    }
+
+    @media (max-width: 650px) {
+      .layout { display: block; }
+      .sidebar { width: 100%; padding: 14px; }
+      .brand { padding: 4px 8px 13px; }
+      .nav { display: flex; overflow-x: auto; gap: 5px; }
+      .nav a { white-space: nowrap; margin: 0; }
+      main { padding: 14px; }
+      .stats { gap: 9px; }
+      .stat { padding: 13px; }
+      .stat-value { font-size: 22px; }
+      h1 { font-size: 23px; }
+      .detail-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">GRAM <span>MART</span></div>
+    <nav class="nav">
+      <a href="./admin.html">Dashboard</a>
+      <a href="./sales.html">Sales</a>
+      <a href="./orders.html">Orders</a>
+      <a href="./inventory.html">Inventory</a>
+      <a href="./users.html" class="active">Users</a>
+      <a href="./index.html">View Store</a>
+    </nav>
+  </aside>
+
+  <main>
+    <header class="header">
+      <div>
+        <h1>User Management</h1>
+        <div class="subtitle">Manage customer profiles and review their order activity.</div>
+      </div>
+      <div style="display:flex;gap:9px;flex-wrap:wrap">
+        <button class="btn secondary" id="refreshBtn">Refresh</button>
+        <button class="btn orange" id="exportBtn">Export CSV</button>
+      </div>
+    </header>
+
+    <section class="stats">
+      <article class="stat">
+        <div class="stat-label">Total Profiles</div>
+        <div class="stat-value" id="totalUsers">—</div>
+        <div class="stat-note">Profiles in database</div>
+      </article>
+      <article class="stat">
+        <div class="stat-label">Customers</div>
+        <div class="stat-value" id="customerCount">—</div>
+        <div class="stat-note">Role: customer</div>
+      </article>
+      <article class="stat">
+        <div class="stat-label">Customers With Orders</div>
+        <div class="stat-value" id="orderingCustomers">—</div>
+        <div class="stat-note">Distinct customers with orders</div>
+      </article>
+      <article class="stat">
+        <div class="stat-label">Total Order Value</div>
+        <div class="stat-value" id="totalOrderValue">—</div>
+        <div class="stat-note">Sum of recorded order amounts</div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <div class="toolbar">
+        <input id="searchInput" type="search" placeholder="Search name, phone or user ID...">
+        <select id="roleFilter" aria-label="Filter by role">
+          <option value="all">All roles</option>
+          <option value="customer">Customers</option>
+          <option value="admin">Admins</option>
+          <option value="delivery_boy">Delivery boys</option>
+        </select>
+        <select id="activityFilter" aria-label="Filter by order activity">
+          <option value="all">All order activity</option>
+          <option value="ordered">Has orders</option>
+          <option value="no_orders">No orders</option>
+        </select>
+      </div>
+
+      <div id="notice" class="message" role="status">Checking admin access...</div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Role</th>
+              <th>Registered</th>
+              <th>Orders</th>
+              <th>Total Order Value</th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody id="usersBody">
+            <tr><td colspan="6" class="message">Loading users...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        <span id="pageInfo">0 users</span>
+        <div class="footer-actions">
+          <button class="btn secondary" id="prevBtn">Previous</button>
+          <button class="btn secondary" id="nextBtn">Next</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<dialog id="userDialog">
+  <div class="modal-head">
+    <div>
+      <strong id="modalTitle">Customer details</strong>
+      <div class="muted">Profile and order history</div>
+    </div>
+    <button class="close-btn" id="closeDialog">Close</button>
+  </div>
+  <div class="modal-body" id="modalBody"></div>
+</dialog>
+
+<script>
+(() => {
+  const PAGE_SIZE = 10;
+  const db = window.supabaseClient;
+
+  const $ = id => document.getElementById(id);
+
+  let profiles = [];
+  let orders = [];
+  let page = 0;
+  let currentUser = null;
+
+  const money = value =>
+    new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 2
+    }).format(Number(value) || 0);
+
+  const date = value => {
+    if (!value) return "—";
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime())
+      ? "—"
+      : parsed.toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric"
+        });
+  };
+
+  const escapeHTML = value => String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[ch]);
+
+  function notify(message, type = "") {
+    $("notice").className = "message " + type;
+    $("notice").textContent = message;
+  }
+
+  function roleClass(role) {
+    if (role === "admin") return "admin-role";
+    if (role === "delivery_boy") return "delivery-role";
+    return "customer-role";
+  }
+
+  function ordersFor(userId) {
+    return orders.filter(order => order.user_id === userId);
+  }
+
+  function totalFor(userId) {
+    return ordersFor(userId).reduce(
+      (sum, order) => sum + (Number(order.total_amount) || 0), 0
+    );
+  }
+
+  function renderStats() {
+    const customers = profiles.filter(p => (p.role || "customer") === "customer");
+    const orderedIds = new Set(orders.map(o => o.user_id));
+
+    $("totalUsers").textContent = profiles.length;
+    $("customerCount").textContent = customers.length;
+    $("orderingCustomers").textContent =
+      customers.filter(p => orderedIds.has(p.id)).length;
+
+    $("totalOrderValue").textContent = money(
+      orders.reduce((sum, order) => sum + (Number(order.total_amount) || 0), 0)
+    );
+  }
+
+  function filteredProfiles() {
+    const term = $("searchInput").value.trim().toLowerCase();
+    const role = $("roleFilter").value;
+    const activity = $("activityFilter").value;
+
+    return profiles.filter(profile => {
+      const profileRole = profile.role || "customer";
+      const hasOrders = ordersFor(profile.id).length > 0;
+
+      const matchesTerm = !term || [
+        profile.full_name,
+        profile.phone,
+        profile.id
+      ].some(value => String(value || "").toLowerCase().includes(term));
+
+      const matchesRole = role === "all" || profileRole === role;
+      const matchesActivity =
+        activity === "all" ||
+        (activity === "ordered" && hasOrders) ||
+        (activity === "no_orders" && !hasOrders);
+
+      return matchesTerm && matchesRole && matchesActivity;
+    });
+  }
+
+  function renderTable() {
+    const filtered = filteredProfiles();
+    const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+
+    if (page >= pageCount) page = pageCount - 1;
+    if (page < 0) page = 0;
+
+    const visible = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+    $("prevBtn").disabled = page === 0;
+    $("nextBtn").disabled = page >= pageCount - 1;
+
+    $("pageInfo").textContent = filtered.length
+      ? `Showing ${page * PAGE_SIZE + 1}–${Math.min((page + 1) * PAGE_SIZE, filtered.length)} of ${filtered.length} users`
+      : "0 users found";
+
+    if (!visible.length) {
+      $("usersBody").innerHTML =
+        '<tr><td colspan="6" class="message">No users match your search.</td></tr>';
+      return;
+    }
+
+    $("usersBody").innerHTML = visible.map(profile => {
+      const role = profile.role || "customer";
+      const name = profile.full_name || "Unnamed user";
+      const orderList = ordersFor(profile.id);
+
+      return `
+        <tr>
+          <td>
+            <div class="customer">
+              <div class="avatar">${escapeHTML(name.trim().charAt(0).toUpperCase() || "U")}</div>
+              <div>
+                <div class="customer-name">${escapeHTML(name)}</div>
+                <div class="muted">${escapeHTML(profile.phone || "No phone provided")}</div>
+                <div class="muted">ID: ${escapeHTML(profile.id)}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="pill ${roleClass(role)}">${escapeHTML(role.replace("_", " "))}</span></td>
+          <td>${date(profile.created_at)}</td>
+          <td>${orderList.length}</td>
+          <td>${money(totalFor(profile.id))}</td>
+          <td><button class="link-btn" data-user-id="${escapeHTML(profile.id)}">View details →</button></td>
+        </tr>`;
+    }).join("");
+  }
+
+  function detail(label, value) {
+    return `<div class="detail">
+      <div class="detail-label">${escapeHTML(label)}</div>
+      <div class="detail-value">${escapeHTML(value || "—")}</div>
+    </div>`;
+  }
+
+  function openUser(profileId) {
+    const profile = profiles.find(p => p.id === profileId);
+    if (!profile) return;
+
+    currentUser = profile;
+    const userOrders = ordersFor(profile.id)
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    $("modalTitle").textContent = profile.full_name || "Customer details";
+
+    $("modalBody").innerHTML = `
+      <div class="detail-grid">
+        ${detail("Full name", profile.full_name)}
+        ${detail("Phone", profile.phone)}
+        ${detail("Role", profile.role || "customer")}
+        ${detail("Registration date", date(profile.created_at))}
+        ${detail("User ID", profile.id)}
+        ${detail("Total orders", String(userOrders.length))}
+        ${detail("Total order value", money(totalFor(profile.id)))}
+      </div>
+
+      <h3>Order history</h3>
+      ${userOrders.length ? `
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Order ID</th><th>Date</th><th>Status</th><th>Amount</th></tr></thead>
+            <tbody>
+              ${userOrders.map(order => `
+                <tr>
+                  <td>${escapeHTML(order.id)}</td>
+                  <td>${date(order.created_at)}</td>
+                  <td>${escapeHTML(order.status || "pending")}</td>
+                  <td>${money(order.total_amount)}</td>
+                </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>` : '<div class="message">No orders found for this user.</div>'}
+    `;
+
+    $("userDialog").showModal();
+  }
+
+  function csvCell(value) {
+    let text = String(value ?? "");
+    if (/^[=+\-@\t\r]/.test(text)) text = "'" + text;
+    return '"' + text.replace(/"/g, '""') + '"';
+  }
+
+  function exportCSV() {
+    const filtered = filteredProfiles();
+    const rows = [
+      ["User ID", "Full Name", "Phone", "Role", "Registered", "Order Count", "Total Order Value"],
+      ...filtered.map(profile => [
+        profile.id,
+        profile.full_name || "",
+        profile.phone || "",
+        profile.role || "customer",
+        profile.created_at || "",
+        ordersFor(profile.id).length,
+        totalFor(profile.id)
+      ])
+    ];
+
+    const csv = "\uFEFF" + rows.map(row => row.map(csvCell).join(",")).join("\r\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "gram-mart-users.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function loadData() {
+    if (!db) {
+      notify("Supabase client nahi mila. js/supabase.js aur CDN script check karo.", "error");
+      return;
+    }
+
+    notify("Checking session and admin permission...");
+
+    try {
+      const { data: sessionData, error: sessionError } = await db.auth.getSession();
+      if (sessionError) throw sessionError;
+
+      const session = sessionData?.session;
+      if (!session) {
+        notify("Login required. Pehle admin account se login karo.", "error");
+        return;
+      }
+
+      const { data: adminAllowed, error: adminError } =
+        await db.rpc("is_admin");
+
+      if (adminError) throw adminError;
+
+      if (adminAllowed !== true) {
+        notify("Access denied. Is account ko admin permission nahi mili.", "error");
+        return;
+      }
+
+      notify("Loading profiles and orders...");
+
+      const [profileResult, orderResult] = await Promise.all([
+        db.from("profiles")
+          .select("id, full_name, phone, role, created_at")
+          .order("created_at", { ascending: false }),
+
+        db.from("orders")
+          .select("id, user_id, total_amount, status, created_at")
+          .order("created_at", { ascending: false })
+      ]);
+
+      if (profileResult.error) throw profileResult.error;
+      if (orderResult.error) throw orderResult.error;
+
+      profiles = profileResult.data || [];
+      orders = orderResult.data || [];
+
+      renderStats();
+      renderTable();
+      notify(`Loaded ${profiles.length} profiles and ${orders.length} orders.`, "success");
+    } catch (error) {
+      console.error("User management load error:", error);
+      notify(
+        "Data load nahi hua: " + (error.message || "Unknown error") +
+        ". Admin permission aur RLS policies check karo.",
+        "error"
+      );
+    }
+  }
+
+  $("searchInput").addEventListener("input", () => {
+    page = 0;
+    renderTable();
+  });
+
+  $("roleFilter").addEventListener("change", () => {
+    page = 0;
+    renderTable();
+  });
+
+  $("activityFilter").addEventListener("change", () => {
+    page = 0;
+    renderTable();
+  });
+
+  $("usersBody").addEventListener("click", event => {
+    const button = event.target.closest("[data-user-id]");
+    if (button) openUser(button.dataset.userId);
+  });
+
+  $("prevBtn").addEventListener("click", () => {
+    page--;
+    renderTable();
+  });
+
+  $("nextBtn").addEventListener("click", () => {
+    page++;
+    renderTable();
+  });
+
+  $("refreshBtn").addEventListener("click", loadData);
+  $("exportBtn").addEventListener("click", exportCSV);
+  $("closeDialog").addEventListener("click", () => $("userDialog").close());
+
+  loadData();
+})();
+</script>
+</body>
+</html>
