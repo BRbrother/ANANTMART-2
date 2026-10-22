@@ -1241,3 +1241,112 @@ img {
         height: 38px;
     }
 }
+/* ===== GRAM MART FOOTER WORDMARK ===== */
+.site-footer .footer-logo {
+    display: inline-flex;
+    align-items: center;
+    max-width: 220px;
+    text-decoration: none;
+}
+
+.site-footer .footer-wordmark {
+    display: block;
+    width: 190px;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+@media (max-width: 600px) {
+    .site-footer .footer-wordmark {
+        width: 165px;
+    }
+}
+/* Gram Mart Login Branding */
+.auth-brand {
+    text-align: center;
+    margin: 0 auto 24px;
+}
+
+.auth-brand a {
+    display: inline-block;
+}
+
+.auth-wordmark {
+    display: block;
+    width: 210px;
+    max-width: 75vw;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto;
+}
+
+.auth-brand p {
+    margin: 8px 0 0;
+    color: #666;
+    font-size: 14px;
+}
+/* ===== CATEGORY HEADER WORDMARK ===== */
+.category-brand {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    text-decoration: none;
+}
+
+.category-wordmark {
+    display: block;
+    width: 190px;
+    max-width: 45vw;
+    height: auto;
+    object-fit: contain;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.category-header-links {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+@media (max-width: 600px) {
+    .category-wordmark {
+        width: 135px;
+    }
+
+    .category-header {
+        flex-wrap: wrap;
+    }
+
+    .category-header-links {
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+}
+/* ===== GRAM MART PROFILE & ORDERS LOGO ===== */
+.page-brand {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    text-decoration: none;
+}
+
+.page-wordmark {
+    display: block;
+    width: 190px;
+    max-width: 45vw;
+    height: auto;
+    object-fit: contain;
+}
+
+@media (max-width: 600px) {
+    .page-wordmark {
+        width: 145px;
+    }
+}
