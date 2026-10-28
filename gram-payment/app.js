@@ -528,14 +528,7 @@
     */
     const VAPID_PUBLIC_KEY = "BK1HKFZ4qG3ZokfoRU5NouiyJndcT7YaHNPaf3nRDAkRjyPbZV3f9aA1M4i0RYBoz1noBw_Ue1YRjkCS4v2xhvM";
 
-    if (VAPID_PUBLIC_KEY === "BK1HKFZ4qG3ZokfoRU5NouiyJndcT7YaHNPaf3nRDAkRjyPbZV3f9aA1M4i0RYBoz1noBw_Ue1YRjkCS4v2xhvM") {
-      showMessage(
-        dashboardMessage,
-        "Push setup pending: pehle VAPID public key aur server-side push sender configure karo.",
-        "info"
-      );
-      return;
-    }
+    
 
     if (!window.isSecureContext) {
       throw new Error("Push notifications ke liye HTTPS zaroori hai.");
