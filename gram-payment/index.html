@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101827">
+  <meta name="description" content="Gram Payment — secure manual payment verification dashboard">
+  <title>Gram Payment | Admin Panel</title>
+
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="../favicon.ico">
+  <link rel="stylesheet" href="./style.css">
+
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --ink: #172033;
+      --muted: #697386;
+      --line: #e4e9f1;
+      --navy: #101827;
+      --blue: #2458e8;
+      --green: #168653;
+      --red: #d93645;
+      --orange: #ed8a18;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    button, input { font: inherit; }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 15px;
+      font-weight: 700;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .hidden { display: none !important; }
+
+    .topbar {
+      background: var(--navy);
+      color: white;
+      padding: 17px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .brand-mark {
+      background: #f3a928;
+      color: #111827;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+    }
+
+    .brand small {
+      display: block;
+      font-size: 11px;
+      color: #cbd5e1;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .btn-light { background: white; color: var(--navy); }
+    .btn-blue { background: var(--blue); color: white; }
+    .btn-green { background: var(--green); color: white; }
+    .btn-red { background: var(--red); color: white; }
+    .btn-orange { background: #fff0d8; color: #8b4a00; }
+    .btn-muted { background: #e9edf4; color: #273247; }
+
+    main {
+      width: min(1200px, 92%);
+      margin: 30px auto;
+    }
+
+    .login-wrap {
+      width: min(440px, 100%);
+      margin: 65px auto;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: 0 6px 24px #14213d08;
+    }
+
+    .login-card h1 { margin: 0 0 8px; }
+    .muted { color: var(--muted); }
+    .small { font-size: 12px; line-height: 1.5; }
+
+    .field { margin-top: 18px; }
+
+    .field label {
+      display: block;
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #d7deea;
+      border-radius: 10px;
+      background: white;
+      outline: none;
+    }
+
+    .field input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px #2458e818;
+    }
+
+    .full { width: 100%; margin-top: 20px; }
+
+    .notice {
+      border-radius: 12px;
+      padding: 13px 15px;
+      background: #fff4dc;
+      color: #75430a;
+      font-size: 13px;
+      line-height: 1.55;
+      margin-bottom: 20px;
+    }
+
+    .status {
+      padding: 12px 14px;
+      margin-top: 15px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .status.error { background: #fff0f0; color: #a51d2d; }
+    .status.success { background: #e9f8ef; color: #126b3f; }
+    .status.info { background: #eaf1ff; color: #1744a3; }
+
+    .dashboard-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .dashboard-heading h1 { margin: 0 0 6px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+
+    .stat-label { color: var(--muted); font-size: 13px; }
+    .stat-value { font-size: 30px; font-weight: 800; margin-top: 10px; }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .toolbar input {
+      flex: 1;
+      min-width: 180px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      background: white;
+    }
+
+    .orders {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .order-card { min-width: 0; }
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .order-id {
+      font-size: 13px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .pill {
+      display: inline-block;
+      border-radius: 99px;
+      padding: 6px 9px;
+      font-size: 11px;
+      font-weight: 800;
+      background: #fff1d9;
+      color: #8a5000;
+      text-transform: uppercase;
+    }
+
+    .pill.paid { background: #e3f7eb; color: #137343; }
+    .pill.failed { background: #ffe7e9; color: #ae2433; }
+
+    .amount {
+      font-size: 25px;
+      font-weight: 800;
+      margin: 17px 0;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      border-top: 1px solid var(--line);
+      padding: 11px 0;
+      font-size: 13px;
+    }
+
+    .detail-row span:first-child { color: var(--muted); }
+    .detail-row span:last-child {
+      font-weight: 650;
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+
+    .utr {
+      font-family: ui-monospace, monospace;
+      font-size: 15px !important;
+      letter-spacing: .3px;
+    }
+
+    .order-actions {
+      display: flex;
+      gap: 9px;
+      margin-top: 16px;
+    }
+
+    .order-actions button { flex: 1; }
+
+    .empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 45px 20px;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 30px 10px;
+    }
+
+    @media (max-width: 760px) {
+      main { margin-top: 20px; }
+      .stats { grid-template-columns: 1fr; gap: 10px; }
+      .stat-value { font-size: 25px; }
+      .orders { grid-template-columns: 1fr; }
+      .card { padding: 18px; }
+      .login-wrap { margin: 35px auto; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">G</div>
+      <div>
+        Gram Payment
+        <small>Secure Payment Verification</small>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button id="notifyBtn" class="btn-orange hidden" type="button">
+        Enable Alerts
+      </button>
+      <button id="refreshBtn" class="btn-light hidden" type="button">
+        Refresh
+      </button>
+      <button id="logoutBtn" class="btn-light hidden" type="button">
+        Logout
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section id="loginSection" class="login-wrap">
+      <div class="card login-card">
+        <h1>Admin Login</h1>
+        <p class="muted">Sign in to review customer payments.</p>
+
+        <div class="notice">
+          <strong>Authorized access only.</strong><br>
+          Login karne ke baad bhi account ka Gram Payment admin access verify hoga.
+        </div>
+
+        <form id="loginForm">
+          <div class="field">
+            <label for="email">Admin Email</label>
+            <input id="email" type="email" autocomplete="username"
+                   placeholder="Enter your admin email" required>
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" type="password"
+                   autocomplete="current-password"
+                   placeholder="Enter your password" required>
+          </div>
+
+          <button class="btn-blue full" id="loginBtn" type="submit">
+            Login Securely
+          </button>
+        </form>
+
+        <div id="loginMessage" class="status hidden" role="status"></div>
+
+        <p class="muted small">
+          Customer UTR is not proof of payment. Confirm the actual bank/UPI
+          credit before approving any order.
+        </p>
+      </div>
+    </section>
+
+    <section id="dashboardSection" class="hidden">
+      <div class="dashboard-heading">
+        <div>
+          <h1>Payment Review</h1>
+          <div class="muted small" id="adminEmail"></div>
+        </div>
+        <div class="muted small" id="lastUpdated"></div>
+      </div>
+
+      <div class="notice">
+        <strong>Manual verification required.</strong>
+        Bank/UPI app mein actual credit, amount aur UTR match karo.
+        Sirf screenshot ya customer-submitted UTR ke basis par payment approve mat karo.
+      </div>
+
+      <div class="stats">
+        <div class="card">
+          <div class="stat-label">Awaiting Review</div>
+          <div class="stat-value" id="pendingCount">—</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Pending Amount</div>
+          <div class="stat-value" id="pendingAmount">—</div>
+        </div>
+        <div class="card">
+          <div class="stat-label">Queue Records</div>
+          <div class="stat-value" id="totalCount">—</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <input id="searchInput" type="search"
+               placeholder="Search Order ID or UTR">
+        <button class="btn-muted" id="showAllBtn" type="button">
+          Show All
+        </button>
+        <button class="btn-blue" id="pendingOnlyBtn" type="button">
+          Pending Only
+        </button>
+      </div>
+
+      <div id="dashboardMessage" class="status hidden" role="status"></div>
+      <div id="ordersList" class="orders">
+        <div class="card empty">Login required to load payment records.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Gram Payment · Authorized staff only · Verify bank credit before approval
+  </footer>
+
+  <!-- Existing Gram Mart Supabase client -->
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/supabase.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

@@ -8,10 +8,9 @@
   <meta name="description" content="Complete your Gram Mart order and select your delivery location.">
 
   <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="images/gram-mart-icon.png">
+  <link rel="apple-touch-icon" href="images/gram-mart-icon.png">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <!-- Gram Mart Favicon -->
-<link rel="icon" type="image/png" href="images/gram-mart-icon.png">
-<link rel="apple-touch-icon" href="images/gram-mart-icon.png">
 
   <style>
     :root {
@@ -30,7 +29,6 @@
       color: var(--text);
       font-family: Inter, Arial, sans-serif;
     }
-
     button, input, textarea { font: inherit; }
     a { text-decoration: none; }
 
@@ -38,7 +36,6 @@
       background: white;
       border-bottom: 1px solid var(--border);
     }
-
     .gm-header-inner {
       max-width: 1120px;
       margin: auto;
@@ -48,16 +45,12 @@
       align-items: center;
       gap: 15px;
     }
-
-    .gm-logo {
-      font-size: 27px;
-      font-weight: 900;
-      letter-spacing: -1px;
-      color: var(--blue);
+    .page-brand img {
+      display: block;
+      max-width: 190px;
+      max-height: 55px;
+      object-fit: contain;
     }
-
-    .gm-logo span { color: var(--orange); }
-
     .back-cart {
       color: var(--blue);
       border: 1px solid var(--border);
@@ -71,20 +64,16 @@
       width: min(100% - 32px, 760px);
       margin: 35px auto;
     }
-
     .checkout-intro { margin-bottom: 23px; }
-
     .checkout-intro h1 {
       margin: 0 0 9px;
       color: var(--blue);
       font-size: clamp(27px, 4vw, 36px);
     }
-
     .checkout-intro p, .section-title p {
       color: var(--muted);
       line-height: 1.6;
     }
-
     .checkout-card {
       background: white;
       border: 1px solid var(--border);
@@ -92,14 +81,12 @@
       padding: 28px;
       box-shadow: 0 8px 28px rgba(18,38,80,.05);
     }
-
     .section-title {
       display: flex;
       align-items: center;
       gap: 12px;
       margin-bottom: 24px;
     }
-
     .section-icon {
       width: 44px;
       height: 44px;
@@ -109,13 +96,11 @@
       background: #FFF0E5;
       font-size: 21px;
     }
-
     .section-title h2 {
       margin: 0;
       color: var(--blue);
       font-size: 20px;
     }
-
     .section-title p {
       margin: 4px 0 0;
       font-size: 13px;
@@ -126,11 +111,9 @@
       grid-template-columns: 1fr 1fr;
       gap: 19px 16px;
     }
-
     .form-field { min-width: 0; }
     .full-width, .form-divider, .location-picker,
     .address-note, .place-order-btn { grid-column: 1 / -1; }
-
     .form-field label {
       display: block;
       color: #344054;
@@ -138,9 +121,7 @@
       font-weight: 750;
       margin-bottom: 8px;
     }
-
     .required-star { color: var(--orange); }
-
     .checkout-form input, .checkout-form textarea {
       width: 100%;
       display: block;
@@ -151,15 +132,12 @@
       padding: 13px 14px;
       outline: none;
     }
-
     .checkout-form input { min-height: 47px; }
     .checkout-form textarea { min-height: 100px; resize: vertical; }
-
     .checkout-form input:focus, .checkout-form textarea:focus {
       border-color: var(--blue);
       box-shadow: 0 0 0 3px rgba(11,48,145,.09);
     }
-
     .field-help {
       display: block;
       margin-top: 6px;
@@ -167,7 +145,6 @@
       font-size: 12px;
       line-height: 1.5;
     }
-
     .form-divider {
       height: 1px;
       background: var(--border);
@@ -180,26 +157,22 @@
       border-radius: 13px;
       background: white;
     }
-
     .location-picker h3 {
       margin: 0 0 8px;
       color: var(--blue);
       font-size: 17px;
     }
-
     .location-picker p {
       color: var(--muted);
       font-size: 13px;
       line-height: 1.6;
     }
-
     .location-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin-bottom: 12px;
     }
-
     .location-btn {
       border: 0;
       border-radius: 9px;
@@ -209,14 +182,11 @@
       font-weight: 700;
       cursor: pointer;
     }
-
     .location-btn.secondary {
       background: #FFF0E5;
       color: #A84900;
     }
-
     .location-btn:disabled { opacity: .6; cursor: wait; }
-
     #deliveryMap {
       width: 100%;
       height: 320px;
@@ -225,14 +195,12 @@
       z-index: 1;
       background: #EEF2F7;
     }
-
     #locationStatus {
       margin: 10px 0 0;
       font-size: 13px;
       line-height: 1.6;
       overflow-wrap: anywhere;
     }
-
     .success { color: #16834A; }
     .error { color: #A12722; }
 
@@ -245,7 +213,6 @@
       font-size: 13px;
       line-height: 1.6;
     }
-
     .place-order-btn {
       width: 100%;
       min-height: 53px;
@@ -258,9 +225,7 @@
       font-weight: 800;
       cursor: pointer;
     }
-
     .place-order-btn:disabled { opacity: .65; cursor: wait; }
-
     .security-note {
       text-align: center;
       color: var(--muted);
@@ -279,47 +244,124 @@
       font-size: 14px;
       line-height: 1.7;
     }
-
     #checkoutMessage.message-visible { display: block; }
     #checkoutMessage.message-error {
       color: #A12722;
       background: #FFF0EF;
       border: 1px solid #FFD6D3;
     }
-
     #checkoutMessage.message-success {
       color: #11683A;
       background: #EAF8EF;
       border: 1px solid #BDE8CB;
     }
-
     #checkoutMessage.message-info {
       color: #24447E;
       background: #F0F5FF;
       border: 1px solid #DCE7FF;
     }
-
     .success-actions {
       display: none;
       gap: 10px;
       margin-top: 14px;
     }
-
     .success-actions.visible { display: flex; flex-wrap: wrap; }
-
     .success-actions a {
       padding: 11px 14px;
       border-radius: 9px;
       font-size: 13px;
       font-weight: 750;
     }
-
     .orders-link { background: var(--blue); color: white; }
     .home-link { background: #FFF0E5; color: #A84900; }
 
+    /* Payment section */
+    .payment-card {
+      margin-top: 22px;
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .payment-card[hidden] { display: none; }
+    .payment-card h2 { margin-top: 0; color: var(--blue); }
+    .payment-help {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .payment-total {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .payment-grand {
+      font-size: 18px;
+      color: var(--blue);
+      border-bottom: 0;
+    }
+    .upi-label, .utr-label {
+      display: block;
+      margin: 18px 0 8px;
+      font-weight: 750;
+    }
+    .upi-copy-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+    .upi-copy-row code {
+      padding: 11px;
+      background: var(--bg);
+      border-radius: 8px;
+      overflow-wrap: anywhere;
+    }
+    .upi-copy-row button {
+      padding: 11px;
+      border: 0;
+      border-radius: 8px;
+      color: white;
+      background: var(--blue);
+      cursor: pointer;
+    }
+    #upiQr {
+      display: flex;
+      justify-content: center;
+      margin: 22px auto;
+      min-height: 10px;
+    }
+    #upiQr img, #upiQr canvas {
+      max-width: 100%;
+      height: auto;
+    }
+    .pay-upi-button {
+      display: block;
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 10px;
+      background: var(--orange);
+      color: white;
+      text-align: center;
+      font-weight: 800;
+    }
+    #paymentUtr {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #D0D8E5;
+      border-radius: 10px;
+      margin-bottom: 14px;
+    }
+    #paymentStatusMessage {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.6;
+      font-size: 14px;
+    }
     .checkout-bottom { text-align: center; margin-top: 21px; }
     .checkout-bottom a { color: var(--blue); font-weight: 750; }
-
     .gm-footer {
       text-align: center;
       padding: 24px 15px;
@@ -329,12 +371,11 @@
       font-size: 13px;
       line-height: 1.7;
     }
-
     .gm-footer strong { color: var(--blue); }
 
     @media (max-width: 600px) {
       .gm-header-inner { padding: 15px; }
-      .gm-logo { font-size: 24px; }
+      .page-brand img { max-width: 145px; max-height: 45px; }
       .back-cart { font-size: 12px; padding: 9px 10px; }
       .checkout-container { width: calc(100% - 24px); margin: 24px auto; }
       .checkout-card { padding: 20px 16px; }
@@ -343,6 +384,7 @@
       .address-note, .place-order-btn { grid-column: 1; }
       #deliveryMap { height: 280px; }
       .location-actions button { flex: 1 1 100%; }
+      .payment-card { padding: 17px; }
     }
   </style>
 </head>
@@ -351,11 +393,7 @@
   <header class="gm-header">
     <div class="gm-header-inner">
       <a href="index.html" class="page-brand" aria-label="Gram Mart home">
-        <img
-            src="images/gram-mart-logo.png"
-            alt="Gram Mart"
-            class="page-wordmark"
-          >
+        <img src="images/gram-mart-logo.png" alt="Gram Mart">
       </a>
       <a href="cart.html" class="back-cart">← Back to Cart</a>
     </div>
@@ -429,9 +467,7 @@
           <p>
             Map par apne ghar ya delivery point ki location select karo.
             Pin ko drag karke sahi jagah par set kar sakte ho.
-            Order place karne ke liye map location zaroori hai.
           </p>
-
           <div class="location-actions">
             <button type="button" id="useCurrentLocation" class="location-btn">
               ◎ Use My Current Location
@@ -440,12 +476,10 @@
               Clear Location
             </button>
           </div>
-
           <div id="deliveryMap" aria-label="Select delivery location on map"></div>
           <p id="locationStatus" role="status" aria-live="polite">
             Map par click karke delivery pin select karo.
           </p>
-
           <input type="hidden" id="latitude" name="latitude">
           <input type="hidden" id="longitude" name="longitude">
         </div>
@@ -463,6 +497,54 @@
 
       <p id="checkoutMessage" role="status" aria-live="polite"></p>
 
+      <!-- Payment section appears after an order is created -->
+      <section id="paymentSection" class="payment-card" hidden>
+        <h2>💳 Pay for Your Order</h2>
+        <p class="payment-help">
+          UPI se exact amount pay karo. Payment verify hone tak status Pending rahega.
+        </p>
+
+        <div class="payment-total">
+          <span>Products subtotal</span>
+          <strong id="paymentSubtotal">₹0.00</strong>
+        </div>
+        <div class="payment-total">
+          <span>Delivery</span>
+          <strong id="paymentDelivery">₹0.00</strong>
+        </div>
+        <div class="payment-total payment-grand">
+          <span>Total to Pay</span>
+          <strong id="paymentAmount">₹0.00</strong>
+        </div>
+
+        <p class="upi-label">UPI ID</p>
+        <div class="upi-copy-row">
+          <code id="upiIdText">9256259598@upi</code>
+          <button type="button" id="copyUpiButton">Copy UPI ID</button>
+        </div>
+
+        <div id="upiQr" aria-label="UPI payment QR code"></div>
+        <p class="payment-help">
+          QR scan karo aur payment confirm karne se pehle apne UPI app mein
+          recipient aur amount verify kar lo.
+        </p>
+
+        <a id="openUpiButton" class="pay-upi-button" href="#">
+          Open UPI App
+        </a>
+
+        <label class="utr-label" for="paymentUtr">
+          UTR / UPI Reference Number
+        </label>
+        <input id="paymentUtr" type="text" maxlength="50"
+          autocomplete="off" placeholder="Payment ke baad reference number daalo">
+
+        <button type="button" id="submitUtrButton" class="place-order-btn">
+          Submit Payment Reference
+        </button>
+        <p id="paymentStatusMessage" role="status" aria-live="polite"></p>
+      </section>
+
       <div id="successActions" class="success-actions">
         <a href="my-orders.html" class="orders-link">View My Orders</a>
         <a href="index.html" class="home-link">Continue Shopping</a>
@@ -470,6 +552,7 @@
 
       <p class="security-note">
         🔒 Order tumhare logged-in Gram Mart account ke through place hoga.
+        Payment manually verify hone ke baad hi Paid mark hoga.
       </p>
     </section>
 
@@ -491,8 +574,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-  <!-- Map and location selection -->
   <script>
     (() => {
       "use strict";
@@ -512,114 +595,106 @@
         setStatus("Map load nahi hua. Internet check karke page reload karo.", "error");
         currentBtn.disabled = true;
         clearBtn.disabled = true;
-      } else {
-        // This is only the initial map view, not a selected customer location.
-        const map = L.map("deliveryMap").setView([26.5, 75.5], 6);
+        return;
+      }
 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 19,
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        }).addTo(map);
+      const map = L.map("deliveryMap").setView([26.5, 75.5], 6);
 
-        let marker = null;
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }).addTo(map);
 
-        function selectLocation(lat, lng) {
-          lat = Number(lat);
-          lng = Number(lng);
+      let marker = null;
 
-          if (!Number.isFinite(lat) || !Number.isFinite(lng) ||
-              lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-            setStatus("Valid map location select nahi hui. Dobara try karo.", "error");
-            return;
-          }
+      function selectLocation(lat, lng) {
+        lat = Number(lat);
+        lng = Number(lng);
 
-          latInput.value = lat.toFixed(7);
-          lngInput.value = lng.toFixed(7);
-
-          if (!marker) {
-            marker = L.marker([lat, lng], {
-              draggable: true,
-              autoPan: true
-            }).addTo(map);
-
-            marker.on("dragend", () => {
-              const point = marker.getLatLng();
-              selectLocation(point.lat, point.lng);
-            });
-          } else {
-            marker.setLatLng([lat, lng]);
-          }
-
-          setStatus(
-            "Location selected: " + lat.toFixed(6) + ", " +
-            lng.toFixed(6) + ". Pin drag karke adjust kar sakte ho.",
-            "success"
-          );
+        if (!Number.isFinite(lat) || !Number.isFinite(lng) ||
+            lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+          setStatus("Valid map location select nahi hui. Dobara try karo.", "error");
+          return;
         }
 
-        map.on("click", event => {
-          selectLocation(event.latlng.lat, event.latlng.lng);
-        });
+        latInput.value = lat.toFixed(7);
+        lngInput.value = lng.toFixed(7);
 
-        currentBtn.addEventListener("click", () => {
-          if (!navigator.geolocation) {
-            setStatus("Browser location support nahi karta. Map par manually pin select karo.", "error");
-            return;
-          }
+        if (!marker) {
+          marker = L.marker([lat, lng], {
+            draggable: true,
+            autoPan: true
+          }).addTo(map);
 
-          currentBtn.disabled = true;
-          currentBtn.textContent = "Finding Location...";
+          marker.on("dragend", () => {
+            const point = marker.getLatLng();
+            selectLocation(point.lat, point.lng);
+          });
+        } else {
+          marker.setLatLng([lat, lng]);
+        }
 
-          navigator.geolocation.getCurrentPosition(
-            position => {
-              const lat = position.coords.latitude;
-              const lng = position.coords.longitude;
-
-              map.setView([lat, lng], 17);
-              selectLocation(lat, lng);
-
-              currentBtn.disabled = false;
-              currentBtn.textContent = "◎ Use My Current Location";
-            },
-            error => {
-              let reason = "Current location nahi mil saki.";
-
-              if (error.code === 1) reason = "Location permission deny hui.";
-              if (error.code === 2) reason = "Device ki location unavailable hai.";
-              if (error.code === 3) reason = "Location request time out ho gayi.";
-
-              setStatus(
-                reason + " Permission allow karo ya map par manually pin select karo.",
-                "error"
-              );
-
-              currentBtn.disabled = false;
-              currentBtn.textContent = "◎ Use My Current Location";
-            },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-          );
-        });
-
-        clearBtn.addEventListener("click", () => {
-          latInput.value = "";
-          lngInput.value = "";
-
-          if (marker) {
-            map.removeLayer(marker);
-            marker = null;
-          }
-
-          setStatus("Location clear ho gayi. Order ke liye dobara pin select karo.");
-        });
-
-        window.addEventListener("load", () => {
-          setTimeout(() => map.invalidateSize(), 150);
-        });
+        setStatus(
+          "Location selected: " + lat.toFixed(6) + ", " +
+          lng.toFixed(6) + ". Pin drag karke adjust kar sakte ho.",
+          "success"
+        );
       }
+
+      map.on("click", event => {
+        selectLocation(event.latlng.lat, event.latlng.lng);
+      });
+
+      currentBtn.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+          setStatus("Location support nahi karta. Map par manually pin select karo.", "error");
+          return;
+        }
+
+        currentBtn.disabled = true;
+        currentBtn.textContent = "Finding Location...";
+
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            map.setView([lat, lng], 17);
+            selectLocation(lat, lng);
+            currentBtn.disabled = false;
+            currentBtn.textContent = "◎ Use My Current Location";
+          },
+          error => {
+            let reason = "Current location nahi mil saki.";
+            if (error.code === 1) reason = "Location permission deny hui.";
+            if (error.code === 2) reason = "Device location unavailable hai.";
+            if (error.code === 3) reason = "Location request time out ho gayi.";
+
+            setStatus(reason + " Permission allow karo ya map par manually pin select karo.", "error");
+            currentBtn.disabled = false;
+            currentBtn.textContent = "◎ Use My Current Location";
+          },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+        );
+      });
+
+      clearBtn.addEventListener("click", () => {
+        latInput.value = "";
+        lngInput.value = "";
+
+        if (marker) {
+          map.removeLayer(marker);
+          marker = null;
+        }
+
+        setStatus("Location clear ho gayi. Order ke liye dobara pin select karo.");
+      });
+
+      window.addEventListener("load", () => {
+        setTimeout(() => map.invalidateSize(), 150);
+      });
     })();
   </script>
 
-  <!-- Checkout, delivery-zone validation and order placement -->
   <script>
     (() => {
       "use strict";
@@ -630,31 +705,51 @@
       const successActions = document.getElementById("successActions");
       const latInput = document.getElementById("latitude");
       const lngInput = document.getElementById("longitude");
-      const locationStatus = document.getElementById("locationStatus");
 
+      const paymentSection = document.getElementById("paymentSection");
+      const subtotalEl = document.getElementById("paymentSubtotal");
+      const deliveryEl = document.getElementById("paymentDelivery");
+      const amountEl = document.getElementById("paymentAmount");
+      const qrEl = document.getElementById("upiQr");
+      const openUpiButton = document.getElementById("openUpiButton");
+      const copyUpiButton = document.getElementById("copyUpiButton");
+      const utrInput = document.getElementById("paymentUtr");
+      const submitUtrButton = document.getElementById("submitUtrButton");
+      const paymentStatusMessage = document.getElementById("paymentStatusMessage");
+
+      const UPI_ID = "9256259598@upi";
       let isSubmitting = false;
+      let currentOrderId = null;
+      let paymentReferenceSubmitted = false;
 
       function showMessage(text, type) {
         message.textContent = text;
         message.className = "message-visible message-" + type;
       }
 
+      function formatINR(value) {
+        return new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR"
+        }).format(Number(value));
+      }
+
       function getFriendlyError(error) {
         const raw = String(error?.message || "");
 
-        if (/delivery zone|outside.*delivery|delivery.*area|location.*delivery/i.test(raw)) {
-          return "Sorry! Is location par abhi GRAM MART delivery available nahi hai. Map par apni actual delivery location check karo.";
+        if (/delivery zone|outside.*delivery|delivery.*area/i.test(raw)) {
+          return "Sorry! Is location par abhi Gram Mart delivery available nahi hai.";
         }
 
-        if (/delivery_zone_contains|function.*not found|could not find the function/i.test(raw)) {
-          return "Delivery-zone validation setup nahi hua hai. Admin ko Supabase SQL aur delivery zone configuration check karni hogi.";
+        if (/insufficient stock/i.test(raw)) {
+          return "Is product ka stock abhi available nahi hai. Cart refresh karke try karo.";
         }
 
-        if (/no active delivery zone|delivery zone.*not active/i.test(raw)) {
-          return "Abhi GRAM MART ka delivery area active nahi hai. Please baad mein try karo.";
+        if (/cart is empty/i.test(raw)) {
+          return "Tumhara cart empty hai. Pehle products add karo.";
         }
 
-        return raw || "Order place nahi ho paya. Please dobara try karo.";
+        return raw || "Order place nahi ho paya. Dobara try karo.";
       }
 
       async function checkDeliveryZone(client, latitude, longitude) {
@@ -674,25 +769,90 @@
 
         if (error) {
           console.error("Delivery zone RPC error:", error);
-          throw new Error(
-            "Delivery area verify nahi ho paya. Please thodi der baad dobara try karo."
-          );
+          throw new Error("Delivery area verify nahi ho paya. Dobara try karo.");
         }
 
         if (data !== true) {
-          throw new Error(
-            "Sorry! Abhi aapke location par GRAM MART delivery available nahi hai."
-          );
+          throw new Error("Sorry! Is location par abhi Gram Mart delivery available nahi hai.");
+        }
+      }
+
+      function showPayment(order) {
+        currentOrderId = order.id;
+
+        const total = Number(order.total_amount);
+        const delivery = Number(order.delivery_charge || 0);
+        const subtotal = total - delivery;
+
+        if (!Number.isFinite(total) || total <= 0 ||
+            !Number.isFinite(delivery) || delivery < 0 ||
+            subtotal < 0) {
+          throw new Error("Order amount valid nahi hai. Admin se contact karo.");
         }
 
-        return true;
+        subtotalEl.textContent = formatINR(subtotal);
+        deliveryEl.textContent = delivery === 0 ? "FREE" : formatINR(delivery);
+        amountEl.textContent = formatINR(total);
+
+        qrEl.replaceChildren();
+
+        const upiParams = new URLSearchParams({
+          pa: UPI_ID,
+          pn: "Gram Mart",
+          am: total.toFixed(2),
+          cu: "INR",
+          tn: "Gram Mart order " + order.id
+        });
+
+        const upiLink = "upi://pay?" + upiParams.toString();
+        openUpiButton.href = upiLink;
+
+        if (typeof QRCode === "undefined") {
+          paymentStatusMessage.textContent =
+            "QR library load nahi hui. UPI ID copy karke UPI app mein manually pay karo.";
+        } else {
+          new QRCode(qrEl, {
+            text: upiLink,
+            width: 220,
+            height: 220,
+            correctLevel: QRCode.CorrectLevel.M
+          });
+        }
+
+        paymentReferenceSubmitted = Boolean(order.payment_utr);
+
+        if (paymentReferenceSubmitted) {
+          utrInput.value = order.payment_utr || "";
+          utrInput.disabled = true;
+          submitUtrButton.disabled = true;
+          submitUtrButton.textContent = "Reference Submitted";
+          paymentStatusMessage.textContent =
+            "Reference pehle submit ho chuka hai. Payment verification ka wait karo.";
+        } else {
+          paymentStatusMessage.textContent =
+            "Payment status: Pending. Payment karne ke baad UTR submit karo.";
+        }
+
+        paymentSection.hidden = false;
+        paymentSection.scrollIntoView({ behavior: "smooth", block: "start" });
       }
+
+      copyUpiButton.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(UPI_ID);
+          copyUpiButton.textContent = "Copied!";
+          setTimeout(() => {
+            copyUpiButton.textContent = "Copy UPI ID";
+          }, 1800);
+        } catch {
+          paymentStatusMessage.textContent = "UPI ID manually copy karo: " + UPI_ID;
+        }
+      });
 
       form.addEventListener("submit", async event => {
         event.preventDefault();
 
-        if (isSubmitting) return;
-        if (!form.reportValidity()) return;
+        if (isSubmitting || !form.reportValidity()) return;
 
         const client = window.supabaseClient;
 
@@ -701,11 +861,8 @@
           return;
         }
 
-        // Do not proceed without a map-selected delivery location.
         if (!latInput.value || !lngInput.value) {
-          showMessage("Order place karne se pehle map par apni delivery location select karo.", "error");
-          locationStatus.textContent = "Delivery location required hai. Map par click karo ya current location select karo.";
-          locationStatus.className = "error";
+          showMessage("Order place karne se pehle map par delivery location select karo.", "error");
           document.getElementById("deliveryMap").scrollIntoView({
             behavior: "smooth",
             block: "center"
@@ -718,61 +875,64 @@
         button.textContent = "Checking Delivery Area...";
         successActions.classList.remove("visible");
 
-        showMessage("Login aur delivery availability check ho rahi hai...", "info");
-
         try {
           const { data: userData, error: userError } = await client.auth.getUser();
-
           if (userError) throw userError;
 
           if (!userData.user) {
-            showMessage("Checkout ke liye pehle login karo. Login page par bheja ja raha hai...", "error");
-
+            showMessage("Pehle login karo. Login page par bheja ja raha hai...", "error");
             window.location.href =
               "login.html?redirect=" + encodeURIComponent("checkout.html");
             return;
           }
 
-          // Step 1: Verify the selected coordinates against the saved active zone.
-          button.textContent = "Checking Delivery Area...";
           await checkDeliveryZone(client, latInput.value, lngInput.value);
 
-          // Step 2: Build the existing address payload, including map coordinates.
-          const formData = new FormData(form);
-          const address = Object.fromEntries(formData.entries());
-
+          const address = Object.fromEntries(new FormData(form).entries());
           address.latitude = Number(latInput.value);
           address.longitude = Number(lngInput.value);
 
-          // Step 3: Keep the existing order RPC and its parameter unchanged.
           button.textContent = "Placing Your Order...";
 
-          const { data: orderId, error } = await client.rpc("place_order", {
+          const { data: orderId, error: orderError } = await client.rpc("place_order", {
             p_shipping_address: address
           });
 
-          if (error) throw error;
+          if (orderError) throw orderError;
+          if (!orderId) throw new Error("Order ID nahi mila. My Orders check karo.");
 
-          if (!orderId) {
-            throw new Error("Order confirmation ID nahi mila. My Orders page check karo.");
+          // Fetch amount from Supabase, never trust a browser-calculated amount.
+          const { data: order, error: fetchError } = await client
+            .from("orders")
+            .select("id,total_amount,delivery_charge,payment_status,payment_utr")
+            .eq("id", orderId)
+            .single();
+
+          if (fetchError) {
+            console.error("Order fetch error:", fetchError);
+            form.style.display = "none";
+            showMessage(
+              "Order create ho gaya, lekin payment details load nahi hui. My Orders check karo; dobara order place mat karna.",
+              "error"
+            );
+            successActions.classList.add("visible");
+            return;
           }
 
-          form.reset();
           form.style.display = "none";
-
           showMessage(
-            "🎉 Order successfully place ho gaya!\n\nOrder ID: " +
-            String(orderId) +
-            "\n\nTum My Orders page par apne order ka status check kar sakte ho.",
-            "success"
+            "Order successfully create ho gaya!\nOrder ID: " + orderId +
+            "\nPayment status: " + (order.payment_status || "pending") +
+            "\nQR se payment karke UTR submit karo. Payment verification ke baad hi Paid mark hoga.",
+            "info"
           );
 
+          showPayment(order);
           successActions.classList.add("visible");
 
         } catch (error) {
           console.error("Checkout error:", error);
           showMessage(getFriendlyError(error), "error");
-
         } finally {
           isSubmitting = false;
           button.disabled = false;
@@ -780,6 +940,51 @@
           if (form.style.display !== "none") {
             button.textContent = "Place Order →";
           }
+        }
+      });
+
+      submitUtrButton.addEventListener("click", async () => {
+        const client = window.supabaseClient;
+        const utr = utrInput.value.trim();
+
+        if (!client || !currentOrderId) {
+          paymentStatusMessage.textContent = "Order details nahi mili. My Orders check karo.";
+          return;
+        }
+
+        if (paymentReferenceSubmitted) {
+          paymentStatusMessage.textContent =
+            "Payment reference pehle hi submit ho chuka hai. Verification ka wait karo.";
+          return;
+        }
+
+        if (!/^[A-Za-z0-9-]{6,50}$/.test(utr)) {
+          paymentStatusMessage.textContent =
+            "Valid UTR/reference number daalo (6–50 letters, digits ya hyphen).";
+          return;
+        }
+
+        submitUtrButton.disabled = true;
+        paymentStatusMessage.textContent = "Payment reference submit ho raha hai...";
+
+        try {
+          const { error } = await client.rpc("submit_payment_utr", {
+            p_order_id: currentOrderId,
+            p_utr: utr
+          });
+
+          if (error) throw error;
+
+          paymentReferenceSubmitted = true;
+          utrInput.disabled = true;
+          submitUtrButton.textContent = "Reference Submitted";
+          paymentStatusMessage.textContent =
+            "UTR submit ho gaya. Payment abhi Pending verification hai. Admin bank credit verify karega.";
+        } catch (error) {
+          console.error("UTR submission error:", error);
+          paymentStatusMessage.textContent =
+            error.message || "UTR submit nahi hua. Dobara try karo.";
+          submitUtrButton.disabled = false;
         }
       });
     })();

@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "Gram Payment",
+  "short_name": "Gram Payment",
+  "description": "Gram Mart secure payment verification dashboard",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f6fb",
+  "theme_color": "#101827",
+  "categories": ["business", "finance", "productivity"],
+  "icons": [
+    {
+      "src": "../favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon",
+      "purpose": "any"
+    }
+  ]
+}
