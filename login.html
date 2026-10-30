@@ -3,26 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - ANANTMART</title>
+  <title>Login - GRAM MART</title>
   <link rel="stylesheet" href="css/style.css">
-  <!-- Gram Mart Favicon -->
-<link rel="icon" type="image/png" href="images/gram-mart-icon.png">
-<link rel="apple-touch-icon" href="images/gram-mart-icon.png">
+  <link rel="icon" type="image/png" href="images/gram-mart-icon.png">
+  <link rel="apple-touch-icon" href="images/gram-mart-icon.png">
 </head>
 <body>
 
   <div class="auth-container">
     <div class="auth-brand">
-    <a href="index.html" aria-label="Gram Mart Home">
+      <a href="index.html" aria-label="Gram Mart Home">
         <img
-            src="images/gram-mart-logo.png"
-            alt="Gram Mart"
-            class="auth-wordmark"
+          src="images/gram-mart-logo.png"
+          alt="Gram Mart"
+          class="auth-wordmark"
         >
-    </a>
-    <p>Everyday Groceries, Made Easy</p>
-</div>
+      </a>
+      <p>Everyday Groceries, Made Easy</p>
+    </div>
+
     <h1>Login</h1>
+
+    <p id="referralNotice" style="display:none; color:#0B3091;">
+      You have received a Gram Mart referral invitation.
+      Create an account to join!
+    </p>
 
     <form id="loginForm">
       <input
@@ -48,7 +53,7 @@
 
     <p>
       New User?
-      <a href="register.html">Create Account</a>
+      <a href="register.html" id="registerLink">Create Account</a>
     </p>
   </div>
 
@@ -57,6 +62,17 @@
   <script src="js/auth.js"></script>
 
   <script>
+    // Preserve referral code when moving from login to registration.
+    const params = new URLSearchParams(window.location.search);
+    const referralCode = params.get("ref");
+
+    if (referralCode) {
+      document.getElementById("registerLink").href =
+        "register.html?ref=" + encodeURIComponent(referralCode);
+
+      document.getElementById("referralNotice").style.display = "block";
+    }
+
     document.getElementById("loginForm").addEventListener("submit", function(event) {
       event.preventDefault();
       loginUser();

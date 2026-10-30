@@ -1350,3 +1350,165 @@ img {
         width: 145px;
     }
 }
+/* =================================
+   GRAM MART COMMON WEBSITE FOOTER
+================================= */
+
+.site-footer {
+    background: #071D58;
+    color: #ffffff;
+    padding: 55px 0 20px;
+    margin-top: 45px;
+}
+
+.footer-content {
+    width: min(1200px, 92%);
+    margin: auto;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1.2fr;
+    gap: 35px;
+    padding-bottom: 35px;
+}
+
+.footer-wordmark {
+    width: 160px;
+    max-height: 65px;
+    object-fit: contain;
+    margin-bottom: 15px;
+}
+
+.footer-about p,
+.footer-column p {
+    color: #C4D0ED;
+    font-size: 12px;
+    line-height: 1.9;
+}
+
+.footer-about > p {
+    max-width: 280px;
+}
+
+.footer-column h3 {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 17px;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.footer-links a,
+.footer-contact a {
+    color: #C4D0ED;
+    font-size: 12px;
+    transition: 0.2s;
+}
+
+.footer-links a:hover,
+.footer-contact a:hover {
+    color: #FF6A00;
+    padding-left: 3px;
+}
+
+.footer-contact {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.footer-contact h3 {
+    margin-bottom: 3px;
+}
+
+.footer-contact p {
+    margin: 0;
+}
+
+.footer-address {
+    display: flex;
+    gap: 7px;
+    margin-top: 8px !important;
+}
+
+.footer-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #FF6A00;
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 18px;
+    transition: 0.2s;
+}
+
+.footer-whatsapp:hover {
+    background: #ffffff;
+    color: #0B3091;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.footer-bottom p {
+    color: #AAB9DA;
+    font-size: 11px;
+    margin: 0;
+}
+
+@media (max-width: 850px) {
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .site-footer {
+        padding-top: 40px;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 25px 15px;
+    }
+
+    .footer-about,
+    .footer-contact {
+        grid-column: 1 / -1;
+    }
+
+    .footer-wordmark {
+        width: 145px;
+    }
+
+    .footer-column h3 {
+        font-size: 13px;
+    }
+
+    .footer-links a,
+    .footer-contact a {
+        font-size: 11px;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+}

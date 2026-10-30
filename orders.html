@@ -251,6 +251,19 @@
     .modal-section h3 { font-size: 14px; margin: 0 0 12px; }
     .modal-footer { display: flex; justify-content: flex-end; gap: 9px; padding: 0 20px 20px; }
 
+    .refund-details {
+      min-width: 180px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .refund-actions {
+      min-width: 145px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
     @media(max-width: 1250px) {
       .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -330,6 +343,36 @@
         <div class="stat-value" id="cancelledCount">0</div>
         <div class="stat-note">Cancelled orders</div>
       </article>
+    </section>
+
+    <!-- REFUND MANAGEMENT -->
+    <section class="panel">
+      <div class="table-heading">
+        <h2>Refund Management</h2>
+        <button class="btn light" id="refreshRefundsBtn">↻ Refresh Refunds</button>
+      </div>
+
+      <div id="refundNotice" class="notice" role="status"></div>
+
+      <div class="table-wrap">
+        <table style="min-width:1100px">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Refund Amount</th>
+              <th>Customer Details</th>
+              <th>Method</th>
+              <th>Status</th>
+              <th>UTR</th>
+              <th>Admin Note</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="refundsBody">
+            <tr><td colspan="8" class="empty">Loading refunds...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <section class="panel">
@@ -418,23 +461,32 @@
 
       const $ = id => document.getElementById(id);
       const PAGE_SIZE = 25;
+
       let db;
       let orders = [];
       let orderItems = [];
       let visibleOrders = [];
+      let refunds = [];
       let page = 1;
       let selectedOrder = null;
       let loading = false;
 
       const money = value => new Intl.NumberFormat("en-IN", {
-        style: "currency", currency: "INR", maximumFractionDigits: 2
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 2
       }).format(Number(value) || 0);
 
       const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
       })[c]);
 
-      const normalize = status => String(status || "pending").trim().toLowerCase();
+      const normalize = status =>
+        String(status || "pending").trim().toLowerCase();
 
       function notice(message, type = "info") {
         $("notice").textContent = message;
@@ -446,13 +498,27 @@
         $("notice").className = "notice";
       }
 
+      function refundNotice(message, type = "info") {
+        $("refundNotice").textContent = message;
+        $("refundNotice").className = "notice " + type;
+      }
+
+      function clearRefundNotice() {
+        $("refundNotice").textContent = "";
+        $("refundNotice").className = "notice";
+      }
+
       function formatDate(value) {
         if (!value) return "—";
         const date = new Date(value);
         if (Number.isNaN(date.getTime())) return "—";
+
         return date.toLocaleString("en-IN", {
-          day: "2-digit", month: "short", year: "numeric",
-          hour: "2-digit", minute: "2-digit"
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
         });
       }
 
@@ -460,14 +526,28 @@
         const value = order.shipping_address;
         if (!value) return {};
         if (typeof value === "object") return value;
-        try { return JSON.parse(value); } catch { return {}; }
+
+        try {
+          return JSON.parse(value);
+        } catch {
+          return {};
+        }
       }
 
       function getCustomer(order) {
         const address = addressObject(order);
-        const name = address.full_name || address.name ||
-          address.customer_name || address.recipient_name || "Customer";
-        const phone = address.phone || address.mobile || address.phone_number || "";
+
+        const name = address.full_name ||
+          address.name ||
+          address.customer_name ||
+          address.recipient_name ||
+          "Customer";
+
+        const phone = address.phone ||
+          address.mobile ||
+          address.phone_number ||
+          "";
+
         const addressText = [
           address.address_line1 || address.address || address.street,
           address.address_line2,
@@ -486,36 +566,61 @@
 
       function itemSummary(orderId) {
         const items = itemsFor(orderId);
+
         if (!items.length) return "Item details unavailable";
+
         const names = items.slice(0, 2).map(item =>
           `${item.product_name || "Product"} × ${Number(item.quantity) || 0}`
         );
-        return names.join(", ") + (items.length > 2 ? ` +${items.length - 2} more` : "");
+
+        return names.join(", ") +
+          (items.length > 2 ? ` +${items.length - 2} more` : "");
       }
 
       function badgeClass(status) {
         const s = normalize(status);
+
         if (s === "delivered") return "delivered";
         if (s.includes("cancel")) return "cancelled";
-        if (s.includes("ship") || s.includes("transit") || s.includes("out_for_delivery")) return "shipped";
-        if (s === "pending" || s === "placed" || s === "confirmed") return "pending";
+
+        if (
+          s.includes("ship") ||
+          s.includes("transit") ||
+          s.includes("out_for_delivery")
+        ) return "shipped";
+
+        if (
+          s === "pending" ||
+          s === "placed" ||
+          s === "confirmed"
+        ) return "pending";
+
         return "";
       }
 
       function renderStats(list) {
         const status = list.map(o => normalize(o.status));
+
         $("totalCount").textContent = list.length;
+
         $("pendingCount").textContent = status.filter(s =>
           s === "pending" || s === "placed" || s === "confirmed"
         ).length;
+
         $("processingCount").textContent = status.filter(s =>
           s.includes("processing") || s.includes("preparing")
         ).length;
+
         $("shippedCount").textContent = status.filter(s =>
-          s.includes("ship") || s.includes("transit") || s.includes("out_for_delivery")
+          s.includes("ship") || s.includes("transit") ||
+          s.includes("out_for_delivery")
         ).length;
-        $("deliveredCount").textContent = status.filter(s => s === "delivered").length;
-        $("cancelledCount").textContent = status.filter(s => s.includes("cancel")).length;
+
+        $("deliveredCount").textContent =
+          status.filter(s => s === "delivered").length;
+
+        $("cancelledCount").textContent =
+          status.filter(s => s.includes("cancel")).length;
       }
 
       function filterOrders() {
@@ -526,13 +631,18 @@
 
         visibleOrders = orders.filter(order => {
           const customer = getCustomer(order);
+
           const searchable = [
-            order.id, customer.name, customer.phone, customer.addressText
+            order.id,
+            customer.name,
+            customer.phone,
+            customer.addressText
           ].join(" ").toLowerCase();
 
           if (search && !searchable.includes(search)) return false;
 
           const actualStatus = normalize(order.status);
+
           if (status !== "all" && actualStatus !== status) return false;
 
           if (from) {
@@ -542,7 +652,7 @@
 
           if (to) {
             const date = new Date(order.created_at);
-            if (date >= new Date(to + "T23:59:59.999")) return false;
+            if (date > new Date(to + "T23:59:59.999")) return false;
           }
 
           return true;
@@ -558,12 +668,22 @@
         const size = 1000;
 
         for (let offset = 0; ; offset += size) {
-          let query = db.from(table).select(columns).range(offset, offset + size - 1);
-          if (orderColumn) query = query.order(orderColumn, { ascending: false });
+          let query = db.from(table)
+            .select(columns)
+            .range(offset, offset + size - 1);
+
+          if (orderColumn) {
+            query = query.order(orderColumn, { ascending: false });
+          }
 
           const { data, error } = await query;
-          if (error) throw new Error(`${table}: ${error.message}`);
+
+          if (error) {
+            throw new Error(`${table}: ${error.message}`);
+          }
+
           all.push(...(data || []));
+
           if (!data || data.length < size) break;
         }
 
@@ -572,10 +692,14 @@
 
       async function loadOrders() {
         if (loading) return;
+
         loading = true;
         clearNotice();
+
         $("refreshBtn").disabled = true;
-        $("ordersBody").innerHTML = '<tr><td colspan="7" class="empty">Loading orders…</td></tr>';
+
+        $("ordersBody").innerHTML =
+          '<tr><td colspan="7" class="empty">Loading orders…</td></tr>';
 
         try {
           orders = await fetchAll(
@@ -585,28 +709,38 @@
           );
 
           orderItems = [];
+
           const ids = orders.map(o => o.id);
 
           for (let i = 0; i < ids.length; i += 150) {
             const batch = ids.slice(i, i + 150);
+
             const { data, error } = await db.from("order_items")
               .select("order_id, product_id, product_name, unit_price, quantity, created_at")
               .in("order_id", batch);
 
-            if (error) throw new Error("Order items: " + error.message);
+            if (error) {
+              throw new Error("Order items: " + error.message);
+            }
+
             orderItems.push(...(data || []));
           }
 
           filterOrders();
-          $("resultCount").textContent = `${visibleOrders.length} orders`;
+
         } catch (error) {
           console.error(error);
+
           notice(
-            "Orders load nahi ho sake.\n" + (error.message || "Unknown error") +
+            "Orders load nahi ho sake.\n" +
+            (error.message || "Unknown error") +
             "\nSupabase permissions, table columns aur RLS policies check karo.",
             "error"
           );
-          $("ordersBody").innerHTML = '<tr><td colspan="7" class="empty">Could not load orders.</td></tr>';
+
+          $("ordersBody").innerHTML =
+            '<tr><td colspan="7" class="empty">Could not load orders.</td></tr>';
+
         } finally {
           loading = false;
           $("refreshBtn").disabled = false;
@@ -614,40 +748,68 @@
       }
 
       function renderTable() {
-        const totalPages = Math.max(1, Math.ceil(visibleOrders.length / PAGE_SIZE));
+        const totalPages = Math.max(
+          1,
+          Math.ceil(visibleOrders.length / PAGE_SIZE)
+        );
+
         if (page > totalPages) page = totalPages;
 
         const start = (page - 1) * PAGE_SIZE;
         const current = visibleOrders.slice(start, start + PAGE_SIZE);
 
-        $("resultCount").textContent = `${visibleOrders.length} orders`;
-        $("pageInfo").textContent = `Page ${page} of ${totalPages}`;
+        $("resultCount").textContent =
+          `${visibleOrders.length} orders`;
+
+        $("pageInfo").textContent =
+          `Page ${page} of ${totalPages}`;
+
         $("prevBtn").disabled = page <= 1;
         $("nextBtn").disabled = page >= totalPages;
 
         if (!current.length) {
-          $("ordersBody").innerHTML = '<tr><td colspan="7" class="empty">No orders match these filters.</td></tr>';
+          $("ordersBody").innerHTML =
+            '<tr><td colspan="7" class="empty">No orders match these filters.</td></tr>';
           return;
         }
 
         $("ordersBody").innerHTML = current.map(order => {
           const customer = getCustomer(order);
+
           return `
             <tr>
               <td>
                 <div class="order-id">#${esc(order.id.slice(0, 8))}</div>
                 <div class="small">ID: ${esc(order.id)}</div>
               </td>
+
               <td>${esc(formatDate(order.created_at))}</td>
+
               <td>
                 <strong>${esc(customer.name)}</strong>
-                ${customer.phone ? `<div class="small">${esc(customer.phone)}</div>` : ""}
-                ${customer.addressText ? `<div class="small">${esc(customer.addressText)}</div>` : ""}
+                ${customer.phone
+                  ? `<div class="small">${esc(customer.phone)}</div>`
+                  : ""}
+                ${customer.addressText
+                  ? `<div class="small">${esc(customer.addressText)}</div>`
+                  : ""}
               </td>
+
               <td>${esc(itemSummary(order.id))}</td>
+
               <td><strong>${money(order.total_amount)}</strong></td>
-              <td><span class="badge ${badgeClass(order.status)}">${esc(order.status || "pending")}</span></td>
-              <td><button class="row-btn" data-view="${esc(order.id)}">View / Manage</button></td>
+
+              <td>
+                <span class="badge ${badgeClass(order.status)}">
+                  ${esc(order.status || "pending")}
+                </span>
+              </td>
+
+              <td>
+                <button class="row-btn" data-view="${esc(order.id)}">
+                  View / Manage
+                </button>
+              </td>
             </tr>
           `;
         }).join("");
@@ -660,44 +822,99 @@
         $("modalTitle").textContent = "Order Details";
         $("modalSubtitle").textContent = "Order ID: " + order.id;
 
-        const itemRows = items.length ? items.map(item => `
-          <tr>
-            <td>${esc(item.product_name || "Product")}</td>
-            <td>${Number(item.quantity) || 0}</td>
-            <td>${money(item.unit_price)}</td>
-            <td>${money((Number(item.unit_price) || 0) * (Number(item.quantity) || 0))}</td>
-          </tr>
-        `).join("") : '<tr><td colspan="4" class="empty">No item details available.</td></tr>';
+        const itemRows = items.length
+          ? items.map(item => `
+              <tr>
+                <td>${esc(item.product_name || "Product")}</td>
+                <td>${Number(item.quantity) || 0}</td>
+                <td>${money(item.unit_price)}</td>
+                <td>${money(
+                  (Number(item.unit_price) || 0) *
+                  (Number(item.quantity) || 0)
+                )}</td>
+              </tr>
+            `).join("")
+          : '<tr><td colspan="4" class="empty">No item details available.</td></tr>';
 
-        const addressText = customer.addressText || "No formatted address found.";
+        const addressText =
+          customer.addressText || "No formatted address found.";
+
         const rawAddress = JSON.stringify(customer.raw, null, 2);
+
+        const currentStatus = normalize(order.status);
+        const terminal =
+          currentStatus === "delivered" ||
+          currentStatus === "cancelled";
+
+        const statusOptions = [
+          "pending",
+          "confirmed",
+          "processing",
+          "shipped",
+          "out_for_delivery",
+          "delivered",
+          "cancelled"
+        ].map(status => {
+          const cancellationBlocked =
+            currentStatus === "out_for_delivery" &&
+            status === "cancelled";
+
+          const disabled =
+            (terminal && currentStatus !== status) ||
+            cancellationBlocked;
+
+          return `
+            <option
+              value="${status}"
+              ${currentStatus === status ? "selected" : ""}
+              ${disabled ? "disabled" : ""}
+            >
+              ${status.replace(/_/g, " ")}
+            </option>
+          `;
+        }).join("");
 
         $("modalBody").innerHTML = `
           <section class="modal-section">
             <div class="detail-grid">
               <div>
                 <div class="detail-label">Order date</div>
-                <div class="detail-value">${esc(formatDate(order.created_at))}</div>
+                <div class="detail-value">
+                  ${esc(formatDate(order.created_at))}
+                </div>
               </div>
+
               <div>
                 <div class="detail-label">Order total</div>
-                <div class="detail-value"><strong>${money(order.total_amount)}</strong></div>
+                <div class="detail-value">
+                  <strong>${money(order.total_amount)}</strong>
+                </div>
               </div>
+
               <div>
                 <div class="detail-label">Customer</div>
                 <div class="detail-value">${esc(customer.name)}</div>
               </div>
+
               <div>
                 <div class="detail-label">Phone</div>
-                <div class="detail-value">${esc(customer.phone || "Not available")}</div>
+                <div class="detail-value">
+                  ${esc(customer.phone || "Not available")}
+                </div>
               </div>
+
               <div>
                 <div class="detail-label">Customer user ID</div>
-                <div class="detail-value">${esc(order.user_id || "Not available")}</div>
+                <div class="detail-value">
+                  ${esc(order.user_id || "Not available")}
+                </div>
               </div>
+
               <div>
                 <div class="detail-label">Delivery person ID</div>
-                <div class="detail-value">${esc(order.delivery_boy_id || "Not assigned")}</div>
+                <div class="detail-value">
+                  ${esc(order.delivery_boy_id || "Not assigned")}
+                </div>
               </div>
             </div>
           </section>
@@ -705,8 +922,11 @@
           <section class="modal-section">
             <h3>Shipping Address</h3>
             <div class="detail-value">${esc(addressText)}</div>
+
             <details style="margin-top:10px">
-              <summary style="cursor:pointer;font-size:12px;color:var(--muted)">View raw address data</summary>
+              <summary style="cursor:pointer;font-size:12px;color:var(--muted)">
+                View raw address data
+              </summary>
               <pre style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px">${esc(rawAddress)}</pre>
             </details>
           </section>
@@ -715,7 +935,14 @@
             <h3>Products in this order</h3>
             <div class="table-wrap">
               <table style="min-width:400px">
-                <thead><tr><th>Product</th><th>Qty</th><th>Unit Price</th><th>Subtotal</th></tr></thead>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
                 <tbody>${itemRows}</tbody>
               </table>
             </div>
@@ -725,22 +952,26 @@
             <h3>Update order status</h3>
             <div class="field">
               <label for="newStatus">Status</label>
-              <select id="newStatus">
-                ${["pending","confirmed","processing","shipped","out_for_delivery","delivered","cancelled"].map(status =>
-                  `<option value="${status}" ${normalize(order.status) === status ? "selected" : ""}>${status.replace(/_/g, " ")}</option>`
-                ).join("")}
+              <select id="newStatus" ${terminal ? "disabled" : ""}>
+                ${statusOptions}
               </select>
             </div>
-            <div class="small">Status update Supabase permission/RLS policy par depend karega.</div>
+
+            <div class="small">
+              Cancellation is blocked after Out for Delivery.
+              Delivered and cancelled orders are final.
+            </div>
           </section>
         `;
 
-        $("saveStatusBtn").disabled = false;
+        $("saveStatusBtn").disabled = terminal;
       }
 
       function openOrder(id) {
         selectedOrder = orders.find(order => order.id === id);
+
         if (!selectedOrder) return;
+
         renderOrderDetails(selectedOrder);
         $("orderDialog").showModal();
       }
@@ -749,84 +980,418 @@
         if (!selectedOrder) return;
 
         const newStatus = $("newStatus").value;
-        if (newStatus === normalize(selectedOrder.status)) {
+        const currentStatus = normalize(selectedOrder.status);
+
+        if (newStatus === currentStatus) {
           notice("Status mein koi change nahi kiya.", "info");
           $("orderDialog").close();
+          return;
+        }
+
+        if (
+          currentStatus === "out_for_delivery" &&
+          newStatus === "cancelled"
+        ) {
+          notice(
+            "Out for delivery hone ke baad order cancel nahi ho sakta.",
+            "error"
+          );
+          return;
+        }
+
+        if (
+          currentStatus === "delivered" ||
+          currentStatus === "cancelled"
+        ) {
+          notice(
+            "Delivered ya cancelled order ka status change nahi ho sakta.",
+            "error"
+          );
           return;
         }
 
         const confirmed = window.confirm(
           `Order #${selectedOrder.id.slice(0, 8)} ka status "${newStatus}" karna hai?`
         );
+
         if (!confirmed) return;
 
         $("saveStatusBtn").disabled = true;
 
         try {
-          const { error } = await db.from("orders")
-            .update({ status: newStatus })
-            .eq("id", selectedOrder.id);
+          const { error } = await db.rpc(
+            "admin_update_gram_mart_order_status",
+            {
+              p_order_id: selectedOrder.id,
+              p_new_status: newStatus
+            }
+          );
 
           if (error) throw error;
 
           $("orderDialog").close();
-          notice("Order status update request successful. Data refresh ki ja rahi hai.", "info");
+
+          notice(
+            newStatus === "cancelled"
+              ? "Order cancel ho gaya. Paid order ke liye refund record create kiya gaya hai."
+              : "Order status successfully update ho gaya.",
+            "info"
+          );
+
           await loadOrders();
+          await loadRefunds();
+
         } catch (error) {
           console.error(error);
+
           notice(
-            "Status update nahi hua: " + (error.message || "Unknown error") +
-            "\nOrders table ke UPDATE RLS policy aur admin permission check karo.",
+            "Status update nahi hua: " +
+            (error.message || "Unknown error"),
             "error"
           );
+
         } finally {
           $("saveStatusBtn").disabled = false;
         }
       }
 
+      // ---------------- REFUND MANAGEMENT ----------------
+
+      function refundCustomerDetails(refund) {
+        if (!refund.details_submitted) {
+          return `
+            <span class="small">
+              Customer ne abhi refund details submit nahi ki hain.
+            </span>
+          `;
+        }
+
+        if (refund.refund_method === "upi") {
+          return `
+            <div class="refund-details">
+              <strong>UPI ID:</strong><br>
+              ${esc(refund.refund_upi_id || "Not available")}
+            </div>
+          `;
+        }
+
+        if (refund.refund_method === "bank") {
+          return `
+            <div class="refund-details">
+              <strong>Account Holder:</strong>
+              ${esc(refund.account_holder || "—")}<br>
+
+              <strong>Account Number:</strong>
+              ${esc(refund.account_number || "—")}<br>
+
+              <strong>IFSC:</strong>
+              ${esc(refund.ifsc_code || "—")}
+            </div>
+          `;
+        }
+
+        return "Details not available";
+      }
+
+      async function loadRefunds() {
+        const body = $("refundsBody");
+
+        if (!body || !db) return;
+
+        body.innerHTML =
+          '<tr><td colspan="8" class="empty">Loading refunds...</td></tr>';
+
+        clearRefundNotice();
+
+        try {
+          const { data, error } = await db.rpc(
+            "admin_get_gram_mart_refunds"
+          );
+
+          if (error) throw error;
+
+          refunds = Array.isArray(data) ? data : [];
+
+          if (!refunds.length) {
+            body.innerHTML =
+              '<tr><td colspan="8" class="empty">No refunds found.</td></tr>';
+            return;
+          }
+
+          body.innerHTML = refunds.map(refund => {
+            const status = normalize(refund.refund_status);
+
+            const canUpdate =
+              refund.details_submitted === true &&
+              status !== "refunded";
+
+            return `
+              <tr>
+                <td>
+                  <strong>#${esc(String(refund.order_id).slice(0, 8))}</strong>
+                  <div class="small">${esc(refund.order_id)}</div>
+                </td>
+
+                <td>
+                  <strong>${money(refund.refund_amount)}</strong>
+                </td>
+
+                <td>${refundCustomerDetails(refund)}</td>
+
+                <td>${esc(refund.refund_method || "Awaiting details")}</td>
+
+                <td>
+                  <span class="badge ${
+                    status === "refunded" ? "delivered" : "pending"
+                  }">
+                    ${esc(status.replace(/_/g, " "))}
+                  </span>
+
+                  ${
+                    !refund.details_submitted
+                      ? '<div class="small">Details pending</div>'
+                      : ""
+                  }
+                </td>
+
+                <td>
+                  <input
+                    type="text"
+                    id="refundUtr_${esc(refund.id)}"
+                    placeholder="Refund UTR"
+                    value="${esc(refund.refund_utr || "")}"
+                    ${status === "refunded" ? "disabled" : ""}
+                  >
+                </td>
+
+                <td>
+                  <input
+                    type="text"
+                    id="refundNote_${esc(refund.id)}"
+                    placeholder="Admin note"
+                    value="${esc(refund.admin_note || "")}"
+                    ${status === "refunded" ? "disabled" : ""}
+                  >
+                </td>
+
+                <td>
+                  <div class="refund-actions">
+                    <select
+                      id="refundStatus_${esc(refund.id)}"
+                      ${!canUpdate ? "disabled" : ""}
+                    >
+                      <option
+                        value="refund_processing"
+                        ${status === "refund_processing" ? "selected" : ""}
+                      >
+                        Processing
+                      </option>
+
+                      <option value="refunded">
+                        Refunded
+                      </option>
+                    </select>
+
+                    <button
+                      class="row-btn"
+                      data-save-refund="${esc(refund.id)}"
+                      ${!canUpdate ? "disabled" : ""}
+                    >
+                      Save Refund
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join("");
+
+        } catch (error) {
+          console.error(error);
+
+          body.innerHTML =
+            '<tr><td colspan="8" class="empty">Could not load refunds.</td></tr>';
+
+          refundNotice(
+            "Refunds load nahi hue: " +
+            (error.message || "Unknown error"),
+            "error"
+          );
+        }
+      }
+
+      async function saveRefund(refundId) {
+        const refund = refunds.find(item => item.id === refundId);
+
+        if (!refund) {
+          refundNotice("Refund record nahi mila.", "error");
+          return;
+        }
+
+        if (!refund.details_submitted) {
+          refundNotice(
+            "Customer ke refund details aane ka wait karo.",
+            "error"
+          );
+          return;
+        }
+
+        if (refund.refund_status === "refunded") {
+          refundNotice(
+            "Ye refund pehle hi completed hai.",
+            "error"
+          );
+          return;
+        }
+
+        const statusInput = $("refundStatus_" + refundId);
+        const utrInput = $("refundUtr_" + refundId);
+        const noteInput = $("refundNote_" + refundId);
+
+        if (!statusInput || !utrInput || !noteInput) return;
+
+        const newStatus = statusInput.value;
+        const utr = utrInput.value.trim();
+        const note = noteInput.value.trim();
+
+        if (
+          newStatus === "refunded" &&
+          !utr
+        ) {
+          refundNotice(
+            "Refund complete karne ke liye UTR zaroori hai.",
+            "error"
+          );
+          return;
+        }
+
+        if (
+          !["refund_processing", "refunded"].includes(newStatus)
+        ) {
+          refundNotice("Invalid refund status.", "error");
+          return;
+        }
+
+        const message = newStatus === "refunded"
+          ? "Kya customer ko refund transfer ho chuka hai? UTR verify kar lo."
+          : "Refund ko processing mein move karna hai?";
+
+        if (!window.confirm(message)) return;
+
+        try {
+          const { error } = await db.rpc(
+            "admin_update_gram_mart_refund",
+            {
+              p_refund_id: refundId,
+              p_new_status: newStatus,
+              p_refund_utr: utr || null,
+              p_admin_note: note || null
+            }
+          );
+
+          if (error) throw error;
+
+          refundNotice(
+            newStatus === "refunded"
+              ? "Refund successfully marked as completed."
+              : "Refund processing mein update ho gaya.",
+            "info"
+          );
+
+          await loadRefunds();
+
+        } catch (error) {
+          console.error(error);
+
+          refundNotice(
+            "Refund update nahi hua: " +
+            (error.message || "Unknown error"),
+            "error"
+          );
+        }
+      }
+
+      // ---------------- CSV EXPORT ----------------
+
       function exportCSV() {
         const rows = [
-          ["Order ID", "Created At", "Customer", "Phone", "Address", "Status", "Total Amount", "Products"],
+          [
+            "Order ID",
+            "Created At",
+            "Customer",
+            "Phone",
+            "Address",
+            "Status",
+            "Total Amount",
+            "Products"
+          ],
+
           ...visibleOrders.map(order => {
             const customer = getCustomer(order);
+
             const items = itemsFor(order.id).map(item =>
               `${item.product_name || "Product"} x ${Number(item.quantity) || 0}`
             ).join("; ");
 
             return [
-              order.id, order.created_at, customer.name, customer.phone,
-              customer.addressText, order.status, order.total_amount, items
+              order.id,
+              order.created_at,
+              customer.name,
+              customer.phone,
+              customer.addressText,
+              order.status,
+              order.total_amount,
+              items
             ];
           })
         ];
 
         const csv = rows.map(row => row.map(value => {
           let text = String(value ?? "");
-          if (/^[=+\-@]/.test(text)) text = "'" + text;
+
+          if (/^[=+\-@]/.test(text)) {
+            text = "'" + text;
+          }
+
           return '"' + text.replace(/"/g, '""') + '"';
         }).join(",")).join("\r\n");
 
-        const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+        const blob = new Blob(
+          ["\uFEFF" + csv],
+          { type: "text/csv;charset=utf-8;" }
+        );
+
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
+
         link.href = url;
         link.download = "gram-mart-orders.csv";
+
         document.body.appendChild(link);
         link.click();
         link.remove();
+
         URL.revokeObjectURL(url);
       }
+
+      // ---------------- ADMIN INITIALIZATION ----------------
 
       async function init() {
         db = window.supabaseClient;
 
         if (!db) {
-          notice("Supabase client nahi mila. ./js/supabase.js check karo.", "error");
+          notice(
+            "Supabase client nahi mila. ./js/supabase.js check karo.",
+            "error"
+          );
           return;
         }
 
         try {
-          const { data: sessionData, error: sessionError } = await db.auth.getSession();
+          const {
+            data: sessionData,
+            error: sessionError
+          } = await db.auth.getSession();
+
           if (sessionError) throw sessionError;
 
           if (!sessionData.session) {
@@ -834,26 +1399,55 @@
             return;
           }
 
-          const { data: isAdmin, error: adminError } = await db.rpc("is_admin");
+          const {
+            data: isAdmin,
+            error: adminError
+          } = await db.rpc("is_admin");
+
           if (adminError) throw adminError;
 
           if (isAdmin !== true) {
-            notice("Access denied: ye page sirf authorized admin ke liye hai.", "error");
+            notice(
+              "Access denied: ye page sirf authorized admin ke liye hai.",
+              "error"
+            );
             return;
           }
 
           await loadOrders();
+          await loadRefunds();
+
         } catch (error) {
           console.error(error);
-          notice("Initialization error: " + (error.message || "Unknown error"), "error");
+
+          notice(
+            "Initialization error: " +
+            (error.message || "Unknown error"),
+            "error"
+          );
         }
       }
 
-      $("refreshBtn").addEventListener("click", loadOrders);
+      // ---------------- EVENT LISTENERS ----------------
+
+      $("refreshBtn").addEventListener("click", async () => {
+        await loadOrders();
+        await loadRefunds();
+      });
+
+      $("refreshRefundsBtn").addEventListener("click", loadRefunds);
+
       $("exportBtn").addEventListener("click", exportCSV);
+
       $("saveStatusBtn").addEventListener("click", saveStatus);
-      $("closeDialogBtn").addEventListener("click", () => $("orderDialog").close());
-      $("cancelDialogBtn").addEventListener("click", () => $("orderDialog").close());
+
+      $("closeDialogBtn").addEventListener("click", () =>
+        $("orderDialog").close()
+      );
+
+      $("cancelDialogBtn").addEventListener("click", () =>
+        $("orderDialog").close()
+      );
 
       $("search").addEventListener("input", filterOrders);
       $("statusFilter").addEventListener("change", filterOrders);
@@ -869,19 +1463,37 @@
       });
 
       $("prevBtn").addEventListener("click", () => {
-        if (page > 1) { page--; renderTable(); }
+        if (page > 1) {
+          page--;
+          renderTable();
+        }
       });
 
       $("nextBtn").addEventListener("click", () => {
-        if (page < Math.ceil(visibleOrders.length / PAGE_SIZE)) { page++; renderTable(); }
+        if (page < Math.ceil(visibleOrders.length / PAGE_SIZE)) {
+          page++;
+          renderTable();
+        }
       });
 
       $("ordersBody").addEventListener("click", event => {
         const button = event.target.closest("[data-view]");
-        if (button) openOrder(button.dataset.view);
+
+        if (button) {
+          openOrder(button.dataset.view);
+        }
+      });
+
+      $("refundsBody").addEventListener("click", event => {
+        const button = event.target.closest("[data-save-refund]");
+
+        if (button) {
+          saveRefund(button.dataset.saveRefund);
+        }
       });
 
       init();
+
     })();
   </script>
 </body>

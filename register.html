@@ -70,6 +70,16 @@
         .auth-container a {
             color: #0B3091;
         }
+
+        #referralInfo {
+            display: none;
+            background: #f1f5ff;
+            color: #0B3091;
+            padding: 11px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -88,6 +98,10 @@
 
         <h1>Create Account</h1>
         <p class="auth-subtitle">Join Gram Mart today</p>
+
+        <p id="referralInfo">
+            Referral invitation applied! Create your account to continue.
+        </p>
 
         <form id="registerForm">
             <input
@@ -160,6 +174,15 @@
             const button = document.getElementById("registerButton");
             const message = document.getElementById("registerMessage");
 
+            const params = new URLSearchParams(window.location.search);
+            const referralCode = (params.get("ref") || "")
+                .trim()
+                .toUpperCase();
+
+            if (referralCode) {
+                document.getElementById("referralInfo").style.display = "block";
+            }
+
             function showMessage(text, isError = false) {
                 message.textContent = text;
                 message.style.color = isError ? "#c62828" : "#16803c";
@@ -208,7 +231,8 @@
                         options: {
                             data: {
                                 full_name: name,
-                                phone: mobile
+                                phone: mobile,
+                                referral_code: referralCode || null
                             }
                         }
                     });
@@ -221,17 +245,39 @@
                         );
                     }
 
+                    // Apply referral immediately if signup created a session.
+                    if (referralCode && data.session) {
+                        const { error: referralError } = await supabase.rpc(
+                            "apply_referral_code",
+                            { p_code: referralCode }
+                        );
+
+                        if (referralError) {
+                            console.error(
+                                "Referral application error:",
+                                referralError
+                            );
+
+                            showMessage(
+                                "Account created, but referral could not be applied: " +
+                                referralError.message,
+                                true
+                            );
+                            return;
+                        }
+                    }
+
                     if (!data.session) {
                         showMessage(
-                            "Account created, but automatic login is unavailable. " +
-                            "Check that email confirmation is OFF in Supabase, " +
-                            "then try logging in.",
-                            true
+                            "Account created! Please verify your email and log in. " +
+                            "Referral will be applied after login."
                         );
                         return;
                     }
 
-                    showMessage("Account created successfully! Redirecting...");
+                    showMessage(
+                        "Account created successfully! Redirecting..."
+                    );
 
                     window.location.replace("index.html");
 
@@ -241,12 +287,15 @@
                     let errorMessage =
                         error.message || "Registration failed. Please try again.";
 
-                    if (errorMessage.toLowerCase().includes("already registered")) {
+                    if (
+                        errorMessage.toLowerCase().includes("already registered")
+                    ) {
                         errorMessage =
                             "This email is already registered. Please log in.";
                     }
 
                     showMessage(errorMessage, true);
+
                 } finally {
                     button.disabled = false;
                 }

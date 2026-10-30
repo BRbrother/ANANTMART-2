@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0B3091">
+
+  <title>Shipping & Delivery Policy | Gram Mart</title>
+  <meta name="description" content="Read Gram Mart's shipping and delivery policy, including delivery areas, order processing, delivery charges and customer support.">
+
+  <!-- Favicon and App Icon -->
+  <link rel="icon" type="image/png" href="images/gram-mart-icon.png">
+  <link rel="apple-touch-icon" href="images/gram-mart-icon.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --blue: #0B3091;
+      --orange: #FF6A00;
+      --light: #F4F7FC;
+      --text: #263247;
+      --muted: #68758A;
+      --white: #FFFFFF;
+      --border: #E7ECF4;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--light);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* HEADER */
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar {
+      max-width: 1150px;
+      margin: auto;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .brand img {
+      width: 165px;
+      max-height: 58px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      color: var(--orange);
+    }
+
+    .home-btn {
+      background: var(--blue);
+      color: white !important;
+      padding: 9px 17px;
+      border-radius: 8px;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(120deg, #0B3091, #1747B8);
+      color: white;
+      padding: 52px 20px;
+      text-align: center;
+    }
+
+    .hero-icon {
+      width: 62px;
+      height: 62px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.15);
+      display: grid;
+      place-items: center;
+      margin: 0 auto 15px;
+    }
+
+    .hero-icon i {
+      width: 32px;
+      height: 32px;
+    }
+
+    .hero h1 {
+      font-size: 31px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .orange-line {
+      width: 55px;
+      height: 4px;
+      background: var(--orange);
+      margin: 17px auto 0;
+      border-radius: 10px;
+    }
+
+    /* CONTENT */
+    .container {
+      max-width: 950px;
+      margin: 35px auto 65px;
+      padding: 0 18px;
+    }
+
+    .intro-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .intro-card strong {
+      color: var(--blue);
+    }
+
+    .policy-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 25px;
+      margin-bottom: 16px;
+      box-shadow: 0 5px 20px rgba(15,35,75,0.025);
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 13px;
+    }
+
+    .section-icon {
+      min-width: 43px;
+      height: 43px;
+      border-radius: 12px;
+      background: #FFF1E7;
+      color: var(--orange);
+      display: grid;
+      place-items: center;
+    }
+
+    .section-icon i {
+      width: 21px;
+      height: 21px;
+    }
+
+    h2 {
+      font-size: 17px;
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    .policy-card p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .policy-card ul {
+      padding-left: 22px;
+      margin: 8px 0 10px;
+    }
+
+    .policy-card li {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .highlight {
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    .notice {
+      background: #FFF8EF;
+      border: 1px solid #FFE3C8;
+      border-radius: 12px;
+      padding: 17px;
+      margin-top: 12px;
+    }
+
+    .notice p {
+      margin: 0;
+      color: #76502E;
+      font-size: 12px;
+    }
+
+    .contact-box {
+      background: #EEF3FF;
+      border: 1px solid #DCE6FF;
+      padding: 22px;
+      border-radius: 14px;
+      margin-top: 20px;
+    }
+
+    .contact-box h3 {
+      color: var(--blue);
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .contact-box p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      background: #168B55;
+      color: white;
+      padding: 10px 17px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* FOOTER */
+    footer {
+      background: #071E5C;
+      color: white;
+      padding: 38px 20px 18px;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 35px;
+    }
+
+    .footer-brand img {
+      width: 155px;
+      max-height: 55px;
+      object-fit: contain;
+      background: white;
+      border-radius: 8px;
+      padding: 5px;
+      margin-bottom: 12px;
+    }
+
+    .footer-inner h3 {
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .footer-inner p,
+    .footer-inner a {
+      font-size: 12px;
+      color: #D1DCF7;
+    }
+
+    .footer-inner a {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .footer-inner a:hover {
+      color: var(--orange);
+    }
+
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 25px auto 0;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      text-align: center;
+      color: #B9C8EB;
+      font-size: 11px;
+    }
+
+    @media(max-width: 700px) {
+      .navbar {
+        padding: 10px 14px;
+      }
+
+      .brand img {
+        width: 125px;
+      }
+
+      .nav-links {
+        gap: 12px;
+        font-size: 11px;
+      }
+
+      .nav-links .optional {
+        display: none;
+      }
+
+      .hero {
+        padding: 40px 15px;
+      }
+
+      .hero h1 {
+        font-size: 25px;
+      }
+
+      .container {
+        margin-top: 22px;
+      }
+
+      .policy-card {
+        padding: 19px;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+      }
+
+      .footer-brand {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media(max-width: 390px) {
+      .nav-links {
+        gap: 9px;
+      }
+
+      .home-btn {
+        padding: 7px 10px;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-brand {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="navbar">
+      <a href="index.html" class="brand">
+        <img src="images/gram-mart-logo.png" alt="Gram Mart Logo">
+      </a>
+
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#products" class="optional">Shop</a>
+        <a href="my-orders.html" class="optional">My Orders</a>
+        <a href="index.html" class="home-btn">Back to Store</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-icon">
+      <i data-lucide="truck"></i>
+    </div>
+
+    <h1>Shipping & Delivery Policy</h1>
+    <p>Everything you need to know about your Gram Mart delivery.</p>
+    <div class="orange-line"></div>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <main class="container">
+
+    <div class="intro-card">
+      <p>
+        At <strong>Gram Mart</strong>, we aim to make grocery shopping
+        convenient by delivering your orders to your doorstep.
+        This policy explains how we process and deliver orders,
+        where we currently operate and what customers can expect.
+      </p>
+
+      <p style="margin-top:10px;font-size:12px;color:#68758A;">
+        <strong>Effective Date:</strong> 1 November 2026
+      </p>
+    </div>
+
+    <!-- 1 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="map-pin"></i></div>
+        <h2>1. Delivery Location & Service Area</h2>
+      </div>
+
+      <p>
+        Gram Mart currently operates from its delivery centre in
+        <strong>Aakeda Dunger, Jaipur, Rajasthan.</strong>
+      </p>
+
+      <p>
+        Our delivery service is available only in selected areas
+        covered by our active delivery zone.
+      </p>
+
+      <ul>
+        <li>Delivery availability is checked using the address or location provided during checkout.</li>
+        <li>Customers must enter a complete and accurate delivery address.</li>
+        <li>Orders outside the active delivery area may not be accepted.</li>
+        <li>Our service area may expand or change over time.</li>
+      </ul>
+    </section>
+
+    <!-- 2 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="package-check"></i></div>
+        <h2>2. Order Processing</h2>
+      </div>
+
+      <p>
+        After an order is successfully placed, it is recorded in our
+        system for processing.
+      </p>
+
+      <ul>
+        <li>Orders are reviewed and prepared subject to product availability.</li>
+        <li>Online payment orders may require payment verification.</li>
+        <li>COD orders are processed subject to service availability and confirmation where required.</li>
+        <li>We may contact customers if order details need clarification.</li>
+      </ul>
+
+      <p>
+        An order confirmation does not guarantee delivery if an item
+        is unavailable or the delivery address is outside our service area.
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="clock"></i></div>
+        <h2>3. Estimated Delivery Time</h2>
+      </div>
+
+      <p>
+        Delivery times may depend on order volume, product availability,
+        distance, weather, traffic and delivery personnel availability.
+      </p>
+
+      <ul>
+        <li>Any delivery estimate shown during checkout is indicative.</li>
+        <li>Actual delivery time may vary due to operational conditions.</li>
+        <li>We will make reasonable efforts to deliver orders as promptly as possible.</li>
+        <li>Customers may contact support for assistance with delayed orders.</li>
+      </ul>
+
+      <div class="notice">
+        <p>
+          <strong>Important:</strong> Unless a specific delivery slot is
+          displayed and confirmed at checkout, a delivery estimate should
+          not be treated as a guaranteed delivery time.
+        </p>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="indian-rupee"></i></div>
+        <h2>4. Delivery Charges</h2>
+      </div>
+
+      <p>
+        Applicable delivery charges, if any, will be displayed during
+        checkout before the customer confirms the order.
+      </p>
+
+      <ul>
+        <li>Delivery charges may depend on the order or service conditions.</li>
+        <li>Any applicable delivery fee will be included in the order total.</li>
+        <li>Promotional or free-delivery offers may be subject to separate conditions.</li>
+      </ul>
+
+      <p>
+        Customers should review the final payable amount before placing
+        an order.
+      </p>
+    </section>
+
+    <!-- 5 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="wallet"></i></div>
+        <h2>5. Available Payment Methods</h2>
+      </div>
+
+      <p>Depending on availability, Gram Mart may accept:</p>
+
+      <ul>
+        <li>Online UPI payment.</li>
+        <li>Cash on Delivery (COD).</li>
+      </ul>
+
+      <p>
+        For online orders, payment must be successfully verified.
+        For COD orders, the customer must pay the applicable amount
+        at the time of delivery.
+      </p>
+    </section>
+
+    <!-- 6 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="house"></i></div>
+        <h2>6. Customer Availability at Delivery</h2>
+      </div>
+
+      <p>
+        Customers should ensure that someone is available at the provided
+        delivery address to receive the order.
+      </p>
+
+      <ul>
+        <li>Please provide a working mobile number.</li>
+        <li>Keep your phone reachable around the expected delivery time.</li>
+        <li>Provide accurate landmarks or delivery instructions if necessary.</li>
+        <li>Ensure that the delivery location can be accessed safely.</li>
+      </ul>
+    </section>
+
+    <!-- 7 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="alert-triangle"></i></div>
+        <h2>7. Failed or Delayed Delivery</h2>
+      </div>
+
+      <p>
+        Delivery may be delayed or unsuccessful due to circumstances
+        such as:
+      </p>
+
+      <ul>
+        <li>Customer unavailable at the delivery address.</li>
+        <li>Incorrect or incomplete address or contact information.</li>
+        <li>Traffic, weather or other local disruptions.</li>
+        <li>Unexpected operational or technical problems.</li>
+        <li>Temporary unavailability of the delivery service.</li>
+      </ul>
+
+      <p>
+        If delivery cannot be completed, our team may contact the customer
+        to discuss the next appropriate step. Any cancellation or refund
+        will be handled under the applicable policy.
+      </p>
+    </section>
+
+    <!-- 8 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="package"></i></div>
+        <h2>8. Checking Your Order at Delivery</h2>
+      </div>
+
+      <p>
+        Customers are encouraged to check the delivered items at the time
+        of receiving the order.
+      </p>
+
+      <ul>
+        <li>Check whether the delivered products match the order.</li>
+        <li>Check visible packaging damage or missing items.</li>
+        <li>Report incorrect, damaged or missing items to customer support as soon as possible, preferably within 24 hours.</li>
+        <li>Share your order ID and relevant photographs where available.</li>
+      </ul>
+
+      <p>
+        Any resolution will be reviewed according to the nature of the
+        issue and applicable customer policies.
+      </p>
+    </section>
+
+    <!-- 9 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="refresh-cw"></i></div>
+        <h2>9. Cancellation & Refunds</h2>
+      </div>
+
+      <p>
+        Customers may request cancellation before an order reaches
+        Out for Delivery status using the available My Orders option.
+      </p>
+
+      <p>
+        Eligible prepaid cancellations and approved refund requests
+        will be handled according to our
+        <a href="refund-policy.html" class="highlight">
+          Cancellation & Refund Policy
+        </a>.
+      </p>
+    </section>
+
+    <!-- 10 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="message-circle"></i></div>
+        <h2>10. Delivery Support</h2>
+      </div>
+
+      <p>
+        If you have questions about delivery, an order delay or an
+        unsuccessful delivery, please contact Gram Mart support.
+      </p>
+
+      <p>
+        Please keep your order ID ready so our team can assist you.
+      </p>
+    </section>
+
+    <!-- 11 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="edit"></i></div>
+        <h2>11. Changes to This Policy</h2>
+      </div>
+
+      <p>
+        Gram Mart may update this Shipping & Delivery Policy to reflect
+        changes in delivery operations, service areas or applicable
+        requirements.
+      </p>
+
+      <p>
+        Updated information will be published on this page with a revised
+        effective date where appropriate.
+      </p>
+    </section>
+
+    <!-- CONTACT -->
+    <div class="contact-box">
+      <h3>Need Help With Your Delivery?</h3>
+
+      <p>
+        Contact Gram Mart customer support for assistance with orders,
+        delivery delays or service-area questions.
+      </p>
+
+      <a class="whatsapp-btn"
+         href="https://wa.me/917340259598"
+         target="_blank"
+         rel="noopener noreferrer">
+        <i data-lucide="message-circle"></i>
+        Chat on WhatsApp
+      </a>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+        <a href="index.html">
+          <img src="images/gram-mart-logo.png" alt="Gram Mart Logo">
+        </a>
+
+        <p>
+          Har Zarurat Ek Jagah,<br>
+          Infinite Choice One Mart.
+        </p>
+      </div>
+
+      <div>
+        <h3>Quick Links</h3>
+        <a href="index.html">Home</a>
+        <a href="index.html#products">Shop</a>
+        <a href="my-orders.html">My Orders</a>
+        <a href="https://wa.me/917340259598" target="_blank" rel="noopener noreferrer">Contact Support</a>
+      </div>
+
+      <div>
+        <h3>Customer Policies</h3>
+        <a href="terms.html">Terms & Conditions</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="shipping-policy.html">Shipping Policy</a>
+        <a href="refund-policy.html">Cancellation & Refund</a>
+        <a href="contact.html">Contact Us</a>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      © 2026 Gram Mart. All Rights Reserved.
+    </div>
+  </footer>
+
+  <script>
+    // Initialize Lucide icons
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
+
+</body>
+</html>

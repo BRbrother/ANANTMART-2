@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0B3091">
+
+  <title>Contact Us | Gram Mart</title>
+  <meta name="description" content="Contact Gram Mart customer support for grocery orders, delivery queries, payments, cancellations and complaints in Aakeda Dunger, Jaipur.">
+
+  <link rel="icon" type="image/png" href="images/gram-mart-icon.png">
+  <link rel="apple-touch-icon" href="images/gram-mart-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --blue: #0B3091;
+      --orange: #FF6A00;
+      --light: #F5F7FC;
+      --text: #25304A;
+      --muted: #68738A;
+      --white: #FFFFFF;
+      --border: #E7EAF1;
+      --shadow: 0 10px 35px rgba(11,48,145,0.07);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--light);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .container {
+      width: min(1100px, 92%);
+      margin: auto;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--white);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.04);
+    }
+
+    .navbar {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .logo img {
+      width: 165px;
+      max-height: 58px;
+      object-fit: contain;
+      display: block;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+    }
+
+    nav a {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      transition: 0.2s;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: var(--orange);
+    }
+
+    .back-btn {
+      background: var(--blue);
+      color: white;
+      padding: 10px 17px;
+      border-radius: 8px;
+    }
+
+    .back-btn:hover {
+      background: var(--orange);
+      color: white;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(120deg, #0B3091, #1648B8);
+      color: white;
+      padding: 65px 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-icon {
+      width: 68px;
+      height: 68px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 18px;
+    }
+
+    .hero-icon i {
+      width: 34px;
+      height: 34px;
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .hero p {
+      color: #DCE7FF;
+      font-size: 14px;
+    }
+
+    .hero .date {
+      display: inline-block;
+      margin-top: 18px;
+      padding: 6px 15px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 30px;
+      font-size: 12px;
+    }
+
+    /* MAIN */
+    main {
+      padding: 55px 0 70px;
+    }
+
+    .intro {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 35px;
+    }
+
+    .intro h2 {
+      color: var(--blue);
+      font-size: 25px;
+      margin-bottom: 10px;
+    }
+
+    .intro p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+
+    .contact-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      transition: 0.25s;
+    }
+
+    .contact-card:hover {
+      transform: translateY(-4px);
+      border-color: #D5DDF2;
+    }
+
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: #FFF0E5;
+      color: var(--orange);
+      display: grid;
+      place-items: center;
+      margin-bottom: 17px;
+    }
+
+    .card-icon i {
+      width: 25px;
+      height: 25px;
+    }
+
+    .contact-card h3 {
+      color: var(--blue);
+      font-size: 17px;
+      margin-bottom: 7px;
+    }
+
+    .contact-card p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 13px;
+    }
+
+    .contact-value {
+      color: var(--blue);
+      font-weight: 700;
+      font-size: 15px;
+      overflow-wrap: anywhere;
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 14px;
+      padding: 10px 17px;
+      background: var(--blue);
+      color: white;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .contact-link:hover {
+      background: var(--orange);
+    }
+
+    .contact-link i {
+      width: 15px;
+      height: 15px;
+    }
+
+    /* SUPPORT SECTION */
+    .support-section {
+      margin-top: 35px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: var(--shadow);
+    }
+
+    .support-section h2 {
+      color: var(--blue);
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    .support-section p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+
+    .support-section ul {
+      padding-left: 20px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .support-section li {
+      margin: 8px 0;
+    }
+
+    .highlight {
+      color: var(--orange);
+      font-weight: 700;
+    }
+
+    .notice {
+      margin-top: 25px;
+      padding: 17px 20px;
+      background: #FFF6EF;
+      border-left: 4px solid var(--orange);
+      border-radius: 9px;
+      color: #76502F;
+      font-size: 12px;
+    }
+
+    /* FOOTER */
+    footer {
+      background: #071D58;
+      color: white;
+      padding: 45px 0 20px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 35px;
+      padding-bottom: 30px;
+    }
+
+    .footer-logo {
+      width: 155px;
+      max-height: 65px;
+      object-fit: contain;
+      margin-bottom: 15px;
+    }
+
+    .footer-about p {
+      color: #C4D0ED;
+      font-size: 12px;
+      max-width: 330px;
+    }
+
+    footer h4 {
+      font-size: 14px;
+      margin-bottom: 15px;
+      color: white;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .footer-links a {
+      font-size: 12px;
+      color: #C4D0ED;
+      transition: 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--orange);
+    }
+
+    .copyright {
+      border-top: 1px solid rgba(255,255,255,0.13);
+      padding-top: 18px;
+      text-align: center;
+      color: #AAB9DA;
+      font-size: 11px;
+    }
+
+    /* WHATSAPP FLOAT */
+    .whatsapp-float {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      background: #25D366;
+      color: white;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      z-index: 99;
+    }
+
+    .whatsapp-float i {
+      width: 27px;
+      height: 27px;
+    }
+
+    @media (max-width: 700px) {
+      .navbar {
+        min-height: 68px;
+        flex-wrap: wrap;
+        padding: 10px 0;
+      }
+
+      .logo img {
+        width: 135px;
+      }
+
+      nav {
+        width: 100%;
+        justify-content: space-between;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+      }
+
+      nav a {
+        white-space: nowrap;
+        font-size: 11px;
+      }
+
+      .back-btn {
+        padding: 7px 10px;
+      }
+
+      .hero {
+        padding: 48px 0;
+      }
+
+      main {
+        padding: 38px 0 50px;
+      }
+
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-card {
+        padding: 23px;
+      }
+
+      .support-section {
+        padding: 23px;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+      }
+
+      .footer-about {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-about {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="container navbar">
+      <a href="index.html" class="logo">
+        <img src="images/gram-mart-logo.png" alt="Gram Mart Logo">
+      </a>
+
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="index.html#shop">Shop</a>
+        <a href="my-orders.html">My Orders</a>
+        <a href="index.html" class="back-btn">Back to Store</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-icon">
+        <i data-lucide="headset"></i>
+      </div>
+
+      <h1>Contact Us</h1>
+      <p>We're here to help you with your shopping experience.</p>
+      <span class="date">Last Updated: 1 November 2026</span>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <div class="container">
+
+      <div class="intro">
+        <h2>Get in Touch with Gram Mart</h2>
+        <p>
+          Have a question about an order, delivery, payment, cancellation
+          or product? Contact our customer support team through WhatsApp.
+          We're happy to assist you.
+        </p>
+      </div>
+
+      <div class="contact-grid">
+
+        <!-- WHATSAPP -->
+        <div class="contact-card">
+          <div class="card-icon">
+            <i data-lucide="message-circle"></i>
+          </div>
+
+          <h3>WhatsApp Support</h3>
+          <p>
+            For order-related queries, delivery updates, product issues
+            and general assistance, contact us on WhatsApp.
+          </p>
+
+          <div class="contact-value">+91 73402 59598</div>
+
+          <a
+            href="https://wa.me/917340259598"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="contact-link"
+          >
+            <i data-lucide="message-circle"></i>
+            Chat on WhatsApp
+          </a>
+        </div>
+
+        <!-- LOCATION -->
+        <div class="contact-card">
+          <div class="card-icon">
+            <i data-lucide="map-pin"></i>
+          </div>
+
+          <h3>Our Service Location</h3>
+          <p>
+            Gram Mart currently serves customers in its active local
+            delivery areas.
+          </p>
+
+          <div class="contact-value">
+            Aakeda Dunger, Jaipur,<br>
+            Rajasthan, India
+          </div>
+
+          <a
+            href="https://www.google.com/maps/search/?api=1&query=Aakeda+Dunger+Jaipur+Rajasthan"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="contact-link"
+          >
+            <i data-lucide="map"></i>
+            View on Map
+          </a>
+        </div>
+
+        <!-- ORDER SUPPORT -->
+        <div class="contact-card">
+          <div class="card-icon">
+            <i data-lucide="package"></i>
+          </div>
+
+          <h3>Order Assistance</h3>
+          <p>
+            Need help with an existing order? Keep your order ID ready
+            when contacting our support team.
+          </p>
+
+          <div class="contact-value">Order & Delivery Queries</div>
+
+          <a href="my-orders.html" class="contact-link">
+            <i data-lucide="clipboard-list"></i>
+            View My Orders
+          </a>
+        </div>
+
+        <!-- PAYMENT SUPPORT -->
+        <div class="contact-card">
+          <div class="card-icon">
+            <i data-lucide="wallet"></i>
+          </div>
+
+          <h3>Payment & Refund Support</h3>
+          <p>
+            For payment confirmation, duplicate payments, eligible
+            refunds or transaction-related issues, contact us.
+          </p>
+
+          <div class="contact-value">Payment & Refund Queries</div>
+
+          <a
+            href="https://wa.me/917340259598?text=Hello%20Gram%20Mart%2C%20I%20need%20help%20with%20a%20payment%20or%20refund."
+            target="_blank"
+            rel="noopener noreferrer"
+            class="contact-link"
+          >
+            <i data-lucide="send"></i>
+            Contact Support
+          </a>
+        </div>
+
+      </div>
+
+      <!-- SUPPORT DETAILS -->
+      <section class="support-section">
+        <h2>Customer Support & Complaints</h2>
+
+        <p>
+          Gram Mart aims to provide a convenient and reliable grocery
+          shopping experience. If you face any issue, please contact us
+          with the relevant details so we can assist you.
+        </p>
+
+        <p><strong>For faster assistance, please share:</strong></p>
+
+        <ul>
+          <li>Your name and registered mobile number.</li>
+          <li>Your order ID, if the query relates to an order.</li>
+          <li>A clear description of the issue.</li>
+          <li>Relevant product photos or payment reference details, if applicable.</li>
+        </ul>
+
+        <p style="margin-top:18px;">
+          <strong>Grievance & Customer Support Contact:</strong><br>
+          <span class="highlight">Gram Mart Customer Support</span><br>
+          WhatsApp: +91 73402 59598
+        </p>
+
+        <div class="notice">
+          <strong>Important:</strong> Never share your UPI PIN, ATM PIN,
+          OTP, internet banking password or card security details with
+          anyone claiming to represent Gram Mart. We do not require these
+          details to process customer support requests or refunds.
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+
+      <div class="footer-grid">
+
+        <div class="footer-about">
+          <a href="index.html">
+            <img
+              src="images/gram-mart-logo.png"
+              alt="Gram Mart"
+              class="footer-logo"
+            >
+          </a>
+
+          <p>
+            Har Zarurat Ek Jagah, Infinite Choice One Mart.
+            Your local online grocery shopping destination.
+          </p>
+        </div>
+
+        <div>
+          <h4>Quick Links</h4>
+          <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="index.html#shop">Shop Now</a>
+            <a href="my-orders.html">My Orders</a>
+            <a href="contact.html">Contact Us</a>
+          </div>
+        </div>
+
+        <div>
+          <h4>Policies</h4>
+          <div class="footer-links">
+            <a href="terms.html">Terms & Conditions</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="shipping-policy.html">Shipping Policy</a>
+            <a href="refund-policy.html">Refund Policy</a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="copyright">
+        © 2026 Gram Mart. All Rights Reserved.
+        <br>
+        Made with care for your everyday needs.
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- WHATSAPP FLOAT BUTTON -->
+  <a
+    href="https://wa.me/917340259598"
+    class="whatsapp-float"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Contact Gram Mart on WhatsApp"
+  >
+    <i data-lucide="message-circle"></i>
+  </a>
+
+  <script>
+    lucide.createIcons();
+  </script>
+
+</body>
+</html>

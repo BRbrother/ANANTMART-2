@@ -1,312 +1,244 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile | Gram Mart</title>
-    <meta name="description" content="Manage your Gram Mart account, orders and delivery addresses.">
-    <link rel="stylesheet" href="css/style.css">
-    <!-- Gram Mart Favicon -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile | Gram Mart</title>
+<meta name="description" content="Manage your Gram Mart account, orders and delivery addresses.">
+<link rel="stylesheet" href="css/style.css">
 <link rel="icon" type="image/png" href="images/gram-mart-icon.png">
 <link rel="apple-touch-icon" href="images/gram-mart-icon.png">
 
-    <style>
-        :root {
-            --gm-blue: #0B3091;
-            --gm-orange: #FF6A00;
-            --gm-bg: #f5f7fb;
-        }
-
-        body { background: var(--gm-bg); }
-        .profile-container {
-            max-width: 1050px;
-            margin: 32px auto;
-            padding: 0 16px 40px;
-        }
-        .profile-top {
-            background: var(--gm-blue);
-            color: white;
-            padding: 26px;
-            border-radius: 16px;
-            margin-bottom: 22px;
-        }
-        .profile-top h1 { margin: 0 0 8px; }
-        .profile-top p { margin: 0; overflow-wrap: anywhere; }
-        .profile-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 18px;
-        }
-        .profile-card {
-            background: white;
-            padding: 22px;
-            border-radius: 14px;
-            box-shadow: 0 3px 16px #1725540b;
-            min-width: 0;
-        }
-        .profile-card h2 {
-            color: var(--gm-blue);
-            font-size: 20px;
-            margin: 0 0 18px;
-        }
-        .profile-field { margin-bottom: 14px; }
-        .profile-field label {
-            display: block;
-            font-size: 13px;
-            color: #596579;
-            margin-bottom: 6px;
-        }
-        .profile-field input,
-        .profile-field textarea,
-        .profile-field select {
-            width: 100%;
-            padding: 11px 12px;
-            border: 1px solid #d6dce6;
-            border-radius: 8px;
-            font: inherit;
-            box-sizing: border-box;
-            background: white;
-        }
-        .profile-field input:focus,
-        .profile-field textarea:focus {
-            outline: 2px solid #b9caff;
-            border-color: var(--gm-blue);
-        }
-        .profile-btn {
-            display: inline-block;
-            border: 0;
-            border-radius: 8px;
-            padding: 11px 16px;
-            background: var(--gm-blue);
-            color: white;
-            font: inherit;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        .profile-btn.orange { background: var(--gm-orange); }
-        .profile-btn.secondary { background: #e9edf5; color: #172033; }
-        .profile-btn.danger { background: #b42318; }
-        .profile-btn:disabled { opacity: .6; cursor: wait; }
-        .profile-message {
-            margin: 12px 0 0;
-            font-size: 14px;
-            overflow-wrap: anywhere;
-        }
-        .profile-message:empty { display: none; }
-        .profile-message.error { color: #b42318; }
-        .profile-message.success { color: #167a35; }
-        .order-item, .address-item {
-            border: 1px solid #e4e8ef;
-            padding: 14px;
-            border-radius: 10px;
-            margin-bottom: 12px;
-            overflow-wrap: anywhere;
-        }
-        .order-item p, .address-item p { margin: 6px 0; }
-        .muted { color: #687386; font-size: 13px; }
-        .order-status {
-            display: inline-block;
-            padding: 4px 8px;
-            background: #edf2ff;
-            color: var(--gm-blue);
-            border-radius: 20px;
-            font-size: 12px;
-        }
-        .address-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-        }
-        .address-actions .profile-btn {
-            padding: 8px 11px;
-            font-size: 13px;
-        }
-        .profile-footer {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 22px;
-        }
-        .back-link {
-            display: inline-block;
-            margin-bottom: 16px;
-            color: var(--gm-blue);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        @media (max-width: 700px) {
-            .profile-grid { grid-template-columns: 1fr; }
-            .profile-top { padding: 20px; }
-            .profile-card { padding: 18px; }
-            .profile-container { margin-top: 18px; }
-        }
-    </style>
+<style>
+:root{--gm-blue:#0B3091;--gm-orange:#FF6A00;--gm-bg:#f5f7fb}
+body{background:var(--gm-bg)}
+.profile-container{max-width:1050px;margin:32px auto;padding:0 16px 40px}
+.profile-top{background:var(--gm-blue);color:white;padding:26px;border-radius:16px;margin-bottom:22px}
+.profile-top h1{margin:0 0 8px}
+.profile-top p{margin:0;overflow-wrap:anywhere}
+.profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.profile-card{background:white;padding:22px;border-radius:14px;box-shadow:0 3px 16px #1725540b;min-width:0}
+.profile-card h2{color:var(--gm-blue);font-size:20px;margin:0 0 18px}
+.profile-field{margin-bottom:14px}
+.profile-field label{display:block;font-size:13px;color:#596579;margin-bottom:6px}
+.profile-field input,.profile-field textarea,.profile-field select{width:100%;padding:11px 12px;border:1px solid #d6dce6;border-radius:8px;font:inherit;box-sizing:border-box;background:white}
+.profile-field input:focus,.profile-field textarea:focus{outline:2px solid #b9caff;border-color:var(--gm-blue)}
+.profile-btn{display:inline-block;border:0;border-radius:8px;padding:11px 16px;background:var(--gm-blue);color:white;font:inherit;font-weight:600;cursor:pointer;text-decoration:none}
+.profile-btn.orange{background:var(--gm-orange)}
+.profile-btn.secondary{background:#e9edf5;color:#172033}
+.profile-btn.danger{background:#b42318}
+.profile-btn:disabled{opacity:.6;cursor:wait}
+.profile-message{margin:12px 0 0;font-size:14px;overflow-wrap:anywhere}
+.profile-message:empty{display:none}
+.profile-message.error{color:#b42318}
+.profile-message.success{color:#167a35}
+.order-item,.address-item{border:1px solid #e4e8ef;padding:14px;border-radius:10px;margin-bottom:12px;overflow-wrap:anywhere}
+.order-item p,.address-item p{margin:6px 0}
+.muted{color:#687386;font-size:13px}
+.order-status{display:inline-block;padding:4px 8px;background:#edf2ff;color:var(--gm-blue);border-radius:20px;font-size:12px}
+.address-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.address-actions .profile-btn{padding:8px 11px;font-size:13px}
+.profile-footer{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.back-link{display:inline-block;margin-bottom:16px;color:var(--gm-blue);text-decoration:none;font-weight:600}
+.referral-code-box{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px;background:#f1f5ff;border:1px dashed var(--gm-blue);border-radius:10px;margin:12px 0}
+.referral-code-box strong{color:var(--gm-blue);font-size:22px;letter-spacing:2px;overflow-wrap:anywhere}
+.referral-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
+.referral-stat{background:#f7f8fb;padding:14px;border-radius:10px;min-width:0}
+.referral-stat span{display:block;color:#687386;font-size:12px}
+.referral-stat strong{display:block;color:var(--gm-blue);font-size:21px;margin-top:5px;overflow-wrap:anywhere}
+.referral-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px}
+.referral-actions .profile-btn{flex:1 1 150px;text-align:center}
+.referral-progress-item{border:1px solid #e4e8ef;border-radius:10px;padding:12px;margin:10px 0}
+.referral-progress-track{height:8px;background:#e9edf5;border-radius:10px;overflow:hidden;margin-top:8px}
+.referral-progress-fill{height:100%;background:var(--gm-orange);border-radius:10px}
+.referral-history-item{border-bottom:1px solid #edf0f5;padding:10px 0;overflow-wrap:anywhere}
+.referral-history-item:last-child{border-bottom:0}
+.referral-status{display:inline-block;padding:4px 9px;border-radius:20px;background:#edf2ff;color:var(--gm-blue);font-size:12px;text-transform:capitalize}
+.referral-input{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid #d6dce6;border-radius:8px;font:inherit;margin:6px 0 12px}
+.referral-card-wide{grid-column:1/-1}
+.referral-two-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.referral-section-title{color:var(--gm-blue);font-size:17px;margin:18px 0 10px}
+@media(max-width:700px){.profile-grid{grid-template-columns:1fr}.profile-top{padding:20px}.profile-card{padding:18px}.profile-container{margin-top:18px}.referral-card-wide{grid-column:auto}.referral-two-columns{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 
 <header class="site-header">
-    <nav class="navbar">
-        <a href="index.html" class="page-brand" aria-label="Gram Mart Home">
-            <img
-                src="images/gram-mart-logo.png"
-                alt="Gram Mart"
-                class="page-wordmark"
-            >
-        </a>
-        <div class="actions">
-            <a href="index.html" class="orders-link">Home</a>
-            <a href="my-orders.html" class="orders-link">My Orders</a>
-            <a href="cart.html" class="cart-btn">🛒 Cart</a>
-        </div>
-    </nav>
+<nav class="navbar">
+<a href="index.html" class="page-brand" aria-label="Gram Mart Home">
+<img src="images/gram-mart-logo.png" alt="Gram Mart" class="page-wordmark">
+</a>
+<div class="actions">
+<a href="index.html" class="orders-link">Home</a>
+<a href="my-orders.html" class="orders-link">My Orders</a>
+<a href="cart.html" class="cart-btn">🛒 Cart</a>
+</div>
+</nav>
 </header>
 
 <main class="profile-container">
-    <a href="index.html" class="back-link">← Back to shopping</a>
+<a href="index.html" class="back-link">← Back to shopping</a>
+<section class="profile-top">
+<h1>My Account</h1>
+<p id="profileWelcome">Loading your profile...</p>
+</section>
+<div id="pageMessage" class="profile-message" role="status" aria-live="polite"></div>
 
-    <section class="profile-top">
-        <h1>My Account</h1>
-        <p id="profileWelcome">Loading your profile...</p>
-    </section>
+<div class="profile-grid">
+<section class="profile-card">
+<h2>Personal Details</h2>
+<form id="profileForm">
+<div class="profile-field">
+<label for="fullName">Full name</label>
+<input id="fullName" name="fullName" type="text" maxlength="100" autocomplete="name" required>
+</div>
+<div class="profile-field">
+<label for="email">Registered email</label>
+<input id="email" type="email" readonly disabled>
+</div>
+<div class="profile-field">
+<label for="phone">Mobile number</label>
+<input id="phone" name="phone" type="tel" maxlength="20" autocomplete="tel" placeholder="Enter mobile number">
+</div>
+<button class="profile-btn" id="saveProfileBtn" type="submit">Save Changes</button>
+<p id="profileMessage" class="profile-message" role="status" aria-live="polite"></p>
+</form>
+<p class="muted">Your name and phone number are saved to your account profile. Email changes are not available on this page.</p>
+</section>
 
-    <div id="pageMessage" class="profile-message" role="status" aria-live="polite"></div>
+<section class="profile-card">
+<h2>My Orders</h2>
+<p class="muted">Your latest orders will appear here.</p>
+<div id="ordersList">Loading orders...</div>
+<a href="my-orders.html" class="profile-btn secondary">View My Orders</a>
+<p id="ordersMessage" class="profile-message" role="status" aria-live="polite"></p>
+</section>
 
-    <div class="profile-grid">
-        <section class="profile-card">
-            <h2>Personal Details</h2>
+<section class="profile-card referral-card-wide" id="referralCard">
+<h2>🎁 Refer &amp; Earn</h2>
+<p class="muted">Invite friends to Gram Mart and earn rewards on their eligible completed purchases. Only the referrer earns a reward.</p>
+<p class="muted">Your personal referral code</p>
+<div class="referral-code-box">
+<strong id="myReferralCode">Loading...</strong>
+<button class="profile-btn secondary" id="copyReferralBtn" type="button">Copy Code</button>
+</div>
+<div class="referral-actions">
+<button class="profile-btn orange" id="shareReferralBtn" type="button">Share on WhatsApp</button>
+<button class="profile-btn secondary" id="copyReferralLinkBtn" type="button">Copy Invite Link</button>
+</div>
+<div class="referral-stats">
+<div class="referral-stat"><span>Referred Customers</span><strong id="referralCount">—</strong></div>
+<div class="referral-stat"><span>Total Rewards Earned</span><strong id="referralEarned">—</strong></div>
+<div class="referral-stat"><span>Pending Rewards</span><strong id="referralPending">—</strong></div>
+<div class="referral-stat"><span>Available Balance</span><strong id="referralBalance">—</strong></div>
+</div>
+<h3 class="referral-section-title">Your Referral Progress</h3>
+<div id="referralProgress"><p class="muted">Loading referral progress...</p></div>
+<h3 class="referral-section-title">Reward Milestones</h3>
+<div class="muted">
+₹999 eligible shopping = ₹50 reward<br>
+₹1,999 eligible shopping = ₹50 additional reward<br>
+₹4,999 eligible shopping = ₹100 additional reward<br>
+₹9,999 eligible shopping = ₹200 additional reward<br>
+<strong>Maximum reward: ₹400 per referred customer.</strong>
+</div>
 
-            <form id="profileForm">
-                <div class="profile-field">
-                    <label for="fullName">Full name</label>
-                    <input id="fullName" name="fullName" type="text"
-                           maxlength="100" autocomplete="name" required>
-                </div>
+<div class="referral-two-columns">
+<div>
+<h3 class="referral-section-title">Withdraw Rewards</h3>
+<p class="muted">Minimum withdrawal ₹50. Requests are sent for admin approval.</p>
+<form id="referralWithdrawForm">
+<div class="profile-field">
+<label for="referralWithdrawAmount">Withdrawal amount (₹)</label>
+<input class="referral-input" id="referralWithdrawAmount" type="number" min="50" step="1" placeholder="Minimum ₹50" required>
+</div>
+<div class="profile-field">
+<label for="referralUpi">Your UPI ID</label>
+<input class="referral-input" id="referralUpi" type="text" maxlength="256" placeholder="example@upi" required>
+</div>
+<button class="profile-btn orange" id="referralWithdrawBtn" type="submit">Request Withdrawal</button>
+<p id="referralWithdrawMessage" class="profile-message" role="status" aria-live="polite"></p>
+</form>
+</div>
+<div>
+<h3 class="referral-section-title">How it works</h3>
+<ol class="muted" style="padding-left:20px;line-height:1.8;">
+<li>Share your unique referral link.</li>
+<li>Your friend creates a new Gram Mart account using it.</li>
+<li>Eligible completed purchases add up across orders.</li>
+<li>Rewards are credited at each milestone after backend verification.</li>
+<li>Request withdrawal once your approved balance reaches ₹50.</li>
+</ol>
+</div>
+</div>
 
-                <div class="profile-field">
-                    <label for="email">Registered email</label>
-                    <input id="email" type="email" readonly disabled>
-                </div>
+<div class="referral-two-columns">
+<div>
+<h3 class="referral-section-title">Reward History</h3>
+<div id="referralRewardHistory"><p class="muted">Loading rewards...</p></div>
+</div>
+<div>
+<h3 class="referral-section-title">Withdrawal History</h3>
+<div id="referralWithdrawalHistory"><p class="muted">Loading withdrawals...</p></div>
+</div>
+</div>
+<p id="referralMessage" class="profile-message" role="status" aria-live="polite"></p>
+</section>
 
-                <div class="profile-field">
-                    <label for="phone">Mobile number</label>
-                    <input id="phone" name="phone" type="tel"
-                           maxlength="20" autocomplete="tel"
-                           placeholder="Enter mobile number">
-                </div>
+<section class="profile-card">
+<h2>Saved Addresses</h2>
+<div id="addressesList">Loading addresses...</div>
+<h3 id="addressFormHeading">Add a new address</h3>
+<form id="addressForm">
+<input type="hidden" id="addressId">
+<div class="profile-field">
+<label for="addressName">Full name</label>
+<input id="addressName" maxlength="100" autocomplete="name" required>
+</div>
+<div class="profile-field">
+<label for="addressPhone">Mobile number</label>
+<input id="addressPhone" type="tel" maxlength="20" autocomplete="tel" required>
+</div>
+<div class="profile-field">
+<label for="addressLine">House / Street / Area</label>
+<textarea id="addressLine" rows="2" maxlength="500" autocomplete="street-address" required></textarea>
+</div>
+<div class="profile-field">
+<label for="landmark">Landmark (optional)</label>
+<input id="landmark" maxlength="200">
+</div>
+<div class="profile-field">
+<label for="city">City</label>
+<input id="city" maxlength="100" autocomplete="address-level2" required>
+</div>
+<div class="profile-field">
+<label for="state">State</label>
+<input id="state" maxlength="100" autocomplete="address-level1" value="Rajasthan" required>
+</div>
+<div class="profile-field">
+<label for="pincode">PIN code</label>
+<input id="pincode" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="postal-code" required>
+</div>
+<div class="profile-field">
+<label><input id="isDefault" type="checkbox"> Make this my default address</label>
+</div>
+<button id="saveAddressBtn" class="profile-btn orange" type="submit">Save Address</button>
+<button id="cancelAddressBtn" class="profile-btn secondary" type="button" hidden>Cancel Edit</button>
+<p id="addressMessage" class="profile-message" role="status" aria-live="polite"></p>
+</form>
+</section>
 
-                <button class="profile-btn" id="saveProfileBtn" type="submit">
-                    Save Changes
-                </button>
-                <p id="profileMessage" class="profile-message"
-                   role="status" aria-live="polite"></p>
-            </form>
-
-            <p class="muted">
-                Your name and phone number are saved to your account profile.
-                Email changes are not available on this page.
-            </p>
-        </section>
-
-        <section class="profile-card">
-            <h2>My Orders</h2>
-            <p class="muted">Your latest orders will appear here.</p>
-            <div id="ordersList">Loading orders...</div>
-            <a href="my-orders.html" class="profile-btn secondary">
-                View My Orders
-            </a>
-            <p id="ordersMessage" class="profile-message"
-               role="status" aria-live="polite"></p>
-        </section>
-
-        <section class="profile-card">
-            <h2>Saved Addresses</h2>
-            <div id="addressesList">Loading addresses...</div>
-
-            <h3 id="addressFormHeading">Add a new address</h3>
-            <form id="addressForm">
-                <input type="hidden" id="addressId">
-
-                <div class="profile-field">
-                    <label for="addressName">Full name</label>
-                    <input id="addressName" maxlength="100"
-                           autocomplete="name" required>
-                </div>
-
-                <div class="profile-field">
-                    <label for="addressPhone">Mobile number</label>
-                    <input id="addressPhone" type="tel" maxlength="20"
-                           autocomplete="tel" required>
-                </div>
-
-                <div class="profile-field">
-                    <label for="addressLine">House / Street / Area</label>
-                    <textarea id="addressLine" rows="2" maxlength="500"
-                              autocomplete="street-address" required></textarea>
-                </div>
-
-                <div class="profile-field">
-                    <label for="landmark">Landmark (optional)</label>
-                    <input id="landmark" maxlength="200">
-                </div>
-
-                <div class="profile-field">
-                    <label for="city">City</label>
-                    <input id="city" maxlength="100"
-                           autocomplete="address-level2" required>
-                </div>
-
-                <div class="profile-field">
-                    <label for="state">State</label>
-                    <input id="state" maxlength="100"
-                           autocomplete="address-level1" value="Rajasthan" required>
-                </div>
-
-                <div class="profile-field">
-                    <label for="pincode">PIN code</label>
-                    <input id="pincode" inputmode="numeric"
-                           pattern="[0-9]{6}" maxlength="6"
-                           autocomplete="postal-code" required>
-                </div>
-
-                <div class="profile-field">
-                    <label>
-                        <input id="isDefault" type="checkbox">
-                        Make this my default address
-                    </label>
-                </div>
-
-                <button id="saveAddressBtn" class="profile-btn orange" type="submit">
-                    Save Address
-                </button>
-                <button id="cancelAddressBtn" class="profile-btn secondary"
-                        type="button" hidden>
-                    Cancel Edit
-                </button>
-                <p id="addressMessage" class="profile-message"
-                   role="status" aria-live="polite"></p>
-            </form>
-        </section>
-
-        <section class="profile-card">
-            <h2>Account Security</h2>
-            <p>Keep your account secure. You can request a password reset
-               using your registered email.</p>
-            <button id="resetPasswordBtn" class="profile-btn secondary" type="button">
-                Send Password Reset Email
-            </button>
-            <p id="securityMessage" class="profile-message"
-               role="status" aria-live="polite"></p>
-
-            <div class="profile-footer">
-                <button id="logoutBtn" class="profile-btn danger" type="button">
-                    Logout
-                </button>
-                <a href="index.html" class="profile-btn">Continue Shopping</a>
-            </div>
-        </section>
-    </div>
+<section class="profile-card">
+<h2>Account Security</h2>
+<p>Keep your account secure. You can request a password reset using your registered email.</p>
+<button id="resetPasswordBtn" class="profile-btn secondary" type="button">Send Password Reset Email</button>
+<p id="securityMessage" class="profile-message" role="status" aria-live="polite"></p>
+<div class="profile-footer">
+<button id="logoutBtn" class="profile-btn danger" type="button">Logout</button>
+<a href="index.html" class="profile-btn">Continue Shopping</a>
+</div>
+</section>
+</div>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -314,485 +246,460 @@
 
 <script>
 (() => {
-    "use strict";
-
-    const client = window.supabaseClient;
-
-    const $ = (id) => document.getElementById(id);
-
-    function message(id, text, type = "") {
-        const el = $(id);
-        el.textContent = text;
-        el.className = "profile-message" + (type ? " " + type : "");
-    }
-
-    function setBusy(button, busy, busyText) {
-        if (busy) {
-            button.dataset.originalText = button.textContent;
-            button.textContent = busyText;
-            button.disabled = true;
-        } else {
-            button.textContent = button.dataset.originalText || button.textContent;
-            button.disabled = false;
-        }
-    }
-
-    function safeText(value) {
-        return value == null ? "" : String(value);
-    }
-
-    let currentUser = null;
-    let savedAddresses = [];
-
-    function formatDate(value) {
-        if (!value) return "Date unavailable";
-        const date = new Date(value);
-        return Number.isNaN(date.getTime())
-            ? "Date unavailable"
-            : date.toLocaleString("en-IN", {
-                dateStyle: "medium",
-                timeStyle: "short"
-            });
-    }
-
-    function createTextElement(tag, text, className) {
-        const element = document.createElement(tag);
-        element.textContent = safeText(text);
-        if (className) element.className = className;
-        return element;
-    }
-
-    async function requireLogin() {
-        if (!client) {
-            document.body.textContent =
-                "Account service is unavailable. Please refresh or try again later.";
-            return false;
-        }
-
-        const { data, error } = await client.auth.getUser();
-
-        if (error || !data.user) {
-            window.location.replace("login.html");
-            return false;
-        }
-
-        currentUser = data.user;
-        return true;
-    }
-
-    async function loadProfile() {
-        const metadata = currentUser.user_metadata || {};
-        const name = metadata.full_name || metadata.name || "";
-
-        $("profileWelcome").textContent =
-            "Welcome, " + (name || "Customer") + "!";
-
-        $("fullName").value = name;
-        $("email").value = currentUser.email || "";
-        $("phone").value = metadata.phone || metadata.phone_number || "";
-
-        // Use the registered phone as the default for a new address.
-        $("addressName").value = name;
-        $("addressPhone").value = $("phone").value;
-    }
-
-    $("profileForm").addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        const name = $("fullName").value.trim();
-        const phone = $("phone").value.trim();
-        const button = $("saveProfileBtn");
-
-        if (!name) {
-            message("profileMessage", "Please enter your full name.", "error");
-            return;
-        }
-
-        setBusy(button, true, "Saving...");
-        message("profileMessage", "");
-
-        try {
-            const { data, error } = await client.auth.updateUser({
-                data: {
-                    ...(currentUser.user_metadata || {}),
-                    full_name: name,
-                    phone: phone
-                }
-            });
-
-            if (error) throw error;
-
-            currentUser = data.user || currentUser;
-            $("profileWelcome").textContent = "Welcome, " + name + "!";
-            $("addressName").value = name;
-            $("addressPhone").value = phone;
-
-            message("profileMessage", "Profile updated successfully.", "success");
-        } catch (error) {
-            console.error("Profile update failed:", error);
-            message(
-                "profileMessage",
-                error.message || "Could not update your profile. Please try again.",
-                "error"
-            );
-        } finally {
-            setBusy(button, false);
-        }
-    });
-
-    async function loadOrders() {
-        const list = $("ordersList");
-        list.replaceChildren(createTextElement("p", "Loading orders...", "muted"));
-
-        const { data, error } = await client
-            .from("orders")
-            .select("id, total_amount, status, created_at")
-            .eq("user_id", currentUser.id)
-            .order("created_at", { ascending: false })
-            .limit(10);
-
-        if (error) {
-            console.error("Orders loading failed:", error);
-            list.replaceChildren(
-                createTextElement("p", "Orders could not be loaded. Visit My Orders to try again.", "muted")
-            );
-            return;
-        }
-
-        list.replaceChildren();
-
-        if (!data || data.length === 0) {
-            list.append(createTextElement("p", "You have not placed any orders yet.", "muted"));
-            return;
-        }
-
-        for (const order of data) {
-            const item = document.createElement("article");
-            item.className = "order-item";
-
-            const shortId = safeText(order.id).slice(0, 8);
-
-            item.append(
-                createTextElement("strong", "Order #" + shortId),
-                createTextElement("p", "Amount: ₹" + Number(order.total_amount || 0).toFixed(2)),
-                createTextElement("p", "Placed: " + formatDate(order.created_at)),
-                createTextElement("span", safeText(order.status || "Pending"), "order-status")
-            );
-
-            list.append(item);
-        }
-    }
-
-    async function loadAddresses() {
-        const list = $("addressesList");
-        list.replaceChildren(createTextElement("p", "Loading addresses...", "muted"));
-
-        const { data, error } = await client
-            .from("customer_addresses")
-            .select("*")
-            .eq("user_id", currentUser.id)
-            .order("is_default", { ascending: false })
-            .order("created_at", { ascending: false });
-
-        if (error) {
-            console.error("Addresses loading failed:", error);
-            list.replaceChildren(
-                createTextElement("p", "Could not load saved addresses. Please try again.", "muted")
-            );
-            message(
-                "addressMessage",
-                "Address service may not be set up yet. Check the customer_addresses table and its RLS policies.",
-                "error"
-            );
-            return;
-        }
-
-        savedAddresses = data || [];
-        list.replaceChildren();
-
-        if (savedAddresses.length === 0) {
-            list.append(createTextElement("p", "No saved addresses yet.", "muted"));
-            return;
-        }
-
-        for (const address of savedAddresses) {
-            const item = document.createElement("article");
-            item.className = "address-item";
-
-            item.append(
-                createTextElement("strong", address.full_name),
-                createTextElement("p", address.phone),
-                createTextElement("p", address.address_line),
-                createTextElement("p",
-                    [address.landmark, address.city, address.state, address.pincode]
-                        .filter(Boolean).join(", ")
-                )
-            );
-
-            if (address.is_default) {
-                item.append(createTextElement("span", "Default address", "order-status"));
-            }
-
-            const actions = document.createElement("div");
-            actions.className = "address-actions";
-
-            const editButton = createTextElement("button", "Edit", "profile-btn secondary");
-            editButton.type = "button";
-            editButton.addEventListener("click", () => editAddress(address));
-
-            const defaultButton = createTextElement(
-                "button",
-                address.is_default ? "Default" : "Make Default",
-                "profile-btn"
-            );
-            defaultButton.type = "button";
-            defaultButton.disabled = Boolean(address.is_default);
-            defaultButton.addEventListener("click", () => setDefaultAddress(address));
-
-            const deleteButton = createTextElement("button", "Delete", "profile-btn danger");
-            deleteButton.type = "button";
-            deleteButton.addEventListener("click", () => deleteAddress(address));
-
-            actions.append(editButton, defaultButton, deleteButton);
-            item.append(actions);
-            list.append(item);
-        }
-    }
-
-    function editAddress(address) {
-        $("addressId").value = address.id;
-        $("addressName").value = address.full_name || "";
-        $("addressPhone").value = address.phone || "";
-        $("addressLine").value = address.address_line || "";
-        $("landmark").value = address.landmark || "";
-        $("city").value = address.city || "";
-        $("state").value = address.state || "Rajasthan";
-        $("pincode").value = address.pincode || "";
-        $("isDefault").checked = Boolean(address.is_default);
-
-        $("addressFormHeading").textContent = "Edit address";
-        $("saveAddressBtn").textContent = "Update Address";
-        $("cancelAddressBtn").hidden = false;
-        message("addressMessage", "");
-
-        $("addressFormHeading").scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-        });
-    }
-
-    function resetAddressForm() {
-        $("addressForm").reset();
-        $("addressId").value = "";
-        $("state").value = "Rajasthan";
-        $("addressName").value =
-            $("fullName").value.trim() || currentUser.user_metadata?.full_name || "";
-        $("addressPhone").value = $("phone").value.trim();
-        $("addressFormHeading").textContent = "Add a new address";
-        $("saveAddressBtn").textContent = "Save Address";
-        $("cancelAddressBtn").hidden = true;
-    }
-
-    $("cancelAddressBtn").addEventListener("click", () => {
-        resetAddressForm();
-        message("addressMessage", "");
-    });
-
-    $("addressForm").addEventListener("submit", async (event) => {
-        event.preventDefault();
-
-        const pin = $("pincode").value.trim();
-        if (!/^[0-9]{6}$/.test(pin)) {
-            message("addressMessage", "Enter a valid 6-digit PIN code.", "error");
-            return;
-        }
-
-        const address = {
-            full_name: $("addressName").value.trim(),
-            phone: $("addressPhone").value.trim(),
-            address_line: $("addressLine").value.trim(),
-            landmark: $("landmark").value.trim() || null,
-            city: $("city").value.trim(),
-            state: $("state").value.trim(),
-            pincode: pin,
-            is_default: $("isDefault").checked,
-            updated_at: new Date().toISOString()
-        };
-
-        if (!address.full_name || !address.phone || !address.address_line ||
-            !address.city || !address.state) {
-            message("addressMessage", "Please fill in all required fields.", "error");
-            return;
-        }
-
-        const id = $("addressId").value;
-        const button = $("saveAddressBtn");
-        setBusy(button, true, "Saving...");
-        message("addressMessage", "");
-
-        try {
-            // If the customer chooses a default address, unset the previous default.
-            if (address.is_default) {
-                const { error: clearError } = await client
-                    .from("customer_addresses")
-                    .update({ is_default: false })
-                    .eq("user_id", currentUser.id);
-
-                if (clearError) throw clearError;
-            } else if (!id && savedAddresses.length === 0) {
-                address.is_default = true;
-            }
-
-            let result;
-
-            if (id) {
-                result = await client
-                    .from("customer_addresses")
-                    .update(address)
-                    .eq("id", id)
-                    .eq("user_id", currentUser.id)
-                    .select()
-                    .single();
-            } else {
-                result = await client
-                    .from("customer_addresses")
-                    .insert({
-                        ...address,
-                        user_id: currentUser.id
-                    })
-                    .select()
-                    .single();
-            }
-
-            if (result.error) throw result.error;
-
-            resetAddressForm();
-            message("addressMessage", "Address saved successfully.", "success");
-            await loadAddresses();
-        } catch (error) {
-            console.error("Saving address failed:", error);
-            message(
-                "addressMessage",
-                error.message || "Could not save address. Please try again.",
-                "error"
-            );
-        } finally {
-            setBusy(button, false);
-        }
-    });
-
-    async function setDefaultAddress(address) {
-        message("addressMessage", "");
-
-        const { error: clearError } = await client
-            .from("customer_addresses")
-            .update({ is_default: false })
-            .eq("user_id", currentUser.id);
-
-        if (clearError) {
-            message("addressMessage", clearError.message, "error");
-            return;
-        }
-
-        const { error } = await client
-            .from("customer_addresses")
-            .update({
-                is_default: true,
-                updated_at: new Date().toISOString()
-            })
-            .eq("id", address.id)
-            .eq("user_id", currentUser.id);
-
-        if (error) {
-            message("addressMessage", error.message, "error");
-            return;
-        }
-
-        message("addressMessage", "Default address updated.", "success");
-        await loadAddresses();
-    }
-
-    async function deleteAddress(address) {
-        if (!window.confirm("Delete this saved address?")) return;
-
-        const { error } = await client
-            .from("customer_addresses")
-            .delete()
-            .eq("id", address.id)
-            .eq("user_id", currentUser.id);
-
-        if (error) {
-            message("addressMessage", error.message, "error");
-            return;
-        }
-
-        message("addressMessage", "Address deleted.", "success");
-        await loadAddresses();
-    }
-
-    $("resetPasswordBtn").addEventListener("click", async () => {
-        const button = $("resetPasswordBtn");
-        if (!currentUser.email) {
-            message("securityMessage", "No registered email was found.", "error");
-            return;
-        }
-
-        setBusy(button, true, "Sending...");
-        message("securityMessage", "");
-
-        try {
-            const { error } = await client.auth.resetPasswordForEmail(
-                currentUser.email,
-                { redirectTo: window.location.origin + "/login.html" }
-            );
-
-            if (error) throw error;
-
-            message(
-                "securityMessage",
-                "If password reset is enabled, check your registered email for the reset link.",
-                "success"
-            );
-        } catch (error) {
-            console.error("Password reset request failed:", error);
-            message(
-                "securityMessage",
-                error.message || "Could not send reset email.",
-                "error"
-            );
-        } finally {
-            setBusy(button, false);
-        }
-    });
-
-    $("logoutBtn").addEventListener("click", async () => {
-        const button = $("logoutBtn");
-        setBusy(button, true, "Logging out...");
-
-        const { error } = await client.auth.signOut();
-
-        if (error) {
-            console.error("Logout failed:", error);
-            message("pageMessage", "Could not log out. Please try again.", "error");
-            setBusy(button, false);
-            return;
-        }
-
-        window.location.replace("index.html");
-    });
-
-    async function init() {
-        const loggedIn = await requireLogin();
-        if (!loggedIn) return;
-
-        await loadProfile();
-        await Promise.allSettled([loadOrders(), loadAddresses()]);
-    }
-
-    init().catch((error) => {
-        console.error("Profile page initialization failed:", error);
-        message("pageMessage", "Could not load your account. Please refresh the page.", "error");
-    });
+"use strict";
+
+const client = window.supabaseClient;
+const $ = (id) => document.getElementById(id);
+
+function message(id,text,type=""){
+const el=$(id);
+el.textContent=text;
+el.className="profile-message"+(type?" "+type:"");
+}
+
+function setBusy(button,busy,busyText){
+if(busy){
+button.dataset.originalText=button.textContent;
+button.textContent=busyText;
+button.disabled=true;
+}else{
+button.textContent=button.dataset.originalText||button.textContent;
+button.disabled=false;
+}
+}
+
+function safeText(value){return value==null?"":String(value)}
+let currentUser=null;
+let savedAddresses=[];
+
+function formatDate(value){
+if(!value)return "Date unavailable";
+const date=new Date(value);
+return Number.isNaN(date.getTime())?"Date unavailable":date.toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"});
+}
+
+function createTextElement(tag,text,className){
+const element=document.createElement(tag);
+element.textContent=safeText(text);
+if(className)element.className=className;
+return element;
+}
+
+async function requireLogin(){
+if(!client){
+document.body.textContent="Account service is unavailable. Please refresh or try again later.";
+return false;
+}
+const {data,error}=await client.auth.getUser();
+if(error||!data.user){
+window.location.replace("login.html");
+return false;
+}
+currentUser=data.user;
+return true;
+}
+
+async function loadProfile(){
+const metadata=currentUser.user_metadata||{};
+const name=metadata.full_name||metadata.name||"";
+$("profileWelcome").textContent="Welcome, "+(name||"Customer")+"!";
+$("fullName").value=name;
+$("email").value=currentUser.email||"";
+$("phone").value=metadata.phone||metadata.phone_number||"";
+$("addressName").value=name;
+$("addressPhone").value=$("phone").value;
+}
+
+$("profileForm").addEventListener("submit",async(event)=>{
+event.preventDefault();
+const name=$("fullName").value.trim();
+const phone=$("phone").value.trim();
+const button=$("saveProfileBtn");
+if(!name){
+message("profileMessage","Please enter your full name.","error");
+return;
+}
+setBusy(button,true,"Saving...");
+message("profileMessage","");
+try{
+const {data,error}=await client.auth.updateUser({
+data:{...(currentUser.user_metadata||{}),full_name:name,phone:phone}
+});
+if(error)throw error;
+currentUser=data.user||currentUser;
+$("profileWelcome").textContent="Welcome, "+name+"!";
+$("addressName").value=name;
+$("addressPhone").value=phone;
+message("profileMessage","Profile updated successfully.","success");
+}catch(error){
+console.error("Profile update failed:",error);
+message("profileMessage",error.message||"Could not update your profile. Please try again.","error");
+}finally{setBusy(button,false)}
+});
+
+async function loadOrders(){
+const list=$("ordersList");
+list.replaceChildren(createTextElement("p","Loading orders...","muted"));
+const {data,error}=await client.from("orders")
+.select("id,total_amount,status,created_at")
+.eq("user_id",currentUser.id)
+.order("created_at",{ascending:false}).limit(10);
+if(error){
+console.error("Orders loading failed:",error);
+list.replaceChildren(createTextElement("p","Orders could not be loaded. Visit My Orders to try again.","muted"));
+return;
+}
+list.replaceChildren();
+if(!data||data.length===0){
+list.append(createTextElement("p","You have not placed any orders yet.","muted"));
+return;
+}
+for(const order of data){
+const item=document.createElement("article");
+item.className="order-item";
+const shortId=safeText(order.id).slice(0,8);
+item.append(
+createTextElement("strong","Order #"+shortId),
+createTextElement("p","Amount: ₹"+Number(order.total_amount||0).toFixed(2)),
+createTextElement("p","Placed: "+formatDate(order.created_at)),
+createTextElement("span",safeText(order.status||"Pending"),"order-status")
+);
+list.append(item);
+}
+}
+
+// GRAM MART REFER & EARN
+let referralInviteUrl="";
+
+function rupees(value){
+return "₹"+Number(value||0).toLocaleString("en-IN",{maximumFractionDigits:2});
+}
+
+async function copyReferralText(text){
+try{
+await navigator.clipboard.writeText(text);
+message("referralMessage","Copied successfully.","success");
+}catch(error){window.prompt("Copy this text:",text)}
+}
+
+function renderReferralHistory(containerId,rows,type){
+const container=$(containerId);
+container.replaceChildren();
+if(!Array.isArray(rows)||rows.length===0){
+container.append(createTextElement("p",type==="reward"?"No rewards earned yet.":"No withdrawal requests yet.","muted"));
+return;
+}
+rows.forEach((row)=>{
+const item=document.createElement("div");
+item.className="referral-history-item";
+const heading=type==="reward"?"Milestone: "+rupees(row.milestone_amount):"Withdrawal: "+rupees(row.amount);
+item.append(createTextElement("strong",heading));
+item.append(createTextElement("p",type==="reward"?"Reward: "+rupees(row.reward_amount):"UPI: "+safeText(row.upi_id),"muted"));
+item.append(createTextElement("span",safeText(row.status||"pending"),"referral-status"));
+item.append(createTextElement("p",formatDate(row.created_at),"muted"));
+if(type==="withdrawal"&&row.admin_note)item.append(createTextElement("p","Admin note: "+row.admin_note,"muted"));
+container.append(item);
+});
+}
+
+function renderReferralProgress(rows){
+const container=$("referralProgress");
+container.replaceChildren();
+if(!Array.isArray(rows)||rows.length===0){
+container.append(createTextElement("p","Share your referral link to invite your first customer.","muted"));
+return;
+}
+rows.forEach((row)=>{
+const card=document.createElement("div");
+card.className="referral-progress-item";
+const percent=Math.max(0,Math.min(100,Number(row.progress_percent||0)));
+card.append(createTextElement("strong",safeText(row.label||"Referred customer")));
+card.append(createTextElement("p","Eligible shopping: "+rupees(row.eligible_spend),"muted"));
+card.append(createTextElement("p","Rewards earned: "+rupees(row.earned),"muted"));
+card.append(createTextElement("p",row.next_milestone?"Next milestone: "+rupees(row.next_milestone):"All milestones completed — maximum reward reached.","muted"));
+const track=document.createElement("div");
+track.className="referral-progress-track";
+const fill=document.createElement("div");
+fill.className="referral-progress-fill";
+fill.style.width=percent+"%";
+track.append(fill);
+card.append(track);
+container.append(card);
+});
+}
+
+async function loadReferralDashboard(){
+try{
+const {data,error}=await client.rpc("get_my_referral_dashboard");
+if(error)throw error;
+if(!data||!data.referral_code)throw new Error("Referral dashboard data is unavailable.");
+const code=String(data.referral_code);
+$("myReferralCode").textContent=code;
+referralInviteUrl=new URL("login.html?ref="+encodeURIComponent(code),window.location.href).href;
+$("referralCount").textContent=Number(data.referral_count||0).toLocaleString("en-IN");
+$("referralEarned").textContent=rupees(data.total_earned);
+$("referralPending").textContent=rupees(data.pending_rewards);
+$("referralBalance").textContent=rupees(data.available_balance);
+$("referralWithdrawAmount").max=String(Math.max(0,Number(data.available_balance||0)));
+renderReferralProgress(data.referral_progress);
+renderReferralHistory("referralRewardHistory",data.recent_rewards,"reward");
+renderReferralHistory("referralWithdrawalHistory",data.withdrawals,"withdrawal");
+message("referralMessage","");
+}catch(error){
+console.error("Referral dashboard loading failed:",error);
+message("referralMessage",error.message||"Could not load referral information.","error");
+$("myReferralCode").textContent="Unavailable";
+}
+}
+
+$("copyReferralBtn").addEventListener("click",async()=>{
+const code=$("myReferralCode").textContent;
+if(code&&code!=="Loading..."&&code!=="Unavailable")await copyReferralText(code);
+});
+
+$("copyReferralLinkBtn").addEventListener("click",async()=>{
+if(referralInviteUrl)await copyReferralText(referralInviteUrl);
+});
+
+$("shareReferralBtn").addEventListener("click",()=>{
+if(!referralInviteUrl)return;
+const text="Join me on Gram Mart for everyday groceries! Sign up using my referral link: "+referralInviteUrl;
+window.open("https://wa.me/?text="+encodeURIComponent(text),"_blank","noopener,noreferrer");
+});
+
+$("referralWithdrawForm").addEventListener("submit",async(event)=>{
+event.preventDefault();
+const amount=Number($("referralWithdrawAmount").value);
+const upiId=$("referralUpi").value.trim();
+const button=$("referralWithdrawBtn");
+if(!Number.isFinite(amount)||amount<50){
+message("referralWithdrawMessage","Minimum withdrawal amount is ₹50.","error");
+return;
+}
+if(!/^[A-Za-z0-9._-]{2,256}@[A-Za-z]{2,64}$/.test(upiId)){
+message("referralWithdrawMessage","Please enter a valid UPI ID.","error");
+return;
+}
+setBusy(button,true,"Submitting...");
+message("referralWithdrawMessage","");
+try{
+const {data,error}=await client.rpc("request_referral_withdrawal",{p_amount:amount,p_upi_id:upiId});
+if(error)throw error;
+message("referralWithdrawMessage","Withdrawal request submitted. Request ID: "+safeText(data),"success");
+$("referralWithdrawForm").reset();
+await loadReferralDashboard();
+}catch(error){
+console.error("Referral withdrawal request failed:",error);
+message("referralWithdrawMessage",error.message||"Could not submit withdrawal request.","error");
+}finally{setBusy(button,false)}
+});
+
+async function loadAddresses(){
+const list=$("addressesList");
+list.replaceChildren(createTextElement("p","Loading addresses...","muted"));
+const {data,error}=await client.from("customer_addresses")
+.select("*").eq("user_id",currentUser.id)
+.order("is_default",{ascending:false})
+.order("created_at",{ascending:false});
+if(error){
+console.error("Addresses loading failed:",error);
+list.replaceChildren(createTextElement("p","Could not load saved addresses. Please try again.","muted"));
+message("addressMessage","Address service may not be set up yet. Check the customer_addresses table and its RLS policies.","error");
+return;
+}
+savedAddresses=data||[];
+list.replaceChildren();
+if(savedAddresses.length===0){
+list.append(createTextElement("p","No saved addresses yet.","muted"));
+return;
+}
+for(const address of savedAddresses){
+const item=document.createElement("article");
+item.className="address-item";
+item.append(
+createTextElement("strong",address.full_name),
+createTextElement("p",address.phone),
+createTextElement("p",address.address_line),
+createTextElement("p",[address.landmark,address.city,address.state,address.pincode].filter(Boolean).join(", "))
+);
+if(address.is_default)item.append(createTextElement("span","Default address","order-status"));
+const actions=document.createElement("div");
+actions.className="address-actions";
+const editButton=createTextElement("button","Edit","profile-btn secondary");
+editButton.type="button";
+editButton.addEventListener("click",()=>editAddress(address));
+const defaultButton=createTextElement("button",address.is_default?"Default":"Make Default","profile-btn");
+defaultButton.type="button";
+defaultButton.disabled=Boolean(address.is_default);
+defaultButton.addEventListener("click",()=>setDefaultAddress(address));
+const deleteButton=createTextElement("button","Delete","profile-btn danger");
+deleteButton.type="button";
+deleteButton.addEventListener("click",()=>deleteAddress(address));
+actions.append(editButton,defaultButton,deleteButton);
+item.append(actions);
+list.append(item);
+}
+}
+
+function editAddress(address){
+$("addressId").value=address.id;
+$("addressName").value=address.full_name||"";
+$("addressPhone").value=address.phone||"";
+$("addressLine").value=address.address_line||"";
+$("landmark").value=address.landmark||"";
+$("city").value=address.city||"";
+$("state").value=address.state||"Rajasthan";
+$("pincode").value=address.pincode||"";
+$("isDefault").checked=Boolean(address.is_default);
+$("addressFormHeading").textContent="Edit address";
+$("saveAddressBtn").textContent="Update Address";
+$("cancelAddressBtn").hidden=false;
+message("addressMessage","");
+$("addressFormHeading").scrollIntoView({behavior:"smooth",block:"center"});
+}
+
+function resetAddressForm(){
+$("addressForm").reset();
+$("addressId").value="";
+$("state").value="Rajasthan";
+$("addressName").value=$("fullName").value.trim()||currentUser.user_metadata?.full_name||"";
+$("addressPhone").value=$("phone").value.trim();
+$("addressFormHeading").textContent="Add a new address";
+$("saveAddressBtn").textContent="Save Address";
+$("cancelAddressBtn").hidden=true;
+}
+
+$("cancelAddressBtn").addEventListener("click",()=>{
+resetAddressForm();
+message("addressMessage","");
+});
+
+$("addressForm").addEventListener("submit",async(event)=>{
+event.preventDefault();
+const pin=$("pincode").value.trim();
+if(!/^[0-9]{6}$/.test(pin)){
+message("addressMessage","Enter a valid 6-digit PIN code.","error");
+return;
+}
+const address={
+full_name:$("addressName").value.trim(),
+phone:$("addressPhone").value.trim(),
+address_line:$("addressLine").value.trim(),
+landmark:$("landmark").value.trim()||null,
+city:$("city").value.trim(),
+state:$("state").value.trim(),
+pincode:pin,
+is_default:$("isDefault").checked,
+updated_at:new Date().toISOString()
+};
+if(!address.full_name||!address.phone||!address.address_line||!address.city||!address.state){
+message("addressMessage","Please fill in all required fields.","error");
+return;
+}
+const id=$("addressId").value;
+const button=$("saveAddressBtn");
+setBusy(button,true,"Saving...");
+message("addressMessage","");
+try{
+if(address.is_default){
+const {error:clearError}=await client.from("customer_addresses")
+.update({is_default:false}).eq("user_id",currentUser.id);
+if(clearError)throw clearError;
+}else if(!id&&savedAddresses.length===0){
+address.is_default=true;
+}
+let result;
+if(id){
+result=await client.from("customer_addresses").update(address)
+.eq("id",id).eq("user_id",currentUser.id).select().single();
+}else{
+result=await client.from("customer_addresses").insert({...address,user_id:currentUser.id}).select().single();
+}
+if(result.error)throw result.error;
+resetAddressForm();
+message("addressMessage","Address saved successfully.","success");
+await loadAddresses();
+}catch(error){
+console.error("Saving address failed:",error);
+message("addressMessage",error.message||"Could not save address. Please try again.","error");
+}finally{setBusy(button,false)}
+});
+
+async function setDefaultAddress(address){
+message("addressMessage","");
+const {error:clearError}=await client.from("customer_addresses")
+.update({is_default:false}).eq("user_id",currentUser.id);
+if(clearError){
+message("addressMessage",clearError.message,"error");
+return;
+}
+const {error}=await client.from("customer_addresses")
+.update({is_default:true,updated_at:new Date().toISOString()})
+.eq("id",address.id).eq("user_id",currentUser.id);
+if(error){
+message("addressMessage",error.message,"error");
+return;
+}
+message("addressMessage","Default address updated.","success");
+await loadAddresses();
+}
+
+async function deleteAddress(address){
+if(!window.confirm("Delete this saved address?"))return;
+const {error}=await client.from("customer_addresses").delete()
+.eq("id",address.id).eq("user_id",currentUser.id);
+if(error){
+message("addressMessage",error.message,"error");
+return;
+}
+message("addressMessage","Address deleted.","success");
+await loadAddresses();
+}
+
+$("resetPasswordBtn").addEventListener("click",async()=>{
+const button=$("resetPasswordBtn");
+if(!currentUser.email){
+message("securityMessage","No registered email was found.","error");
+return;
+}
+setBusy(button,true,"Sending...");
+message("securityMessage","");
+try{
+const {error}=await client.auth.resetPasswordForEmail(currentUser.email,{
+redirectTo:window.location.origin+"/login.html"
+});
+if(error)throw error;
+message("securityMessage","If password reset is enabled, check your registered email for the reset link.","success");
+}catch(error){
+console.error("Password reset request failed:",error);
+message("securityMessage",error.message||"Could not send reset email.","error");
+}finally{setBusy(button,false)}
+});
+
+$("logoutBtn").addEventListener("click",async()=>{
+const button=$("logoutBtn");
+setBusy(button,true,"Logging out...");
+const {error}=await client.auth.signOut();
+if(error){
+console.error("Logout failed:",error);
+message("pageMessage","Could not log out. Please try again.","error");
+setBusy(button,false);
+return;
+}
+window.location.replace("index.html");
+});
+
+async function init(){
+const loggedIn=await requireLogin();
+if(!loggedIn)return;
+await loadProfile();
+await Promise.allSettled([loadOrders(),loadAddresses(),loadReferralDashboard()]);
+}
+
+init().catch((error)=>{
+console.error("Profile page initialization failed:",error);
+message("pageMessage","Could not load your account. Please refresh the page.","error");
+});
 })();
 </script>
 </body>

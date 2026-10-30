@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0B3091">
+
+  <title>Terms & Conditions | Gram Mart</title>
+  <meta name="description" content="Read Gram Mart's Terms and Conditions for ordering groceries, payments, delivery, cancellations and customer responsibilities.">
+
+  <!-- Favicon and App Icon -->
+  <link rel="icon" type="image/png" href="images/gram-mart-icon.png">
+  <link rel="apple-touch-icon" href="images/gram-mart-icon.png">
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --blue: #0B3091;
+      --orange: #FF6A00;
+      --light: #F4F7FC;
+      --text: #263247;
+      --muted: #68758A;
+      --white: #FFFFFF;
+      --border: #E7ECF4;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--light);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Header */
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar {
+      max-width: 1150px;
+      margin: auto;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .brand img {
+      width: 165px;
+      max-height: 58px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      color: var(--orange);
+    }
+
+    .home-btn {
+      background: var(--blue);
+      color: white !important;
+      padding: 9px 17px;
+      border-radius: 8px;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(120deg, #0B3091, #1747B8);
+      color: white;
+      padding: 52px 20px;
+      text-align: center;
+    }
+
+    .hero-icon {
+      width: 62px;
+      height: 62px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.15);
+      display: grid;
+      place-items: center;
+      margin: 0 auto 15px;
+    }
+
+    .hero-icon i {
+      width: 32px;
+      height: 32px;
+    }
+
+    .hero h1 {
+      font-size: 31px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .orange-line {
+      width: 55px;
+      height: 4px;
+      background: var(--orange);
+      margin: 17px auto 0;
+      border-radius: 10px;
+    }
+
+    /* Main */
+    .container {
+      max-width: 950px;
+      margin: 35px auto 65px;
+      padding: 0 18px;
+    }
+
+    .intro-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .intro-card strong {
+      color: var(--blue);
+    }
+
+    .policy-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 25px;
+      margin-bottom: 16px;
+      box-shadow: 0 5px 20px rgba(15, 35, 75, 0.025);
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 13px;
+    }
+
+    .section-icon {
+      min-width: 43px;
+      height: 43px;
+      border-radius: 12px;
+      background: #FFF1E7;
+      color: var(--orange);
+      display: grid;
+      place-items: center;
+    }
+
+    .section-icon i {
+      width: 21px;
+      height: 21px;
+    }
+
+    h2 {
+      font-size: 17px;
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    .policy-card p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .policy-card ul {
+      padding-left: 22px;
+      margin: 8px 0 10px;
+    }
+
+    .policy-card li {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .highlight {
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    .contact-box {
+      background: #EEF3FF;
+      border: 1px solid #DCE6FF;
+      padding: 22px;
+      border-radius: 14px;
+      margin-top: 20px;
+    }
+
+    .contact-box h3 {
+      color: var(--blue);
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .contact-box p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      background: #168B55;
+      color: white;
+      padding: 10px 17px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* Footer */
+    footer {
+      background: #071E5C;
+      color: white;
+      padding: 38px 20px 18px;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 35px;
+    }
+
+    .footer-brand img {
+      width: 155px;
+      max-height: 55px;
+      object-fit: contain;
+      background: white;
+      border-radius: 8px;
+      padding: 5px;
+      margin-bottom: 12px;
+    }
+
+    .footer-inner h3 {
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .footer-inner p,
+    .footer-inner a {
+      font-size: 12px;
+      color: #D1DCF7;
+    }
+
+    .footer-inner a {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .footer-inner a:hover {
+      color: var(--orange);
+    }
+
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 25px auto 0;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      text-align: center;
+      color: #B9C8EB;
+      font-size: 11px;
+    }
+
+    @media(max-width: 700px) {
+      .navbar {
+        padding: 10px 14px;
+      }
+
+      .brand img {
+        width: 125px;
+      }
+
+      .nav-links {
+        gap: 12px;
+        font-size: 11px;
+      }
+
+      .nav-links .optional {
+        display: none;
+      }
+
+      .hero {
+        padding: 40px 15px;
+      }
+
+      .hero h1 {
+        font-size: 25px;
+      }
+
+      .container {
+        margin-top: 22px;
+      }
+
+      .policy-card {
+        padding: 19px;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+      }
+
+      .footer-brand {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media(max-width: 390px) {
+      .nav-links {
+        gap: 9px;
+      }
+
+      .home-btn {
+        padding: 7px 10px;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-brand {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="navbar">
+      <a href="index.html" class="brand">
+        <img src="images/gram-mart-logo.png" alt="Gram Mart Logo">
+      </a>
+
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#products" class="optional">Shop</a>
+        <a href="my-orders.html" class="optional">My Orders</a>
+        <a href="index.html" class="home-btn">Back to Store</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-icon">
+      <i data-lucide="file-check"></i>
+    </div>
+
+    <h1>Terms & Conditions</h1>
+    <p>Please read our terms before using Gram Mart.</p>
+    <div class="orange-line"></div>
+  </section>
+
+  <!-- CONTENT -->
+  <main class="container">
+
+    <div class="intro-card">
+      <p>
+        Welcome to <strong>Gram Mart</strong>!
+        These Terms & Conditions explain the rules for using our website,
+        placing orders and receiving our grocery delivery services.
+        By accessing our website or placing an order, you agree to these terms.
+      </p>
+      <p style="margin-top:10px;font-size:12px;color:#68758A;">
+        <strong>Effective Date:</strong> 1 November 2026
+      </p>
+    </div>
+
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="store"></i></div>
+        <h2>1. About Gram Mart</h2>
+      </div>
+      <p>
+        Gram Mart is an online grocery ordering and local delivery service
+        operating from Aakeda Dunger, Jaipur, Rajasthan.
+      </p>
+      <p>
+        We offer packaged grocery and daily-use products through our website,
+        subject to product availability and our active delivery areas.
+      </p>
+    </section>
+
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="user-check"></i></div>
+        <h2>2. Customer Eligibility & Responsibilities</h2>
+      </div>
+      <p>By using Gram Mart, you agree that:</p>
+      <ul>
+        <li>You will provide accurate name, mobile number and delivery address.</li>
+        <li>You will use the website for lawful purposes only.</li>
+        <li>You will not misuse, damage or attempt to disrupt our website.</li>
+        <li>You will keep your login credentials secure.</li>
+        <li>You will provide correct information when placing an order.</li>
+      </ul>
+    </section>
+
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="shopping-basket"></i></div>
+        <h2>3. Products & Availability</h2>
+      </div>
+      <p>
+        All products are subject to availability. We try to display accurate
+        product descriptions, photographs, prices and other information.
+      </p>
+      <ul>
+        <li>Actual packaging or product appearance may vary slightly from photographs.</li>
+        <li>An item may become unavailable after it has been added to the cart.</li>
+        <li>If an ordered product is unavailable, we may contact you regarding the order.</li>
+        <li>We reserve the right to correct genuine listing or pricing errors.</li>
+      </ul>
+    </section>
+
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="credit-card"></i></div>
+        <h2>4. Pricing & Payments</h2>
+      </div>
+      <p>
+        All displayed prices are in Indian Rupees (INR). Applicable delivery
+        charges, if any, will be shown during checkout.
+      </p>
+      <p>Currently, available payment methods may include:</p>
+      <ul>
+        <li>Online UPI payment.</li>
+        <li>Cash on Delivery (COD), where available.</li>
+      </ul>
+      <p>
+        An online payment will be treated as successful only after the payment
+        is verified through the applicable payment process.
+      </p>
+      <p>
+        Customers should never share their UPI PIN, OTP or banking password
+        with anyone claiming to represent Gram Mart.
+      </p>
+    </section>
+
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="truck"></i></div>
+        <h2>5. Order Processing & Delivery</h2>
+      </div>
+      <p>
+        Gram Mart currently serves selected local areas around its delivery
+        centre in Aakeda Dunger, Jaipur.
+      </p>
+      <ul>
+        <li>Orders are accepted subject to delivery-area availability.</li>
+        <li>Estimated delivery times may vary depending on order volume, weather, traffic and other conditions.</li>
+        <li>Customers must provide a complete and reachable delivery address.</li>
+        <li>Delivery may be delayed if the customer is unavailable or the address is incorrect.</li>
+        <li>Orders outside our active delivery area may be declined or cancelled.</li>
+      </ul>
+      <p>
+        For more information, please read our
+        <a href="shipping-policy.html" class="highlight">Shipping & Delivery Policy</a>.
+      </p>
+    </section>
+
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="refresh-cw"></i></div>
+        <h2>6. Order Cancellation</h2>
+      </div>
+      <p>
+        Customers may request cancellation before the order reaches
+        <strong>Out for Delivery</strong> status through the available
+        My Orders option.
+      </p>
+      <p>
+        Orders that are already Out for Delivery, Delivered or Cancelled
+        cannot be cancelled through the normal cancellation option.
+      </p>
+      <p>
+        Gram Mart may also cancel an order due to product unavailability,
+        service-area restrictions, incorrect order information, suspected
+        misuse or technical issues.
+      </p>
+    </section>
+
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="wallet"></i></div>
+        <h2>7. Refunds</h2>
+      </div>
+      <p>
+        If an eligible prepaid order is cancelled or a refund is approved,
+        the customer may be asked to provide UPI or bank account details
+        through the available refund submission process.
+      </p>
+      <ul>
+        <li>Refund details must be accurate and belong to the intended recipient.</li>
+        <li>Refund requests may be reviewed before approval.</li>
+        <li>Our target processing time is 5–7 business days after approval and successful verification of the required details.</li>
+      </ul>
+      <p>
+        For complete information, read our
+        <a href="refund-policy.html" class="highlight">Cancellation & Refund Policy</a>.
+      </p>
+    </section>
+
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="shield-check"></i></div>
+        <h2>8. Product Issues & Complaints</h2>
+      </div>
+      <p>
+        If you receive an incorrect, damaged or missing item, please contact
+        us as soon as possible, preferably within 24 hours of delivery.
+      </p>
+      <p>
+        Please share your order ID and relevant photographs or details so
+        that our team can review the issue.
+      </p>
+      <p>
+        Any replacement, refund or other resolution will depend on the
+        nature of the issue and applicable policy.
+      </p>
+    </section>
+
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="lock-keyhole"></i></div>
+        <h2>9. Privacy & Personal Information</h2>
+      </div>
+      <p>
+        We collect and use customer information such as name, mobile number,
+        delivery address, order details and payment references to provide
+        our services.
+      </p>
+      <p>
+        We handle personal information according to our
+        <a href="privacy.html" class="highlight">Privacy Policy</a>.
+      </p>
+    </section>
+
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="copyright"></i></div>
+        <h2>10. Website Content & Intellectual Property</h2>
+      </div>
+      <p>
+        Gram Mart's website design, branding, logo, text, graphics and
+        original content may not be copied, reproduced or used commercially
+        without prior permission from the rightful owner.
+      </p>
+    </section>
+
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="alert-circle"></i></div>
+        <h2>11. Limitation of Service</h2>
+      </div>
+      <p>
+        We make reasonable efforts to keep our website and delivery service
+        available. However, temporary interruptions may occur due to
+        maintenance, technical problems, network issues or circumstances
+        beyond our reasonable control.
+      </p>
+      <p>
+        Nothing in these terms is intended to exclude any consumer rights
+        or legal protections that cannot lawfully be excluded under
+        applicable Indian law.
+      </p>
+    </section>
+
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="scale"></i></div>
+        <h2>12. Governing Law</h2>
+      </div>
+      <p>
+        These Terms & Conditions are governed by the applicable laws of India.
+        Any disputes will be handled by the competent authorities or courts
+        having jurisdiction under applicable law.
+      </p>
+    </section>
+
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="edit-3"></i></div>
+        <h2>13. Changes to These Terms</h2>
+      </div>
+      <p>
+        Gram Mart may update these Terms & Conditions from time to time.
+        Updated terms will be published on this page with a revised
+        effective date where appropriate.
+      </p>
+        <p>
+        Customers are encouraged to review this page periodically.
+      </p>
+    </section>
+
+    <!-- CONTACT -->
+    <div class="contact-box">
+      <h3>Need Help? Contact Gram Mart</h3>
+      <p>
+        For order-related questions, complaints or clarification about
+        these terms, contact our customer support team.
+      </p>
+
+      <a class="whatsapp-btn"
+         href="https://wa.me/917340259598"
+         target="_blank"
+         rel="noopener noreferrer">
+        <i data-lucide="message-circle"></i>
+        Chat on WhatsApp
+      </a>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+        <a href="index.html">
+          <img src="images/gram-mart-logo.png" alt="Gram Mart">
+        </a>
+        <p>
+          Har Zarurat Ek Jagah,<br>
+          Infinite Choice One Mart.
+        </p>
+      </div>
+
+      <div>
+        <h3>Quick Links</h3>
+        <a href="index.html">Home</a>
+        <a href="index.html#products">Shop</a>
+        <a href="my-orders.html">My Orders</a>
+        <a href="https://wa.me/917340259598" target="_blank" rel="noopener noreferrer">Contact Support</a>
+      </div>
+
+      <div>
+        <h3>Customer Policies</h3>
+        <a href="terms.html">Terms & Conditions</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="shipping-policy.html">Shipping Policy</a>
+        <a href="refund-policy.html">Cancellation & Refund</a>
+        <a href="contact.html">Contact Us</a>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      © 2026 Gram Mart. All Rights Reserved.
+    </div>
+  </footer>
+
+  <script>
+    // Initialize Lucide icons
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
+
+</body>
+</html>

@@ -11,8 +11,6 @@ function showAuthMessage(message) {
 }
 
 // REGISTER
-// Registration is handled directly by register.html.
-// This function remains available for any older page using registerUser().
 async function registerUser(details = null) {
     const name = details?.name ??
         document.getElementById("name")?.value.trim();
@@ -67,20 +65,50 @@ async function registerUser(details = null) {
 
         if (error) throw error;
 
-        if (!data.session) {
-            return {
-                error: new Error(
-                    "Account created, but no active session was returned. " +
-                    "Check Supabase Email Confirmations settings."
-                )
-            };
-        }
-
         return data;
     } catch (error) {
         console.error("Registration error:", error);
         return { error };
     }
+}
+
+// APPLY REFERRAL AFTER LOGIN
+async function applyPendingReferral(client) {
+    const params = new URLSearchParams(window.location.search);
+    const urlCode = params.get("ref");
+
+    // URL referral is preferred; signup metadata is fallback.
+    const { data: userData, error: userError } =
+        await client.auth.getUser();
+
+    if (userError || !userData.user) return;
+
+    const metadataCode =
+        userData.user.user_metadata?.referral_code;
+
+    const referralCode = (urlCode || metadataCode || "")
+        .trim()
+        .toUpperCase();
+
+    if (!referralCode) return;
+
+    const { data: profile, error: profileError } =
+        await client
+            .from("referral_profiles")
+            .select("referred_by")
+            .eq("user_id", userData.user.id)
+            .maybeSingle();
+
+    if (profileError) throw profileError;
+
+    // Never overwrite an existing referral.
+    if (profile?.referred_by) return;
+
+    const { error } = await client.rpc("apply_referral_code", {
+        p_code: referralCode
+    });
+
+    if (error) throw error;
 }
 
 // LOGIN
@@ -118,6 +146,17 @@ async function loginUser() {
         if (error) throw error;
 
         if (data.session) {
+            try {
+                await applyPendingReferral(client);
+            } catch (referralError) {
+                console.error("Referral application error:", referralError);
+                showAuthMessage(
+                    "Login successful, but referral could not be applied: " +
+                    referralError.message
+                );
+                return;
+            }
+
             showAuthMessage("Login successful!");
             window.location.href = "index.html";
         }

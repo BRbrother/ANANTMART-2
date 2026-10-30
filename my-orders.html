@@ -3,730 +3,753 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0B3091">
-
   <title>My Orders | Gram Mart</title>
-  <meta name="description" content="View your Gram Mart orders and purchase history.">
 
-  <link rel="stylesheet" href="css/style.css">
-  <!-- Gram Mart Favicon -->
-<link rel="icon" type="image/png" href="images/gram-mart-icon.png">
-<link rel="apple-touch-icon" href="images/gram-mart-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --gm-orange: #FF6A00;
-      --gm-blue: #0B3091;
-      --gm-bg: #F5F7FB;
-      --gm-white: #FFFFFF;
-      --gm-text: #182230;
-      --gm-muted: #667085;
-      --gm-border: #E2E8F0;
-      --gm-green: #16834A;
+      --blue: #0B3091;
+      --orange: #FF6A00;
+      --light: #F5F7FB;
+      --text: #202633;
+      --muted: #6B7280;
+      --border: #E5E7EB;
+      --green: #15803D;
+      --red: #DC2626;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      background: var(--gm-bg);
-      color: var(--gm-text);
-      font-family: Inter, Arial, sans-serif;
+      font-family: 'Poppins', sans-serif;
+      background: var(--light);
+      color: var(--text);
     }
 
-    a {
-      text-decoration: none;
-    }
+    [hidden] { display: none !important; }
 
-    button {
-      font: inherit;
-    }
-
-    .gm-header {
-      background: var(--gm-white);
-      border-bottom: 1px solid var(--gm-border);
-      box-shadow: 0 3px 15px rgba(11, 48, 145, 0.05);
-    }
-
-    .gm-header-inner {
-      max-width: 1120px;
-      margin: auto;
-      padding: 17px 22px;
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 13px 5%;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
-    .gm-logo {
-      color: var(--gm-blue);
-      font-size: 27px;
-      font-weight: 900;
-      letter-spacing: -1px;
-    }
-
-    .gm-logo span {
-      color: var(--gm-orange);
-    }
-
-    .header-nav {
+    .brand {
       display: flex;
       align-items: center;
       gap: 10px;
-      flex-wrap: wrap;
+      color: var(--blue);
+      font-weight: 800;
+      font-size: 22px;
+      text-decoration: none;
     }
 
-    .nav-link {
-      color: var(--gm-blue);
-      border: 1px solid var(--gm-border);
-      padding: 10px 13px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 750;
+    .brand img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
     }
 
-    .nav-link:hover {
-      border-color: var(--gm-orange);
-      color: var(--gm-orange);
-    }
-
-    .orders-container {
-      width: min(100% - 32px, 1000px);
-      margin: 35px auto;
-      min-height: 55vh;
-    }
-
-    .orders-heading {
+    nav {
       display: flex;
-      justify-content: space-between;
       align-items: center;
       gap: 18px;
-      margin-bottom: 25px;
     }
 
-    .orders-heading h1 {
-      margin: 0 0 8px;
-      color: var(--gm-blue);
-      font-size: clamp(27px, 4vw, 35px);
-      letter-spacing: -0.7px;
-    }
-
-    .orders-heading p {
-      margin: 0;
-      color: var(--gm-muted);
-      line-height: 1.6;
+    nav a {
+      text-decoration: none;
+      color: var(--blue);
       font-size: 14px;
+      font-weight: 600;
     }
 
-    .order-count-label {
-      flex-shrink: 0;
-      padding: 10px 14px;
-      border-radius: 12px;
-      background: #FFF0E5;
-      color: #A84900;
+    .container {
+      width: min(100% - 30px, 950px);
+      margin: 30px auto 60px;
+    }
+
+    .page-heading {
+      margin-bottom: 22px;
+    }
+
+    .page-heading h1 {
+      color: var(--blue);
+      font-size: 27px;
+      margin: 0 0 5px;
+    }
+
+    .page-heading p {
+      color: var(--muted);
+      margin: 0;
       font-size: 13px;
-      font-weight: 800;
     }
 
-    #ordersList {
-      display: grid;
-      gap: 20px;
+    .message {
+      padding: 13px 15px;
+      border-radius: 9px;
+      margin: 15px 0;
+      font-size: 13px;
+      display: none;
     }
+
+    .message.show { display: block; }
+    .message.error { background: #FEE2E2; color: #991B1B; }
+    .message.success { background: #DCFCE7; color: #166534; }
+    .message.info { background: #DBEAFE; color: #1E40AF; }
 
     .order-card {
-      background: var(--gm-white);
-      border: 1px solid var(--gm-border);
-      border-radius: 17px;
-      padding: 23px;
-      box-shadow: 0 5px 22px rgba(18, 38, 80, 0.04);
-      overflow-wrap: anywhere;
-      min-width: 0;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.035);
     }
 
     .order-top {
       display: flex;
-      justify-content: space-between;
       align-items: flex-start;
-      gap: 15px;
+      justify-content: space-between;
+      gap: 12px;
       flex-wrap: wrap;
-    }
-
-    .order-info h2 {
-      color: var(--gm-blue);
-      font-size: 19px;
-      margin: 0 0 11px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
     }
 
     .order-id {
-      color: var(--gm-muted);
-      font-size: 12px;
-      line-height: 1.7;
+      font-weight: 700;
+      color: var(--blue);
+      font-size: 14px;
       word-break: break-all;
-      margin: 0 0 7px;
     }
 
     .order-date {
-      color: #475467;
-      font-size: 13px;
-      margin: 0;
-    }
-
-    .order-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 12px;
-      border-radius: 30px;
-      background: #FFF3D8;
-      color: #895700;
+      color: var(--muted);
       font-size: 12px;
-      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    .status {
+      display: inline-block;
+      border-radius: 30px;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #DBEAFE;
+      color: #1E40AF;
       text-transform: capitalize;
-      white-space: nowrap;
     }
 
-    .order-status::before {
-      content: "";
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: currentColor;
-    }
+    .status.delivered,
+    .status.refunded { background: #DCFCE7; color: #166534; }
 
-    .order-status.status-completed,
-    .order-status.status-delivered,
-    .order-status.status-confirmed {
-      background: #E7F7ED;
-      color: #167341;
-    }
+    .status.cancelled { background: #FEE2E2; color: #991B1B; }
 
-    .order-status.status-cancelled,
-    .order-status.status-failed {
-      background: #FFF0EF;
-      color: #B42318;
-    }
+    .status.out_for_delivery { background: #FEF3C7; color: #92400E; }
 
-    .order-status.status-shipped,
-    .order-status.status-processing,
-    .order-status.status-out-for-delivery {
-      background: #EAF1FF;
-      color: var(--gm-blue);
-    }
-
-    .order-divider {
-      height: 1px;
-      background: var(--gm-border);
-      margin: 19px 0;
-    }
-
-    .order-items h3 {
-      color: var(--gm-blue);
-      margin: 0 0 12px;
-      font-size: 15px;
+    .items {
+      padding: 13px 0;
     }
 
     .item-row {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      gap: 15px;
-      padding: 12px 0;
-      border-bottom: 1px solid #F0F2F6;
-      font-size: 14px;
+      gap: 12px;
+      padding: 6px 0;
+      font-size: 13px;
     }
 
-    .item-row:last-child {
-      border-bottom: 0;
-    }
-
-    .item-name {
-      color: #344054;
-      line-height: 1.6;
-      min-width: 0;
-    }
-
-    .item-price {
-      color: var(--gm-text);
-      font-weight: 750;
-      white-space: nowrap;
-    }
+    .item-name { font-weight: 500; }
+    .item-price { white-space: nowrap; color: var(--muted); }
 
     .order-bottom {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 15px;
       flex-wrap: wrap;
-      border-top: 1px dashed #D0D8E5;
-      margin-top: 15px;
-      padding-top: 18px;
+      gap: 12px;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
     }
 
-    .total-label {
-      color: var(--gm-muted);
-      font-size: 13px;
-      margin: 0 0 5px;
-    }
-
-    .order-total {
-      margin: 0;
-      color: var(--gm-blue);
-      font-size: 25px;
-      font-weight: 900;
-    }
-
-    .order-total-caption {
-      color: var(--gm-muted);
-      font-size: 11px;
-      margin-top: 5px;
-    }
-
-    .message {
-      padding: 30px 20px;
-      text-align: center;
-      background: var(--gm-white);
-      border: 1px solid var(--gm-border);
-      border-radius: 16px;
-      box-shadow: 0 5px 22px rgba(18, 38, 80, 0.035);
-      overflow-wrap: anywhere;
-      color: var(--gm-muted);
-      line-height: 1.7;
-    }
-
-    .message p {
-      margin: 0 0 12px;
-    }
-
-    .message a {
-      display: inline-block;
-      margin-top: 6px;
-      color: var(--gm-blue);
+    .total {
+      font-size: 18px;
       font-weight: 800;
+      color: var(--blue);
     }
 
-    .message a:hover {
-      color: var(--gm-orange);
+    .actions {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
     }
 
-    .retry-button {
-      margin-top: 12px;
-      padding: 11px 18px;
-      border: 0;
-      border-radius: 10px;
+    button {
+      font-family: inherit;
       cursor: pointer;
-      background: var(--gm-orange);
-      color: #FFFFFF;
-      font-weight: 800;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 15px;
+      font-weight: 600;
+      font-size: 12px;
     }
 
-    .retry-button:hover {
-      background: #E85F00;
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
     }
 
-    .gm-footer {
-      margin-top: 45px;
-      padding: 24px 15px;
-      background: #FFFFFF;
-      border-top: 1px solid var(--gm-border);
-      text-align: center;
-      color: var(--gm-muted);
+    .cancel-btn {
+      background: #FEE2E2;
+      color: #B91C1C;
+    }
+
+    .primary-btn {
+      background: var(--orange);
+      color: white;
+    }
+
+    .secondary-btn {
+      background: #E5E7EB;
+      color: #374151;
+    }
+
+    .refund-box {
+      background: #FFF7ED;
+      border: 1px solid #FED7AA;
+      border-radius: 11px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .refund-box h3 {
+      margin: 0 0 6px;
+      color: #9A3412;
+      font-size: 15px;
+    }
+
+    .refund-box p {
+      font-size: 12px;
+      color: #7C2D12;
+      margin: 4px 0 12px;
+    }
+
+    .refund-form {
+      display: grid;
+      gap: 11px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #D1D5DB;
+      border-radius: 8px;
+      font-family: inherit;
       font-size: 13px;
+      background: white;
+    }
+
+    .refund-status {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #F3F4F6;
+      font-size: 12px;
       line-height: 1.7;
     }
 
-    .gm-footer strong {
-      color: var(--gm-blue);
+    .empty {
+      background: white;
+      border-radius: 14px;
+      padding: 45px 20px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .empty h2 {
+      color: var(--blue);
+      margin-top: 0;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 35px;
+      color: var(--muted);
+    }
+
+    footer {
+      text-align: center;
+      padding: 22px;
+      background: white;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
     }
 
     @media (max-width: 600px) {
-      .gm-header-inner {
-        padding: 15px;
-      }
-
-      .gm-logo {
-        font-size: 24px;
-      }
-
-      .header-nav {
-        gap: 6px;
-      }
-
-      .nav-link {
-        padding: 9px;
-        font-size: 12px;
-      }
-
-      .orders-container {
-        width: calc(100% - 24px);
-        margin: 25px auto;
-      }
-
-      .orders-heading {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .order-card {
-        padding: 17px;
-        border-radius: 14px;
-      }
-
-      .order-top {
-        flex-direction: column;
-      }
-
-      .order-status {
-        align-self: flex-start;
-      }
-
-      .item-row {
-        font-size: 13px;
-        gap: 10px;
-      }
-
-      .order-bottom {
-        align-items: flex-start;
-      }
-
-      .order-total {
-        font-size: 23px;
-      }
+      header { padding: 11px 15px; }
+      .brand { font-size: 18px; }
+      .brand img { width: 35px; height: 35px; }
+      nav { gap: 11px; }
+      nav a { font-size: 12px; }
+      .page-heading h1 { font-size: 23px; }
+      .order-card { padding: 15px; }
+      .order-bottom { align-items: flex-start; }
+      .actions { width: 100%; }
+      .actions button { flex: 1; }
     }
   </style>
 </head>
 
 <body>
 
-  <header class="gm-header">
-    <div class="gm-header-inner">
-      <a href="index.html" class="page-brand" aria-label="Gram Mart home">
-        <img
-            src="images/gram-mart-logo.png"
-            alt="Gram Mart"
-            class="page-wordmark"
-        >
-      </a>
+<header>
+  <a href="index.html" class="brand">
+    <img src="images/gram-mart-logo.png" alt="Gram Mart">
+    <span>Gram Mart</span>
+  </a>
 
-      <nav class="header-nav">
-        <a href="index.html" class="nav-link">← Shop</a>
-        <a href="cart.html" class="nav-link">🛒 My Cart</a>
-      </nav>
-    </div>
-  </header>
+  <nav>
+    <a href="index.html">Shop</a>
+    <a href="cart.html">My Cart</a>
+  </nav>
+</header>
 
-  <main class="orders-container">
+<main class="container">
+  <div class="page-heading">
+    <h1>My Orders</h1>
+    <p>Track your orders and manage cancellations or refunds.</p>
+  </div>
 
-    <header class="orders-heading">
-      <div>
-        <h1>📦 My Orders</h1>
-        <p>Track your purchases and view your Gram Mart order history.</p>
-      </div>
+  <div id="message" class="message"></div>
+  <div id="ordersList">
+    <div class="loading">Loading your orders...</div>
+  </div>
+</main>
 
-      <div class="order-count-label" id="orderCountLabel">
-        Your order history
-      </div>
-    </header>
+<footer>
+  © <span id="year"></span> Gram Mart. Har Zarurat Ek Jagah.
+</footer>
 
-    <p id="ordersMessage" class="message" role="status" aria-live="polite">
-      Loading your orders...
-    </p>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
 
-    <div id="ordersList"></div>
+<script>
+  const client = window.supabaseClient;
 
-  </main>
+  const ordersList = document.getElementById("ordersList");
+  const messageBox = document.getElementById("message");
 
-  <footer class="gm-footer">
-    <strong>Gram Mart</strong> — Everyday essentials, made simple.
-    <br>
-    © <span id="currentYear"></span> Gram Mart. All rights reserved.
-  </footer>
+  let currentUser = null;
 
-  <script>
-    document.getElementById("currentYear").textContent =
-      new Date().getFullYear();
-  </script>
+  document.getElementById("year").textContent = new Date().getFullYear();
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase.js"></script>
+  function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, function(char) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char];
+    });
+  }
 
-  <script>
-    (() => {
-      "use strict";
+  function money(value) {
+    return "₹" + Number(value || 0).toFixed(2);
+  }
 
-      const message = document.getElementById("ordersMessage");
-      const ordersList = document.getElementById("ordersList");
-      const orderCountLabel = document.getElementById("orderCountLabel");
+  function showMessage(text, type = "info") {
+    messageBox.textContent = text;
+    messageBox.className = "message show " + type;
+    messageBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
 
-      function showMessage(text, type = "info", link = null) {
-        message.replaceChildren();
-        message.className = "message";
-        message.hidden = false;
+  function hideMessage() {
+    messageBox.className = "message";
+    messageBox.textContent = "";
+  }
 
-        const paragraph = document.createElement("p");
-        paragraph.textContent = text;
-        message.appendChild(paragraph);
+  function readableStatus(status) {
+    return String(status || "pending")
+      .replaceAll("_", " ")
+      .replace(/\b\w/g, letter => letter.toUpperCase());
+  }
 
-        if (link) {
-          const anchor = document.createElement("a");
-          anchor.href = link.href;
-          anchor.textContent = link.text;
-          message.appendChild(anchor);
-        }
+  function canCancel(status) {
+    return !["out_for_delivery", "delivered", "cancelled"]
+      .includes(String(status || "").toLowerCase());
+  }
 
-        if (type === "error") {
-          message.style.borderColor = "#FFD6D3";
-          message.style.color = "#B42318";
+  function refundStatusLabel(status) {
+    const labels = {
+      refund_pending: "Refund Pending",
+      refund_processing: "Refund Processing",
+      refunded: "Refund Completed"
+    };
+
+    return labels[status] || readableStatus(status);
+  }
+
+  async function loadOrders() {
+    hideMessage();
+    ordersList.innerHTML = '<div class="loading">Loading your orders...</div>';
+
+    if (!client) {
+      ordersList.innerHTML = '<div class="empty">Supabase connection not found. Please check js/supabase.js.</div>';
+      return;
+    }
+
+    const { data: authData, error: authError } = await client.auth.getUser();
+
+    if (authError || !authData?.user) {
+      ordersList.innerHTML = `
+        <div class="empty">
+          <h2>Please Login</h2>
+          <p>Login to your Gram Mart account to see your orders.</p>
+          <button class="primary-btn" onclick="location.href='login.html'">Login Now</button>
+        </div>`;
+      return;
+    }
+
+    currentUser = authData.user;
+
+    const { data: orders, error: ordersError } = await client
+      .from("orders")
+      .select("id,user_id,total_amount,status,created_at,payment_status")
+      .eq("user_id", currentUser.id)
+      .order("created_at", { ascending: false });
+
+    if (ordersError) {
+      console.error(ordersError);
+      ordersList.innerHTML = '<div class="empty">Unable to load orders. Please refresh the page.</div>';
+      return;
+    }
+
+    if (!orders || orders.length === 0) {
+      ordersList.innerHTML = `
+        <div class="empty">
+          <h2>No Orders Yet</h2>
+          <p>You haven't placed any orders yet.</p>
+          <button class="primary-btn" onclick="location.href='index.html'">Start Shopping</button>
+        </div>`;
+      return;
+    }
+
+    const orderIds = orders.map(order => order.id);
+
+    const { data: allItems, error: itemsError } = await client
+      .from("order_items")
+      .select("order_id,product_name,unit_price,quantity")
+      .in("order_id", orderIds);
+
+    if (itemsError) {
+      console.error(itemsError);
+      ordersList.innerHTML = '<div class="empty">Unable to load order items. Please refresh.</div>';
+      return;
+    }
+
+    const { data: refunds, error: refundsError } = await client.rpc(
+      "customer_get_my_gram_mart_refunds"
+    );
+
+    if (refundsError) {
+      console.error("Refund fetch error:", refundsError);
+    }
+
+    const itemsByOrder = {};
+    (allItems || []).forEach(item => {
+      if (!itemsByOrder[item.order_id]) itemsByOrder[item.order_id] = [];
+      itemsByOrder[item.order_id].push(item);
+    });
+
+    const refundsByOrder = {};
+    (refunds || []).forEach(refund => {
+      refundsByOrder[refund.order_id] = refund;
+    });
+
+    ordersList.innerHTML = orders.map(order => {
+      const items = itemsByOrder[order.id] || [];
+      const refund = refundsByOrder[order.id];
+      const status = String(order.status || "pending").toLowerCase();
+
+      const itemHTML = items.map(item => `
+        <div class="item-row">
+          <span class="item-name">
+            ${escapeHTML(item.product_name)}
+            × ${Number(item.quantity || 0)}
+          </span>
+          <span class="item-price">
+            ${money(Number(item.unit_price || 0) * Number(item.quantity || 0))}
+          </span>
+        </div>
+      `).join("");
+
+      let refundHTML = "";
+
+      if (refund) {
+        if (
+          refund.refund_status === "refund_pending" &&
+          !refund.details_submitted
+        ) {
+          refundHTML = `
+            <div class="refund-box">
+              <h3>Refund Details Required</h3>
+              <p>Your order was cancelled. Submit your UPI ID or bank details so the refund can be processed.</p>
+
+              <form class="refund-form" onsubmit="submitRefund(event, '${order.id}')">
+
+                <div class="form-group">
+                  <label>Refund Method</label>
+                  <select name="refund_method" required
+                    onchange="toggleRefundMethod(this, '${order.id}')">
+                    <option value="upi">UPI</option>
+                    <option value="bank">Bank Transfer</option>
+                  </select>
+                </div>
+
+                <div class="form-group" id="upi-${order.id}">
+                  <label>UPI ID</label>
+                  <input type="text" name="refund_upi_id"
+                    placeholder="example@upi">
+                </div>
+
+                <div id="bank-${order.id}" hidden>
+                  <div class="form-group">
+                    <label>Account Holder Name</label>
+                    <input type="text" name="account_holder"
+                      placeholder="Name as per bank account">
+                  </div>
+
+                  <div class="form-group">
+                    <label>Account Number</label>
+                    <input type="text" name="account_number"
+                      inputmode="numeric" placeholder="Bank account number">
+                  </div>
+
+                  <div class="form-group">
+                    <label>IFSC Code</label>
+                    <input type="text" name="ifsc_code"
+                      placeholder="e.g. SBIN0001234">
+                  </div>
+                </div>
+
+                <button type="submit" class="primary-btn">
+                  Submit Refund Details
+                </button>
+              </form>
+            </div>
+          `;
         } else {
-          message.style.borderColor = "";
-          message.style.color = "";
+          refundHTML = `
+            <div class="refund-status">
+              <strong>Refund:</strong>
+              ${escapeHTML(refundStatusLabel(refund.refund_status))}
+              <br>
+              <strong>Refund Amount:</strong>
+              ${money(refund.refund_amount)}
+              ${
+                refund.refund_utr
+                  ? `<br><strong>Refund UTR:</strong> ${escapeHTML(refund.refund_utr)}`
+                  : ""
+              }
+              ${
+                refund.admin_note
+                  ? `<br><strong>Note:</strong> ${escapeHTML(refund.admin_note)}`
+                  : ""
+              }
+            </div>
+          `;
         }
       }
 
-      function makeElement(tag, text, className) {
-        const element = document.createElement(tag);
-        element.textContent = text;
+      return `
+        <section class="order-card">
+          <div class="order-top">
+            <div>
+              <div class="order-id">Order #${escapeHTML(order.id)}</div>
+              <div class="order-date">
+                ${new Date(order.created_at).toLocaleString("en-IN")}
+              </div>
+            </div>
+            <span class="status ${escapeHTML(status)}">
+              ${escapeHTML(readableStatus(status))}
+            </span>
+          </div>
 
-        if (className) element.className = className;
-        return element;
-      }
+          <div class="items">
+            ${itemHTML || '<p>No item details found.</p>'}
+          </div>
 
-      function formatMoney(amount) {
-        const number = Number(amount);
+          <div class="order-bottom">
+            <div>
+              <div style="font-size:11px;color:#6B7280;">Order Total</div>
+              <div class="total">${money(order.total_amount)}</div>
+            </div>
 
-        return new Intl.NumberFormat("en-IN", {
-          style: "currency",
-          currency: "INR",
-          maximumFractionDigits: 2
-        }).format(Number.isFinite(number) ? number : 0);
-      }
+            <div class="actions">
+              ${
+                canCancel(status)
+                  ? `<button class="cancel-btn"
+                      onclick="cancelOrder('${order.id}', this)">
+                      Cancel Order
+                    </button>`
+                  : ""
+              }
+            </div>
+          </div>
 
-      function formatDate(value) {
-        if (!value) return "Date unavailable";
+          ${refundHTML}
+        </section>
+      `;
+    }).join("");
+  }
 
-        const date = new Date(value);
+  async function cancelOrder(orderId, button) {
+    const confirmed = confirm(
+      "Are you sure you want to cancel this order?"
+    );
 
-        if (Number.isNaN(date.getTime())) {
-          return "Date unavailable";
-        }
+    if (!confirmed) return;
 
-        return date.toLocaleString("en-IN", {
-          dateStyle: "medium",
-          timeStyle: "short"
-        });
-      }
+    button.disabled = true;
+    button.textContent = "Cancelling...";
 
-      function normalizeStatus(status) {
-        return String(status || "pending")
-          .trim()
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-");
-      }
+    const { data, error } = await client.rpc(
+      "customer_cancel_gram_mart_order",
+      { p_order_id: orderId }
+    );
 
-      function displayOrder(order, items) {
-        const card = document.createElement("article");
-        card.className = "order-card";
+    if (error) {
+      console.error(error);
+      showMessage(error.message || "Unable to cancel this order.", "error");
+      button.disabled = false;
+      button.textContent = "Cancel Order";
+      return;
+    }
 
-        const top = document.createElement("div");
-        top.className = "order-top";
+    showMessage(
+      data?.message || "Order cancellation request completed.",
+      "success"
+    );
 
-        const info = document.createElement("div");
-        info.className = "order-info";
+    await loadOrders();
+  }
 
-        info.appendChild(makeElement("h2", "Order details"));
+  function toggleRefundMethod(select, orderId) {
+    const method = select.value;
+    const upiWrap = document.getElementById("upi-" + orderId);
+    const bankWrap = document.getElementById("bank-" + orderId);
 
-        info.appendChild(makeElement(
-          "p",
-          "Order ID: " + order.id,
-          "order-id"
-        ));
+    const upiInput = upiWrap.querySelector("input");
+    const bankInputs = bankWrap.querySelectorAll("input");
 
-        info.appendChild(makeElement(
-          "p",
-          "Placed on " + formatDate(order.created_at),
-          "order-date"
-        ));
+    if (method === "upi") {
+      upiWrap.hidden = false;
+      bankWrap.hidden = true;
 
-        const statusText = String(order.status || "pending")
-          .replace(/[_-]+/g, " ");
+      upiInput.required = true;
+      bankInputs.forEach(input => input.required = false);
+    } else {
+      upiWrap.hidden = true;
+      bankWrap.hidden = false;
 
-        const status = makeElement(
-          "span",
-          statusText,
-          "order-status status-" + normalizeStatus(order.status)
-        );
+      upiInput.required = false;
+      bankInputs.forEach(input => input.required = true);
+    }
+  }
 
-        top.append(info, status);
-        card.appendChild(top);
+  async function submitRefund(event, orderId) {
+    event.preventDefault();
 
-        const divider = document.createElement("div");
-        divider.className = "order-divider";
-        card.appendChild(divider);
+    const form = event.target;
+    const button = form.querySelector('button[type="submit"]');
+    const formData = new FormData(form);
 
-        const itemsBox = document.createElement("div");
-        itemsBox.className = "order-items";
-        itemsBox.appendChild(makeElement("h3", "Products in this order"));
+    const method = formData.get("refund_method");
 
-        if (!items.length) {
-          itemsBox.appendChild(makeElement(
-            "p",
-            "Product details are not available for this order."
-          ));
-        }
+    const payload = {
+      p_order_id: orderId,
+      p_refund_method: method,
+      p_refund_upi_id: method === "upi"
+        ? String(formData.get("refund_upi_id") || "").trim()
+        : null,
+      p_account_holder: method === "bank"
+        ? String(formData.get("account_holder") || "").trim()
+        : null,
+      p_account_number: method === "bank"
+        ? String(formData.get("account_number") || "").trim()
+        : null,
+      p_ifsc_code: method === "bank"
+        ? String(formData.get("ifsc_code") || "").trim().toUpperCase()
+        : null
+    };
 
-        items.forEach(item => {
-          const row = document.createElement("div");
-          row.className = "item-row";
+    if (method === "upi" && !payload.p_refund_upi_id) {
+      showMessage("Please enter your UPI ID.", "error");
+      return;
+    }
 
-          const productName = item.product_name || "Product";
+    if (method === "bank" && (
+      !payload.p_account_holder ||
+      !payload.p_account_number ||
+      !payload.p_ifsc_code
+    )) {
+      showMessage("Please complete all bank details.", "error");
+      return;
+    }
 
-          const description = makeElement(
-            "span",
-            `${productName} × ${Number(item.quantity || 0)}`,
-            "item-name"
-          );
+    const confirmed = confirm(
+      "Please confirm that these refund details are correct."
+    );
 
-          const amount = makeElement(
-            "span",
-            formatMoney(
-              Number(item.unit_price || 0) *
-              Number(item.quantity || 0)
-            ),
-            "item-price"
-          );
+    if (!confirmed) return;
 
-          row.append(description, amount);
-          itemsBox.appendChild(row);
-        });
+    button.disabled = true;
+    button.textContent = "Submitting...";
 
-        card.appendChild(itemsBox);
+    const { data, error } = await client.rpc(
+      "customer_submit_gram_mart_refund_details",
+      payload
+    );
 
-        const bottom = document.createElement("div");
-        bottom.className = "order-bottom";
+    if (error) {
+      console.error(error);
+      showMessage(error.message || "Unable to submit refund details.", "error");
+      button.disabled = false;
+      button.textContent = "Submit Refund Details";
+      return;
+    }
 
-        const totalBox = document.createElement("div");
-        totalBox.appendChild(makeElement("p", "Order Total", "total-label"));
-        totalBox.appendChild(makeElement(
-          "p",
-          formatMoney(order.total_amount),
-          "order-total"
-        ));
-        totalBox.appendChild(makeElement(
-          "div",
-          "Final total recorded for this order",
-          "order-total-caption"
-        ));
+    showMessage(
+      data?.message || "Refund details submitted successfully.",
+      "success"
+    );
 
-        bottom.appendChild(totalBox);
-        card.appendChild(bottom);
+    await loadOrders();
+  }
 
-        ordersList.appendChild(card);
-      }
-
-      async function loadMyOrders() {
-        ordersList.replaceChildren();
-        showMessage("Loading your orders...");
-        orderCountLabel.textContent = "Loading...";
-
-        const client = window.supabaseClient;
-
-        if (!client) {
-          orderCountLabel.textContent = "Connection issue";
-          showMessage(
-            "Supabase connection missing. Please check js/supabase.js.",
-            "error"
-          );
-          return;
-        }
-
-        try {
-          const { data: authData, error: authError } =
-            await client.auth.getUser();
-
-          if (authError) throw authError;
-
-          const user = authData.user;
-
-          if (!user) {
-            orderCountLabel.textContent = "Login required";
-            showMessage(
-              "Please login to view your order history.",
-              "info",
-              { href: "login.html", text: "Login to Gram Mart →" }
-            );
-            return;
-          }
-
-          // Keep orders restricted to the currently authenticated user.
-          const { data: orders, error: ordersError } = await client
-            .from("orders")
-            .select("id, user_id, total_amount, status, created_at")
-            .eq("user_id", user.id)
-            .order("created_at", { ascending: false });
-
-          if (ordersError) throw ordersError;
-
-          if (!orders || orders.length === 0) {
-            orderCountLabel.textContent = "0 orders";
-            showMessage(
-              "You haven't placed any orders yet. Your purchases will appear here.",
-              "info",
-              { href: "index.html", text: "Start shopping →" }
-            );
-            return;
-          }
-
-          const orderIds = orders.map(order => order.id);
-
-          const { data: items, error: itemsError } = await client
-            .from("order_items")
-            .select("order_id, product_name, unit_price, quantity")
-            .in("order_id", orderIds);
-
-          if (itemsError) throw itemsError;
-
-          const itemsByOrder = new Map();
-
-          for (const item of items || []) {
-            if (!itemsByOrder.has(item.order_id)) {
-              itemsByOrder.set(item.order_id, []);
-            }
-
-            itemsByOrder.get(item.order_id).push(item);
-          }
-
-          for (const order of orders) {
-            displayOrder(order, itemsByOrder.get(order.id) || []);
-          }
-
-          orderCountLabel.textContent =
-            `${orders.length} ${orders.length === 1 ? "order" : "orders"}`;
-
-          message.hidden = true;
-
-        } catch (error) {
-          console.error("My Orders error:", error);
-
-          orderCountLabel.textContent = "Unable to load";
-
-          showMessage(
-            error.message || "Orders load nahi ho paaye. Please try again.",
-            "error"
-          );
-
-          const retry = document.createElement("button");
-          retry.className = "retry-button";
-          retry.type = "button";
-          retry.textContent = "Try Again";
-          retry.addEventListener("click", loadMyOrders);
-          message.appendChild(retry);
-        }
-      }
-
-      loadMyOrders();
-    })();
-  </script>
+  loadOrders();
+</script>
 
 </body>
 </html>

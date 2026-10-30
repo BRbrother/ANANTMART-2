@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0B3091">
+
+  <title>Cancellation & Refund Policy | Gram Mart</title>
+  <meta name="description" content="Read Gram Mart's cancellation and refund policy, including order cancellation, prepaid refunds, UPI and bank refund details, and product complaints.">
+
+  <!-- Favicon and App Icon -->
+  <link rel="icon" type="image/png" href="images/gram-mart-icon.png">
+  <link rel="apple-touch-icon" href="images/gram-mart-icon.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      --blue: #0B3091;
+      --orange: #FF6A00;
+      --light: #F4F7FC;
+      --text: #263247;
+      --muted: #68758A;
+      --white: #FFFFFF;
+      --border: #E7ECF4;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--light);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* HEADER */
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .navbar {
+      max-width: 1150px;
+      margin: auto;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .brand img {
+      width: 165px;
+      max-height: 58px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      color: var(--orange);
+    }
+
+    .home-btn {
+      background: var(--blue);
+      color: white !important;
+      padding: 9px 17px;
+      border-radius: 8px;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(120deg, #0B3091, #1747B8);
+      color: white;
+      padding: 52px 20px;
+      text-align: center;
+    }
+
+    .hero-icon {
+      width: 62px;
+      height: 62px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.15);
+      display: grid;
+      place-items: center;
+      margin: 0 auto 15px;
+    }
+
+    .hero-icon i {
+      width: 32px;
+      height: 32px;
+    }
+
+    .hero h1 {
+      font-size: 31px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .orange-line {
+      width: 55px;
+      height: 4px;
+      background: var(--orange);
+      margin: 17px auto 0;
+      border-radius: 10px;
+    }
+
+    /* CONTENT */
+    .container {
+      max-width: 950px;
+      margin: 35px auto 65px;
+      padding: 0 18px;
+    }
+
+    .intro-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .intro-card strong {
+      color: var(--blue);
+    }
+
+    .policy-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 25px;
+      margin-bottom: 16px;
+      box-shadow: 0 5px 20px rgba(15,35,75,0.025);
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 13px;
+    }
+
+    .section-icon {
+      min-width: 43px;
+      height: 43px;
+      border-radius: 12px;
+      background: #FFF1E7;
+      color: var(--orange);
+      display: grid;
+      place-items: center;
+    }
+
+    .section-icon i {
+      width: 21px;
+      height: 21px;
+    }
+
+    h2 {
+      font-size: 17px;
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    .policy-card p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .policy-card ul {
+      padding-left: 22px;
+      margin: 8px 0 10px;
+    }
+
+    .policy-card li {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .highlight {
+      color: var(--blue);
+      font-weight: 600;
+    }
+
+    .notice {
+      background: #FFF8EF;
+      border: 1px solid #FFE3C8;
+      border-radius: 12px;
+      padding: 17px;
+      margin-top: 12px;
+    }
+
+    .notice p {
+      margin: 0;
+      color: #76502E;
+      font-size: 12px;
+    }
+
+    .contact-box {
+      background: #EEF3FF;
+      border: 1px solid #DCE6FF;
+      padding: 22px;
+      border-radius: 14px;
+      margin-top: 20px;
+    }
+
+    .contact-box h3 {
+      color: var(--blue);
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .contact-box p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      background: #168B55;
+      color: white;
+      padding: 10px 17px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* FOOTER */
+    footer {
+      background: #071E5C;
+      color: white;
+      padding: 38px 20px 18px;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 35px;
+    }
+
+    .footer-brand img {
+      width: 155px;
+      max-height: 55px;
+      object-fit: contain;
+      background: white;
+      border-radius: 8px;
+      padding: 5px;
+      margin-bottom: 12px;
+    }
+
+    .footer-inner h3 {
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .footer-inner p,
+    .footer-inner a {
+      font-size: 12px;
+      color: #D1DCF7;
+    }
+
+    .footer-inner a {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .footer-inner a:hover {
+      color: var(--orange);
+    }
+
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 25px auto 0;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      text-align: center;
+      color: #B9C8EB;
+      font-size: 11px;
+    }
+
+    @media(max-width: 700px) {
+      .navbar {
+        padding: 10px 14px;
+      }
+
+      .brand img {
+        width: 125px;
+      }
+
+      .nav-links {
+        gap: 12px;
+        font-size: 11px;
+      }
+
+      .nav-links .optional {
+        display: none;
+      }
+
+      .hero {
+        padding: 40px 15px;
+      }
+
+      .hero h1 {
+        font-size: 25px;
+      }
+
+      .container {
+        margin-top: 22px;
+      }
+
+      .policy-card {
+        padding: 19px;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+      }
+
+      .footer-brand {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media(max-width: 390px) {
+      .nav-links {
+        gap: 9px;
+      }
+
+      .home-btn {
+        padding: 7px 10px;
+      }
+
+      .footer-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-brand {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="navbar">
+      <a href="index.html" class="brand">
+        <img src="images/gram-mart-logo.png" alt="Gram Mart Logo">
+      </a>
+
+      <nav class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#products" class="optional">Shop</a>
+        <a href="my-orders.html" class="optional">My Orders</a>
+        <a href="index.html" class="home-btn">Back to Store</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-icon">
+      <i data-lucide="refresh-ccw"></i>
+    </div>
+
+    <h1>Cancellation & Refund Policy</h1>
+    <p>Clear and transparent cancellation and refund process.</p>
+    <div class="orange-line"></div>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <main class="container">
+
+    <div class="intro-card">
+      <p>
+        At <strong>Gram Mart</strong>, we aim to provide a smooth and
+        transparent shopping experience. This policy explains how customers
+        can cancel eligible orders, request refunds and report product issues.
+      </p>
+
+      <p style="margin-top:10px;font-size:12px;color:#68758A;">
+        <strong>Effective Date:</strong> 1 November 2026
+      </p>
+    </div>
+
+    <!-- 1 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="x-circle"></i></div>
+        <h2>1. Order Cancellation</h2>
+      </div>
+
+      <p>
+        Customers may cancel an eligible order through the My Orders
+        section of the Gram Mart website before the order reaches
+        <strong>Out for Delivery</strong> status.
+      </p>
+
+      <ul>
+        <li>Cancellation is subject to the current order status.</li>
+        <li>Customers should use the available cancellation option in My Orders.</li>
+        <li>Once an order reaches Out for Delivery status, normal customer cancellation is unavailable.</li>
+        <li>Delivered or already Cancelled orders cannot be cancelled again.</li>
+      </ul>
+
+      <p>
+        If the cancellation option is unavailable, customers can contact
+        our support team for assistance.
+      </p>
+    </section>
+
+    <!-- 2 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="store"></i></div>
+        <h2>2. Cancellation by Gram Mart</h2>
+      </div>
+
+      <p>
+        Gram Mart may cancel an order when it cannot reasonably be
+        processed or delivered.
+      </p>
+
+      <ul>
+        <li>Ordered product is unavailable.</li>
+        <li>Delivery address is incorrect, incomplete or outside our active delivery area.</li>
+        <li>Payment cannot be verified where online payment is required.</li>
+        <li>There is suspected fraudulent activity or misuse.</li>
+        <li>A technical or operational issue prevents order fulfilment.</li>
+      </ul>
+
+      <p>
+        Where an eligible prepaid order is cancelled by Gram Mart,
+        the applicable refund process will be initiated.
+      </p>
+    </section>
+
+    <!-- 3 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="wallet"></i></div>
+        <h2>3. Refund Eligibility</h2>
+      </div>
+
+      <p>
+        A refund may be considered in the following circumstances:
+      </p>
+
+      <ul>
+        <li>An eligible prepaid order is successfully cancelled.</li>
+        <li>Gram Mart cancels a prepaid order and the payment was received.</li>
+        <li>A refund is approved after reviewing an incorrect, damaged or missing product complaint.</li>
+        <li>A duplicate or excess payment is verified.</li>
+        <li>Another refund situation is approved under applicable law or our customer support review.</li>
+      </ul>
+
+      <p>
+        Each refund request is subject to verification and applicable
+        customer rights.
+      </p>
+    </section>
+
+    <!-- 4 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="credit-card"></i></div>
+        <h2>4. Prepaid Order Refund Process</h2>
+      </div>
+
+      <p>
+        For an eligible prepaid cancellation, customers may be asked to
+        submit refund details through the refund option available in
+        the My Orders section.
+      </p>
+
+      <p>Depending on the available refund method, customers may provide:</p>
+
+      <ul>
+        <li>UPI ID for UPI refund.</li>
+        <li>Account holder name for bank transfer.</li>
+        <li>Bank account number.</li>
+        <li>IFSC code.</li>
+      </ul>
+
+      <p>
+        Customers should carefully check the details before submission.
+        Incorrect or incomplete details may delay the refund.
+      </p>
+    </section>
+
+    <!-- 5 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="clock"></i></div>
+        <h2>5. Refund Processing Time</h2>
+      </div>
+
+      <p>
+        Our target processing time is <strong>5–7 business days</strong>
+        after refund approval and successful verification of the required
+        refund details.
+      </p>
+
+      <p>
+        Actual credit time may depend on the bank, UPI service provider
+        and payment channel.
+      </p>
+
+      <div class="notice">
+        <p>
+          <strong>Important:</strong> The processing estimate begins
+          after approval and verification. Incorrect details, bank
+          delays or technical issues may require additional time.
+        </p>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="banknote"></i></div>
+        <h2>6. Cash on Delivery (COD) Orders</h2>
+      </div>
+
+      <p>
+        If a COD order is cancelled before delivery, no product payment
+        refund is normally required because the customer has not paid
+        for the order.
+      </p>
+
+      <p>
+        If any amount has already been collected or paid in relation
+        to a COD order, the matter will be reviewed and handled according
+        to the verified payment details and applicable policy.
+      </p>
+    </section>
+
+    <!-- 7 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="package-x"></i></div>
+        <h2>7. Damaged, Incorrect or Missing Products</h2>
+      </div>
+
+      <p>
+        If you receive a damaged, incorrect or missing product, please
+        contact us as soon as possible, preferably within 24 hours
+        of delivery.
+      </p>
+
+      <p>Please provide:</p>
+
+      <ul>
+        <li>Your order ID.</li>
+        <li>Name of the affected product.</li>
+        <li>A clear description of the issue.</li>
+        <li>Photographs or other supporting details, where available.</li>
+      </ul>
+
+      <p>
+        After reviewing the complaint, Gram Mart may offer an appropriate
+        resolution such as replacement, refund or another suitable solution,
+        subject to applicable law.
+      </p>
+    </section>
+
+    <!-- 8 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="ban"></i></div>
+        <h2>8. When Normal Cancellation Is Unavailable</h2>
+      </div>
+
+      <p>
+        The normal customer cancellation option is unavailable once
+        an order reaches Out for Delivery or Delivered status.
+      </p>
+
+      <p>
+        If a customer has a genuine issue with an order that has already
+        been dispatched or delivered, they should contact support.
+        The issue will be reviewed separately according to its
+        circumstances and applicable consumer rights.
+      </p>
+    </section>
+
+    <!-- 9 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="shield-check"></i></div>
+        <h2>9. Refund Safety & Verification</h2>
+      </div>
+
+      <ul>
+        <li>Submit accurate UPI or bank details.</li>
+        <li>Do not share your UPI PIN or OTP with anyone.</li>
+        <li>Gram Mart does not need your banking password to process a refund.</li>
+        <li>Refund requests may be checked to prevent unauthorized claims or fraud.</li>
+      </ul>
+    </section>
+
+    <!-- 10 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="file-check"></i></div>
+        <h2>10. Refund Request Status</h2>
+      </div>
+
+      <p>
+        Customers may use the My Orders section to access the refund
+        submission option and view available refund information or
+        request status, depending on the website features.
+      </p>
+
+      <p>
+        If you need clarification about a pending refund, contact
+        customer support with your order ID.
+      </p>
+
+      <p>
+        <a href="my-orders.html" class="highlight">Go to My Orders</a>
+      </p>
+    </section>
+
+    <!-- 11 -->
+    <section class="policy-card">
+      <div class="section-heading">
+        <div class="section-icon"><i data-lucide="edit"></i></div>
+        <h2>11. Changes to This Policy</h2>
+      </div>
+
+      <p>
+        Gram Mart may update this Cancellation & Refund Policy from
+        time to time to reflect changes in operations, payment processes
+        or applicable legal requirements.
+      </p>
+
+      <p>
+        Updated information will be published on this page with a
+        revised effective date where appropriate.
+      </p>
+    </section>
+
+    <!-- CONTACT -->
+    <div class="contact-box">
+      <h3>Need Help With a Cancellation or Refund?</h3>
+
+      <p>
+        Contact Gram Mart support and share your order ID so our team
+        can review your request.
+      </p>
+
+      <a class="whatsapp-btn"
+         href="https://wa.me/917340259598"
+         target="_blank"
+         rel="noopener noreferrer">
+        <i data-lucide="message-circle"></i>
+        Contact on WhatsApp
+      </a>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+
+      <div class="footer-brand">
+        <a href="index.html">
+          <img src="images/gram-mart-logo.png" alt="Gram Mart Logo">
+        </a>
+
+        <p>
+          Har Zarurat Ek Jagah,<br>
+          Infinite Choice One Mart.
+        </p>
+      </div>
+
+      <div>
+        <h3>Quick Links</h3>
+        <a href="index.html">Home</a>
+        <a href="index.html#products">Shop</a>
+        <a href="my-orders.html">My Orders</a>
+        <a href="https://wa.me/917340259598" target="_blank" rel="noopener noreferrer">Contact Support</a>
+      </div>
+
+      <div>
+        <h3>Customer Policies</h3>
+        <a href="terms.html">Terms & Conditions</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="shipping-policy.html">Shipping Policy</a>
+        <a href="refund-policy.html">Cancellation & Refund</a>
+        <a href="contact.html">Contact Us</a>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      © 2026 Gram Mart. All Rights Reserved.
+    </div>
+  </footer>
+
+  <script>
+    // Initialize Lucide icons
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
+
+</body>
+</html>
