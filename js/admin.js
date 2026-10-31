@@ -1,6 +1,9 @@
 /* =====================================================
-GRAM MART ADMIN — SUPABASE
-Requires: Supabase CDN + js/supabase.js
+   GRAM MART ADMIN — SUPABASE
+   Requires:
+   1. Supabase CDN
+   2. js/supabase.js
+   3. This file: js/admin.js
 ===================================================== */
 
 const db = window.supabaseClient;
@@ -8,544 +11,738 @@ const db = window.supabaseClient;
 let adminVerified = false;
 let adminCheckPromise = null;
 let allAdminOrders = [];
-let editingProductId = null;
+
+// ---------- COMMON HELPERS ----------
 
 function byId(id) {
-return document.getElementById(id);
+  return document.getElementById(id);
 }
 
 function showError(message) {
-console.error(message);
-alert(message);
+  console.error(message);
+  alert(message);
 }
 
 function formatINR(value) {
-return Number(value || 0).toLocaleString("en-IN", {
-style: "currency",
-currency: "INR",
-maximumFractionDigits: 2
-});
+  return Number(value || 0).toLocaleString("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 2
+  });
 }
 
 function addCell(row, value) {
-const td = document.createElement("td");
-td.textContent = String(value ?? "N/A");
-row.appendChild(td);
-return td;
+  const td = document.createElement("td");
+  td.textContent = String(value ?? "N/A");
+  row.appendChild(td);
+  return td;
 }
 
 function statusClass(status) {
-const value = String(status || "pending").toLowerCase();
-if (value === "delivered") return "status-delivered";
-if (value === "cancelled") return "status-cancelled";
-if (value === "pending") return "status-pending";
-if (value === "shipped") return "status-shipped";
-return "";
+  const value = String(status || "pending").toLowerCase();
+
+  if (value === "delivered") return "status-delivered";
+  if (value === "cancelled") return "status-cancelled";
+  if (value === "pending") return "status-pending";
+  if (value === "shipped") return "status-shipped";
+
+  return "";
+}
+
+function validateImageUrl(value) {
+  if (!value) return true;
+
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
 }
 
 // ---------- ADMIN AUTHORIZATION ----------
 
 async function verifyAdmin() {
-if (adminVerified) return true;
-if (adminCheckPromise) return adminCheckPromise;
+  if (adminVerified) return true;
 
-adminCheckPromise = (async () => {
-if (!db) {
-throw new Error("Supabase client nahi mila. Script loading order check karo.");
+  if (adminCheckPromise) {
+    return adminCheckPromise;
+  }
+
+  adminCheckPromise = (async () => {
+    if (!db) {
+      throw new Error(
+        "Supabase client nahi mila. Script loading order check karo."
+      );
+    }
+
+    const {
+      data: sessionData,
+      error: sessionError
+    } = await db.auth.getSession();
+
+    if (sessionError) {
+      throw sessionError;
+    }
+
+    if (!sessionData.session) {
+      alert("Admin panel ke liye login karna zaroori hai.");
+      window.location.href = "./login.html";
+      return false;
+    }
+
+    const {
+      data: isAdmin,
+      error
+    } = await db.rpc("is_admin");
+
+    if (error) {
+      throw error;
+    }
+
+    if (isAdmin !== true) {
+      alert(
+        "Access denied: Sirf authorized admin access kar sakta hai."
+      );
+
+      window.location.href = "./index.html";
+      return false;
+    }
+
+    adminVerified = true;
+    return true;
+  })();
+
+  try {
+    return await adminCheckPromise;
+  } finally {
+    adminCheckPromise = null;
+  }
 }
 
-const { data: sessionData, error: sessionError } =
-  await db.auth.getSession();
-
-if (sessionError) throw sessionError;
-
-if (!sessionData.session) {
-  alert("Admin panel ke liye login karna zaroori hai.");
-  window.location.href = "./login.html";
-  return false;
-}
-
-const { data: isAdmin, error } = await db.rpc("is_admin");
-
-if (error) throw error;
-
-if (isAdmin !== true) {
-  alert("Access denied: Sirf authorized admin access kar sakta hai.");
-  window.location.href = "./index.html";
-  return false;
-}
-
-adminVerified = true;
-return true;
-
-})();
-
-try {
-return await adminCheckPromise;
-} finally {
-adminCheckPromise = null;
-}
-}
-
-// ---------- PRODUCT FORM ----------
+// ---------- ADD PRODUCT FORM ----------
+// Product editing now happens on edit-product.html.
+// This form is only for adding a new product.
 
 function resetProductForm() {
-editingProductId = null;
-byId("productForm")?.reset();
+  byId("productForm")?.reset();
 
-if (byId("productFormHeading")) {
-byId("productFormHeading").textContent = "Add Grocery Product";
-}
+  const heading = byId("productFormHeading");
 
-if (byId("productSubmitBtn")) {
-byId("productSubmitBtn").textContent = "＋ Add Product";
-}
+  if (heading) {
+    heading.textContent = "Add Grocery Product";
+  }
 
-if (byId("cancelEditBtn")) {
-byId("cancelEditBtn").hidden = true;
-}
-}
+  const submitButton = byId("productSubmitBtn");
 
-function validateImageUrl(value) {
-if (!value) return true;
+  if (submitButton) {
+    submitButton.textContent = "＋ Add Product";
+  }
 
-try {
-const url = new URL(value);
-return url.protocol === "https:" || url.protocol === "http:";
-} catch {
-return false;
-}
+  const cancelButton = byId("cancelEditBtn");
+
+  if (cancelButton) {
+    cancelButton.hidden = true;
+  }
 }
 
 async function handleProductSubmit(event) {
-event.preventDefault();
+  event.preventDefault();
 
-try {
-if (!(await verifyAdmin())) return;
+  try {
+    if (!(await verifyAdmin())) return;
 
-const name = byId("productName").value.trim();
-const priceText = byId("productPrice").value;
-const category = byId("productCategory").value;
-const stockText = byId("productStock").value;
-const imageUrl = byId("productImage").value.trim();
+    const name = byId("productName")?.value.trim() || "";
+    const priceText = byId("productPrice")?.value ?? "";
+    const category = byId("productCategory")?.value || "";
+    const stockText = byId("productStock")?.value ?? "";
+    const imageUrl = byId("productImage")?.value.trim() || "";
 
-const price = Number(priceText);
-const stock = Number(stockText);
+    const price = Number(priceText);
+    const stock = Number(stockText);
 
-if (!name || priceText === "" || !category || stockText === "") {
-  return showError("Product name, price, category aur stock bharo.");
-}
+    if (
+      !name ||
+      priceText === "" ||
+      !category ||
+      stockText === ""
+    ) {
+      return showError(
+        "Product name, price, category aur stock bharo."
+      );
+    }
 
-if (!Number.isFinite(price) || price < 0) {
-  return showError("Valid product price daalo.");
-}
+    if (!Number.isFinite(price) || price < 0) {
+      return showError("Valid product price daalo.");
+    }
 
-if (!Number.isInteger(stock) || stock < 0) {
-  return showError("Stock zero ya positive whole number hona chahiye.");
-}
+    if (!Number.isInteger(stock) || stock < 0) {
+      return showError(
+        "Stock zero ya positive whole number hona chahiye."
+      );
+    }
 
-if (!validateImageUrl(imageUrl)) {
-  return showError("Valid HTTP/HTTPS image URL daalo.");
-}
+    if (!validateImageUrl(imageUrl)) {
+      return showError(
+        "Valid HTTP/HTTPS image URL daalo."
+      );
+    }
 
-const productData = {
-  name,
-  price,
-  category,
-  stock,
-  image_url: imageUrl || null
-};
+    const productData = {
+      name,
+      price,
+      category,
+      stock,
+      image_url: imageUrl || null,
+      is_active: true
+    };
 
-let result;
+    const {
+      error
+    } = await db
+      .from("products")
+      .insert(productData);
 
-if (editingProductId) {
-  result = await db
-    .from("products")
-    .update(productData)
-    .eq("id", editingProductId);
-} else {
-  result = await db
-    .from("products")
-    .insert({ ...productData, is_active: true });
-}
+    if (error) {
+      throw error;
+    }
 
-if (result.error) throw result.error;
+    alert("Product add ho gaya!");
 
-alert(editingProductId ? "Product update ho gaya!" : "Product add ho gaya!");
-resetProductForm();
+    resetProductForm();
 
-await Promise.all([
-  loadProducts(),
-  loadAdminStatsAndOrders()
-]);
+    await Promise.all([
+      loadProducts(),
+      loadAdminStatsAndOrders()
+    ]);
 
-} catch (error) {
-console.error("Product save error:", error);
-showError("Product save nahi hua. RLS permissions aur console error check karo.");
-}
+  } catch (error) {
+    console.error("Product save error:", error);
+
+    showError(
+      "Product save nahi hua. Supabase RLS permissions aur console error check karo."
+    );
+  }
 }
 
 // ---------- LOAD PRODUCTS ----------
 
 async function loadProducts() {
-const container = byId("adminProducts");
-if (!container) return;
+  const container = byId("adminProducts");
 
-try {
-if (!(await verifyAdmin())) return;
+  if (!container) return;
 
-const { data: products, error } = await db
-  .from("products")
-  .select("id, name, price, category, stock, image_url, is_active")
-  .order("created_at", { ascending: false });
+  try {
+    if (!(await verifyAdmin())) return;
 
-if (error) throw error;
+    const {
+      data: products,
+      error
+    } = await db
+      .from("products")
+      .select(
+        "id, name, price, category, stock, image_url, is_active"
+      )
+      .order("created_at", {
+        ascending: false
+      });
 
-container.replaceChildren();
+    if (error) {
+      throw error;
+    }
 
-const activeProducts = (products || []).filter(p => p.is_active === true);
-const lowStockProducts = activeProducts.filter(
-  p => Number(p.stock || 0) <= 5
-);
+    container.replaceChildren();
 
-if (byId("productsWidget")) {
-  byId("productsWidget").textContent = String(activeProducts.length);
-}
+    const productList = products || [];
 
-if (byId("lowStockWidget")) {
-  byId("lowStockWidget").textContent = String(lowStockProducts.length);
-}
+    const activeProducts = productList.filter(
+      product => product.is_active === true
+    );
 
-if (!products || products.length === 0) {
-  container.textContent = "Abhi koi product nahi hai.";
-  return;
-}
+    const lowStockProducts = activeProducts.filter(
+      product => Number(product.stock || 0) <= 5
+    );
 
-products.forEach(product => {
-  const card = document.createElement("article");
-  card.className = "admin-product";
+    if (byId("productsWidget")) {
+      byId("productsWidget").textContent =
+        String(activeProducts.length);
+    }
 
-  const img = document.createElement("img");
-  img.src = product.image_url || "https://placehold.co/300x200?text=GRAM+MART";
-  img.alt = product.name || "Grocery product";
-  img.loading = "lazy";
-  img.onerror = () => {
-    img.onerror = null;
-    img.src = "https://placehold.co/300x200?text=GRAM+MART";
-  };
+    if (byId("lowStockWidget")) {
+      byId("lowStockWidget").textContent =
+        String(lowStockProducts.length);
+    }
 
-  const title = document.createElement("h3");
-  title.textContent = product.name || "Unnamed product";
+    if (productList.length === 0) {
+      container.textContent = "Abhi koi product nahi hai.";
+      return;
+    }
 
-  const price = document.createElement("p");
-  price.textContent = formatINR(product.price);
+    productList.forEach(product => {
+      const card = document.createElement("article");
+      card.className = "admin-product";
 
-  const category = document.createElement("p");
-  category.textContent = "Category: " + (product.category || "Other");
+      // Product image
+      const img = document.createElement("img");
 
-  const stock = document.createElement("p");
-  stock.textContent = "Stock: " + Number(product.stock || 0);
+      img.src =
+        product.image_url ||
+        "https://placehold.co/300x200?text=GRAM+MART";
 
-  const status = document.createElement("p");
-  status.textContent = product.is_active ? "● Active" : "○ Inactive";
+      img.alt = product.name || "Grocery product";
+      img.loading = "lazy";
 
-  const actions = document.createElement("div");
-  actions.className = "action-btns";
+      img.onerror = () => {
+        img.onerror = null;
+        img.src =
+          "https://placehold.co/300x200?text=GRAM+MART";
+      };
 
-  const edit = document.createElement("button");
-  edit.type = "button";
-  edit.className = "btn btn-secondary";
-  edit.textContent = "Edit";
-  edit.addEventListener("click", () => editProduct(product.id));
+      // Product name
+      const title = document.createElement("h3");
+      title.textContent =
+        product.name || "Unnamed product";
 
-  const del = document.createElement("button");
-  del.type = "button";
-  del.className = "btn btn-danger";
-  del.textContent = "Delete";
-  del.addEventListener("click", () => deleteProduct(product.id));
+      // Price
+      const price = document.createElement("p");
+      price.textContent = formatINR(product.price);
 
-  actions.append(edit, del);
-  card.append(img, title, price, category, stock, status, actions);
-  container.appendChild(card);
-});
+      // Category
+      const category = document.createElement("p");
 
-} catch (error) {
-console.error("Products load error:", error);
-container.textContent = "Products load nahi hue. Console check karo.";
-}
-}
+      category.textContent =
+        "Category: " + (product.category || "Other");
 
-// ---------- EDIT PRODUCT ----------
+      // Stock
+      const stock = document.createElement("p");
 
-async function editProduct(id) {
-try {
-if (!(await verifyAdmin())) return;
+      stock.textContent =
+        "Stock: " + Number(product.stock || 0);
 
-const { data: product, error } = await db
-  .from("products")
-  .select("id, name, price, category, stock, image_url, is_active")
-  .eq("id", id)
-  .single();
+      // Status
+      const status = document.createElement("p");
 
-if (error) throw error;
+      status.textContent = product.is_active
+        ? "● Active"
+        : "○ Inactive";
 
-editingProductId = product.id;
-byId("productName").value = product.name || "";
-byId("productPrice").value = product.price ?? "";
-byId("productCategory").value = product.category || "";
-byId("productStock").value = product.stock ?? 0;
-byId("productImage").value = product.image_url || "";
+      // Action buttons
+      const actions = document.createElement("div");
+      actions.className = "action-btns";
 
-byId("productFormHeading").textContent = "Edit Grocery Product";
-byId("productSubmitBtn").textContent = "Save Changes";
-byId("cancelEditBtn").hidden = false;
+      // EDIT BUTTON — OPENS SEPARATE EDIT PAGE
+      const edit = document.createElement("button");
 
-byId("productForm").scrollIntoView({
-  behavior: "smooth",
-  block: "start"
-});
+      edit.type = "button";
+      edit.className = "btn btn-secondary";
+      edit.textContent = "Edit";
 
-} catch (error) {
-console.error("Edit product error:", error);
-showError("Product details load nahi hui.");
-}
+      edit.addEventListener("click", () => {
+        const productId = encodeURIComponent(product.id);
+
+        window.location.href =
+          "./edit-product.html?id=" + productId;
+      });
+
+      // DELETE BUTTON
+      const del = document.createElement("button");
+
+      del.type = "button";
+      del.className = "btn btn-danger";
+      del.textContent = "Delete";
+
+      del.addEventListener("click", () => {
+        deleteProduct(product.id);
+      });
+
+      actions.append(edit, del);
+
+      card.append(
+        img,
+        title,
+        price,
+        category,
+        stock,
+        status,
+        actions
+      );
+
+      container.appendChild(card);
+    });
+
+  } catch (error) {
+    console.error("Products load error:", error);
+
+    container.textContent =
+      "Products load nahi hue. Console check karo.";
+  }
 }
 
 // ---------- DELETE PRODUCT ----------
 
 async function deleteProduct(id) {
-if (!confirm("Kya tum is product ko permanently delete karna chahte ho?")) {
-return;
+  const confirmed = confirm(
+    "Kya tum is product ko permanently delete karna chahte ho?"
+  );
+
+  if (!confirmed) return;
+
+  try {
+    if (!(await verifyAdmin())) return;
+
+    const {
+      error
+    } = await db
+      .from("products")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      throw error;
+    }
+
+    alert("Product delete ho gaya!");
+
+    await Promise.all([
+      loadProducts(),
+      loadAdminStatsAndOrders()
+    ]);
+
+  } catch (error) {
+    console.error("Delete product error:", error);
+
+    showError(
+      "Product delete nahi hua. RLS permissions ya order references check karo."
+    );
+  }
 }
 
-try {
-if (!(await verifyAdmin())) return;
-
-const { error } = await db
-  .from("products")
-  .delete()
-  .eq("id", id);
-
-if (error) throw error;
-
-alert("Product delete ho gaya!");
-
-await Promise.all([
-  loadProducts(),
-  loadAdminStatsAndOrders()
-]);
-
-} catch (error) {
-console.error("Delete product error:", error);
-showError("Product delete nahi hua. RLS ya order references check karo.");
-}
-}
-
-// ---------- ORDERS TABLE FILTER ----------
+// ---------- RENDER ADMIN ORDERS ----------
 
 function renderAdminOrders() {
-const tableBody = byId("adminOrderTableBody");
-if (!tableBody) return;
+  const tableBody = byId("adminOrderTableBody");
 
-const search = (byId("orderSearch")?.value || "").trim().toLowerCase();
-const statusFilter = (byId("orderStatusFilter")?.value || "").toLowerCase();
+  if (!tableBody) return;
 
-const filteredOrders = allAdminOrders.filter(order => {
-const status = String(order.status || "pending").toLowerCase();
+  const search = (
+    byId("orderSearch")?.value || ""
+  ).trim().toLowerCase();
 
-if (statusFilter && status !== statusFilter) return false;
+  const statusFilter = (
+    byId("orderStatusFilter")?.value || ""
+  ).toLowerCase();
 
-const address = order.shipping_address || {};
-const contact = [
-  address.email,
-  address.phone,
-  address.full_name,
-  address.name,
-  order.user_id
-].filter(Boolean).join(" ").toLowerCase();
+  const filteredOrders = allAdminOrders.filter(order => {
+    const status = String(
+      order.status || "pending"
+    ).toLowerCase();
 
-const items = (order.items || [])
-  .map(item => `${item.product_name} ${item.quantity}`)
-  .join(" ").toLowerCase();
+    if (statusFilter && status !== statusFilter) {
+      return false;
+    }
 
-const searchable = [
-  order.id,
-  contact,
-  items,
-  order.status,
-  order.total_amount
-].join(" ").toLowerCase();
+    const address = order.shipping_address || {};
 
-return !search || searchable.includes(search);
+    const contact = [
+      address.email,
+      address.phone,
+      address.full_name,
+      address.name,
+      order.user_id
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
 
-});
+    const items = (order.items || [])
+      .map(item =>
+        `${item.product_name || ""} ${item.quantity || ""}`
+      )
+      .join(" ")
+      .toLowerCase();
 
-tableBody.replaceChildren();
+    const searchable = [
+      order.id,
+      contact,
+      items,
+      order.status,
+      order.total_amount
+    ]
+      .join(" ")
+      .toLowerCase();
 
-if (filteredOrders.length === 0) {
-const row = document.createElement("tr");
-const cell = document.createElement("td");
-cell.colSpan = 6;
-cell.textContent = "Is filter ke liye koi order nahi mila.";
-row.appendChild(cell);
-tableBody.appendChild(row);
-return;
-}
+    return !search || searchable.includes(search);
+  });
 
-filteredOrders.forEach(order => {
-const row = document.createElement("tr");
-const address = order.shipping_address || {};
-const items = order.items || [];
+  tableBody.replaceChildren();
 
-const shortId = String(order.id || "").slice(0, 8);
-const itemsText = items.length
-  ? items.map(item => `${item.product_name || "Product"} (${item.quantity})`).join(", ")
-  : "No item details";
+  if (filteredOrders.length === 0) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
 
-const contact = [
-  address.full_name || address.name,
-  address.phone,
-  address.email
-].filter(Boolean).join(" · ") || order.user_id || "N/A";
+    cell.colSpan = 6;
+    cell.textContent =
+      "Is filter ke liye koi order nahi mila.";
 
-const date = order.created_at
-  ? new Date(order.created_at).toLocaleString("en-IN")
-  : "N/A";
+    row.appendChild(cell);
+    tableBody.appendChild(row);
 
-addCell(row, shortId);
-addCell(row, contact);
-addCell(row, itemsText);
-addCell(row, formatINR(order.total_amount));
-addCell(row, date);
+    return;
+  }
 
-const statusCell = document.createElement("td");
-const badge = document.createElement("span");
-const status = String(order.status || "pending").toLowerCase();
+  filteredOrders.forEach(order => {
+    const row = document.createElement("tr");
 
-badge.className = "status-badge " + statusClass(status);
-badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-statusCell.appendChild(badge);
-row.appendChild(statusCell);
+    const address = order.shipping_address || {};
+    const items = order.items || [];
 
-tableBody.appendChild(row);
+    const shortId = String(order.id || "").slice(0, 8);
 
-});
+    const itemsText = items.length
+      ? items
+          .map(item =>
+            `${item.product_name || "Product"} (${item.quantity})`
+          )
+          .join(", ")
+      : "No item details";
+
+    const contact = [
+      address.full_name || address.name,
+      address.phone,
+      address.email
+    ]
+      .filter(Boolean)
+      .join(" · ") || order.user_id || "N/A";
+
+    const date = order.created_at
+      ? new Date(order.created_at).toLocaleString("en-IN")
+      : "N/A";
+
+    addCell(row, shortId);
+    addCell(row, contact);
+    addCell(row, itemsText);
+    addCell(row, formatINR(order.total_amount));
+    addCell(row, date);
+
+    const statusCell = document.createElement("td");
+    const badge = document.createElement("span");
+
+    const status = String(
+      order.status || "pending"
+    ).toLowerCase();
+
+    badge.className =
+      "status-badge " + statusClass(status);
+
+    badge.textContent =
+      status.charAt(0).toUpperCase() + status.slice(1);
+
+    statusCell.appendChild(badge);
+    row.appendChild(statusCell);
+
+    tableBody.appendChild(row);
+  });
 }
 
 // ---------- DASHBOARD STATS & ORDERS ----------
 
 async function loadAdminStatsAndOrders() {
-const tableBody = byId("adminOrderTableBody");
+  const tableBody = byId("adminOrderTableBody");
 
-try {
-if (!(await verifyAdmin())) return;
+  try {
+    if (!(await verifyAdmin())) return;
 
-const [ordersResult, usersResult] = await Promise.all([
-  db.from("orders")
-    .select("id, user_id, total_amount, status, shipping_address, created_at")
-    .order("created_at", { ascending: false }),
+    const [
+      ordersResult,
+      usersResult
+    ] = await Promise.all([
+      db
+        .from("orders")
+        .select(
+          "id, user_id, total_amount, status, shipping_address, created_at"
+        )
+        .order("created_at", {
+          ascending: false
+        }),
 
-  db.from("profiles")
-    .select("id", { count: "exact", head: true })
-]);
+      db
+        .from("profiles")
+        .select("id", {
+          count: "exact",
+          head: true
+        })
+    ]);
 
-if (ordersResult.error) throw ordersResult.error;
-if (usersResult.error) throw usersResult.error;
+    if (ordersResult.error) {
+      throw ordersResult.error;
+    }
 
-const orders = ordersResult.data || [];
-const orderIds = orders.map(order => order.id);
+    if (usersResult.error) {
+      throw usersResult.error;
+    }
 
-let items = [];
+    const orders = ordersResult.data || [];
 
-if (orderIds.length > 0) {
-  const { data: itemRows, error: itemsError } = await db
-    .from("order_items")
-    .select("order_id, product_name, quantity")
-    .in("order_id", orderIds);
+    const orderIds = orders.map(order => order.id);
 
-  if (itemsError) throw itemsError;
-  items = itemRows || [];
+    let items = [];
+
+    if (orderIds.length > 0) {
+      const {
+        data: itemRows,
+        error: itemsError
+      } = await db
+        .from("order_items")
+        .select(
+          "order_id, product_name, quantity"
+        )
+        .in("order_id", orderIds);
+
+      if (itemsError) {
+        throw itemsError;
+      }
+
+      items = itemRows || [];
+    }
+
+    const itemsByOrder = {};
+
+    items.forEach(item => {
+      if (!itemsByOrder[item.order_id]) {
+        itemsByOrder[item.order_id] = [];
+      }
+
+      itemsByOrder[item.order_id].push(item);
+    });
+
+    allAdminOrders = orders.map(order => ({
+      ...order,
+      items: itemsByOrder[order.id] || []
+    }));
+
+    const countStatus = status => {
+      return orders.filter(order =>
+        String(order.status || "").toLowerCase() === status
+      ).length;
+    };
+
+    const deliveredOrders = countStatus("delivered");
+    const pendingOrders = countStatus("pending");
+    const cancelledOrders = countStatus("cancelled");
+
+    // Delivered order value, not verified payment revenue.
+    const deliveredValue = orders.reduce((sum, order) => {
+      if (
+        String(order.status || "").toLowerCase() === "delivered"
+      ) {
+        return sum + Number(order.total_amount || 0);
+      }
+
+      return sum;
+    }, 0);
+
+    if (byId("ordersWidget")) {
+      byId("ordersWidget").textContent =
+        String(orders.length);
+    }
+
+    if (byId("usersWidget")) {
+      byId("usersWidget").textContent =
+        String(usersResult.count || 0);
+    }
+
+    if (byId("pendingOrdersWidget")) {
+      byId("pendingOrdersWidget").textContent =
+        String(pendingOrders);
+    }
+
+    if (byId("deliveredOrdersWidget")) {
+      byId("deliveredOrdersWidget").textContent =
+        String(deliveredOrders);
+    }
+
+    if (byId("cancelledOrdersWidget")) {
+      byId("cancelledOrdersWidget").textContent =
+        String(cancelledOrders);
+    }
+
+    if (byId("revenueWidget")) {
+      byId("revenueWidget").textContent =
+        formatINR(deliveredValue);
+    }
+
+    renderAdminOrders();
+
+  } catch (error) {
+    console.error("Admin dashboard error:", error);
+
+    if (tableBody) {
+      tableBody.replaceChildren();
+
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+
+      cell.colSpan = 6;
+      cell.textContent =
+        "Dashboard data load nahi hua. Console check karo.";
+
+      row.appendChild(cell);
+      tableBody.appendChild(row);
+    }
+
+    showError(
+      "Dashboard load nahi hua. Browser console aur Supabase RLS policies check karo."
+    );
+  }
 }
 
-const itemsByOrder = {};
-
-items.forEach(item => {
-  if (!itemsByOrder[item.order_id]) itemsByOrder[item.order_id] = [];
-  itemsByOrder[item.order_id].push(item);
-});
-
-allAdminOrders = orders.map(order => ({
-  ...order,
-  items: itemsByOrder[order.id] || []
-}));
-
-const countStatus = status =>
-  orders.filter(order =>
-    String(order.status || "").toLowerCase() === status
-  ).length;
-
-const deliveredOrders = countStatus("delivered");
-const pendingOrders = countStatus("pending");
-const cancelledOrders = countStatus("cancelled");
-
-// Order value, not payment-confirmed revenue.
-const deliveredValue = orders.reduce((sum, order) => {
-  return String(order.status || "").toLowerCase() === "delivered"
-    ? sum + Number(order.total_amount || 0)
-    : sum;
-}, 0);
-
-if (byId("ordersWidget")) byId("ordersWidget").textContent = String(orders.length);
-if (byId("usersWidget")) byId("usersWidget").textContent = String(usersResult.count || 0);
-if (byId("pendingOrdersWidget")) byId("pendingOrdersWidget").textContent = String(pendingOrders);
-if (byId("deliveredOrdersWidget")) byId("deliveredOrdersWidget").textContent = String(deliveredOrders);
-if (byId("cancelledOrdersWidget")) byId("cancelledOrdersWidget").textContent = String(cancelledOrders);
-if (byId("revenueWidget")) byId("revenueWidget").textContent = formatINR(deliveredValue);
-
-renderAdminOrders();
-
-} catch (error) {
-console.error("Admin dashboard error:", error);
-
-if (tableBody) {
-  tableBody.replaceChildren();
-  const row = document.createElement("tr");
-  const cell = document.createElement("td");
-  cell.colSpan = 6;
-  cell.textContent = "Dashboard data load nahi hua. Console check karo.";
-  row.appendChild(cell);
-  tableBody.appendChild(row);
-}
-
-showError("Dashboard load nahi hua. Browser console aur Supabase RLS policies check karo.");
-
-}
-}
-
-// ---------- REFRESH ----------
+// ---------- REFRESH ADMIN ----------
 
 async function refreshAdmin() {
-await Promise.all([
-loadProducts(),
-loadAdminStatsAndOrders()
-]);
+  await Promise.all([
+    loadProducts(),
+    loadAdminStatsAndOrders()
+  ]);
 }
 
-// ---------- START ----------
+// ---------- START ADMIN ----------
 
 document.addEventListener("DOMContentLoaded", async () => {
-byId("productForm")?.addEventListener("submit", handleProductSubmit);
-byId("cancelEditBtn")?.addEventListener("click", resetProductForm);
-byId("orderSearch")?.addEventListener("input", renderAdminOrders);
-byId("orderStatusFilter")?.addEventListener("change", renderAdminOrders);
+  // Add Product form, if present on this page.
+  byId("productForm")?.addEventListener(
+    "submit",
+    handleProductSubmit
+  );
 
-try {
-if (!(await verifyAdmin())) return;
+  byId("cancelEditBtn")?.addEventListener(
+    "click",
+    resetProductForm
+  );
 
-await refreshAdmin();
+  // Order search and status filters.
+  byId("orderSearch")?.addEventListener(
+    "input",
+    renderAdminOrders
+  );
 
-} catch (error) {
-console.error("Admin initialization failed:", error);
-alert("Admin panel initialize nahi hua. Login aur Supabase settings check karo.");
-}
+  byId("orderStatusFilter")?.addEventListener(
+    "change",
+    renderAdminOrders
+  );
+
+  try {
+    if (!(await verifyAdmin())) return;
+
+    await refreshAdmin();
+
+  } catch (error) {
+    console.error(
+      "Admin initialization failed:",
+      error
+    );
+
+    alert(
+      "Admin panel initialize nahi hua. Login aur Supabase settings check karo."
+    );
+  }
 });

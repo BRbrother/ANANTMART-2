@@ -889,8 +889,9 @@
         const stockButton = event.target.closest("[data-stock]");
 
         if (editButton) {
-          const product = products.find(p => p.id === editButton.dataset.edit);
-          if (product) openForm(product, false);
+          const productId = editButton.dataset.edit;
+window.location.href = "./edit-product.html?id=" + encodeURIComponent(productId);
+return;
         }
 
         if (stockButton) {
