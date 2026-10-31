@@ -239,7 +239,39 @@
         </div>
       </form>
     </section>
+<!-- CSV BULK IMPORT -->
+<section class="panel" id="csvImportPanel">
+  <div class="panel-heading">
+    <div>
+      <h2>📥 Bulk Product Import</h2>
+      <p>CSV file se multiple products ek saath add karein.</p>
+    </div>
+  </div>
 
+  <div class="field">
+    <label for="csvFile">Select Product CSV File</label>
+    <input
+      type="file"
+      id="csvFile"
+      accept=".csv,text/csv"
+    >
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" type="button" id="previewCsvBtn">
+      Preview CSV
+    </button>
+    <button class="btn btn-secondary" type="button" id="importCsvBtn" disabled>
+      Import Products
+    </button>
+  </div>
+
+  <div id="csvImportStatus" class="payment-note" role="status">
+    CSV file select karein.
+  </div>
+
+  <div id="csvPreview"></div>
+</section>
     <section class="panel">
       <div class="panel-heading">
         <div><h2>Grocery Inventory</h2><p>Review stock, prices and product availability.</p></div>
@@ -308,6 +340,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./js/supabase.js"></script>
 <script src="./js/admin.js"></script>
+  <script src="./js/csv-import.js"></script>
 
 <script>
 (() => {
