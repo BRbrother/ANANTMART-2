@@ -5,498 +5,327 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Gram Mart Jaipur | Online Grocery & Daily Essentials Delivery</title>
+    <meta name="description" content="Shop groceries and daily essentials online with Gram Mart in Aakeda Dunger, Jaipur. Easy ordering, affordable prices and convenient home delivery.">
+    <meta name="keywords" content="Gram Mart, Gram Mart Jaipur, online grocery Jaipur, grocery delivery Aakeda Dunger, daily essentials Jaipur">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://anantmart.vercel.app/">
 
-<meta name="description" content="Shop groceries and daily essentials online with Gram Mart in Aakeda Dunger, Jaipur. Easy ordering, affordable prices and convenient home delivery.">
-
-<meta name="keywords" content="Gram Mart, Gram Mart Jaipur, online grocery Jaipur, grocery delivery Aakeda Dunger, daily essentials Jaipur">
-
-<meta name="robots" content="index, follow">
-
-<link rel="canonical" href="https://anantmart.vercel.app/">
+    <link rel="icon" type="image/png" href="images/gram-mart-icon.png">
+    <link rel="apple-touch-icon" href="images/gram-mart-icon.png">
     <link rel="stylesheet" href="css/style.css">
-    <!-- Gram Mart Favicon -->
-<link rel="icon" type="image/png" href="images/gram-mart-icon.png">
-<link rel="apple-touch-icon" href="images/gram-mart-icon.png">
+
     <style>
-    .delivery-location {
-        font: inherit;
-        font-family: inherit;
-        text-align: left;
-        color: inherit;
-        background: transparent;
-        border: 0;
-        cursor: pointer;
-        border-radius: 8px;
-        padding: 6px;
-    }
-
-    .delivery-location:focus-visible {
-        outline: 2px solid #0B3091;
-        outline-offset: 3px;
-    }
-
-    .delivery-location:disabled {
-        cursor: wait;
-        opacity: 0.7;
-    }
-
-    .delivery-location-text {
-        display: flex;
-        flex-direction: column;
-        line-height: 1.5;
-    }
-
-    .delivery-location-status {
-        display: block;
-        max-width: 220px;
-        font-size: 11px;
-        line-height: 1.4;
-        overflow-wrap: anywhere;
-    }
-
-    .delivery-location-status:empty {
-        display: none;
-    }
-
-    .delivery-location-status[data-state="success"] {
-        color: #167A35;
-    }
-
-    .delivery-location-status[data-state="error"] {
-        color: #C62828;
-    }
-
-    .delivery-location-status[data-state="checking"] {
-        color: #0B3091;
-    }
-</style>
+        .delivery-location {
+            display:flex;
+            flex-direction:column;
+            align-items:flex-start;
+            gap:4px;
+            border:1px solid #e5e9f0;
+            background:#fff;
+            border-radius:10px;
+            padding:9px 12px;
+            cursor:pointer;
+            min-width:150px;
+        }
+        .delivery-location-text {
+            color:#0B3091;
+            font-size:12px;
+            font-weight:700;
+        }
+        .delivery-location-status {
+            font-size:11px;
+            color:#647084;
+        }
+        .delivery-location-status[data-state="success"] {color:#16803c;}
+        .delivery-location-status[data-state="error"] {color:#d93025;}
+        .delivery-location:focus-visible {
+            outline:3px solid rgba(255,106,0,.3);
+        }
+        .delivery-location:disabled {
+            opacity:.65;
+            cursor:wait;
+        }
+    </style>
 </head>
+
 <body>
 
 <header class="site-header">
     <nav class="navbar">
-        <a href="index.html" class="logo" aria-label="Gram Mart Home">
-        <img
-        src="images/gram-mart-icon.png"
-        alt="Gram Mart"
-        class="brand-logo-icon"
-        >
+
+        <a href="index.html" class="logo">
+            <img src="images/gram-mart-icon.png" class="brand-logo-icon" alt="Gram Mart">
             <span>Gram<span class="logo-accent">Mart</span></span>
         </a>
 
-        <button
-    type="button"
-    class="delivery-location"
-    id="deliveryLocationBtn"
-    aria-describedby="deliveryLocationStatus"
->
-    <span class="location-icon" aria-hidden="true">⌖</span>
-    <span class="delivery-location-text">
-        <small>DELIVER TO</small>
-        <strong id="deliveryLocationLabel">Select your location</strong>
-        <span
-            id="deliveryLocationStatus"
-            class="delivery-location-status"
-            role="status"
-            aria-live="polite"
-        ></span>
-    </span>
-</button>
+        <button class="delivery-location" id="deliveryLocationBtn" type="button">
+            <span class="delivery-location-text" id="deliveryLocationLabel">📍 Select your location</span>
+            <span class="delivery-location-status" id="deliveryLocationStatus" aria-live="polite">
+                Check delivery availability
+            </span>
+        </button>
 
         <div class="search-box">
-            <span class="search-icon">⌕</span>
-            <input
-                type="search"
-                id="searchInput"
-                placeholder="Search atta, milk, fruits..."
-                aria-label="Search products">
+            <input type="search" id="searchInput" placeholder="Search groceries and daily essentials..." aria-label="Search products">
         </div>
 
         <div class="actions">
-            <a href="login.html" id="loginlink" class="login-btn">Login</a>
-
-            <span id="welcomeUser"
-                  style="display:none;"
-                  class="user-name-tag"></span>
-
-            <button id="logoutBtn"
-                    style="display:none;"
-                    class="logout-btn">
-                Logout
-            </button>
-
-            <a href="./my-orders.html" class="orders-link">
-                My Orders
-            </a>
-
-            <a href="./cart.html" class="cart-btn">
-                <span aria-hidden="true">🛒</span>
-                Cart
-            </a>
+            <a href="login.html" id="loginlink">Login</a>
+            <a href="my-orders.html">My Orders</a>
+            <a href="cart.html">🛒 Cart</a>
+            <span id="welcomeUser" style="display:none;cursor:pointer"></span>
+            <button id="logoutBtn" style="display:none" type="button">Logout</button>
         </div>
+
     </nav>
 </header>
 
 <main>
+
     <section class="hero">
         <div class="hero-content">
-            <span class="hero-label">YOUR NEIGHBOURHOOD GROCERY STORE</span>
+            <span class="hero-label">WELCOME TO GRAM MART</span>
 
-            <h1>
-                Everyday essentials.<br>
+            <h1>Everyday essentials.<br>
                 <span>Delivered with care.</span>
             </h1>
 
-            <p>
-                From kitchen staples to daily favourites,
-                shop your essentials in one convenient place.
-            </p>
+            <p>Your neighbourhood grocery store is now online. Shop daily essentials at affordable prices.</p>
 
-            <a href="#featured-products" class="shop-btn">
-                Shop groceries <span aria-hidden="true">→</span>
-            </a>
+            <a href="#featured-products" class="shop-btn">Start Shopping →</a>
 
             <div class="hero-trust">
-                <span>✓ Easy online shopping</span>
-                <span>✓ Convenient ordering</span>
+                <span>✓ Everyday essentials</span>
+                <span>✓ Easy online ordering</span>
             </div>
         </div>
 
-        <div class="hero-visual" aria-label="Fresh grocery illustration">
-            <div class="hero-circle"></div>
-            <div class="hero-emoji" aria-hidden="true">🥬 🍅 🥑</div>
-            <div class="hero-note">
-                <span>🥦</span>
-                <div>
-                    <strong>Fresh picks</strong>
-                    <small>For your everyday needs</small>
-                </div>
+        <div class="hero-visual">
+            <div class="hero-circle">
+                <span class="hero-emoji">🛒</span>
             </div>
+            <div class="hero-note">Your daily needs, one place!</div>
         </div>
     </section>
-<section class="categories section-container" id="categories">
-    <div class="section-heading">
-        <div>
-            <span class="section-eyebrow">EXPLORE OUR STORE</span>
-            <h2>What do you need today?</h2>
-            <p>Find everyday essentials by category.</p>
+
+    <section class="categories section-container" id="categories">
+        <div class="section-heading">
+            <div>
+                <span class="section-eyebrow">EXPLORE OUR STORE</span>
+                <h2>What do you need today?</h2>
+                <p>Explore everyday grocery categories.</p>
+            </div>
         </div>
-    </div>
 
-    <div class="category-grid">
-        <a href="category.html?cat=fruits-vegetables" class="category-card">
-            <span class="category-icon">🥦</span>
-            <strong>Fruits &amp; Vegetables</strong>
-        </a>
+        <div class="category-grid">
 
-        <a href="category.html?cat=dairy-eggs" class="category-card">
-            <span class="category-icon">🥛</span>
-            <strong>Dairy &amp; Eggs</strong>
-        </a>
+            <a href="category.html?cat=atta-flour-and-grains" class="category-card">
+                <span class="category-icon">🌾</span>
+                <h3>Atta, Flour & Grains</h3>
+            </a>
 
-        <a href="category.html?cat=atta-rice-dal" class="category-card">
-            <span class="category-icon">🌾</span>
-            <strong>Atta, Rice &amp; Dal</strong>
-        </a>
+            <a href="category.html?cat=dairy-and-packaged-foods" class="category-card">
+                <span class="category-icon">🥛</span>
+                <h3>Dairy & Packaged Foods</h3>
+            </a>
 
-        <a href="category.html?cat=oil-ghee-masala" class="category-card">
-            <span class="category-icon">🫒</span>
-            <strong>Oil &amp; Spices</strong>
-        </a>
+            <a href="category.html?cat=rice" class="category-card">
+                <span class="category-icon">🍚</span>
+                <h3>Rice</h3>
+            </a>
 
-        <a href="category.html?cat=snacks-beverages" class="category-card">
-            <span class="category-icon">🍪</span>
-            <strong>Snacks &amp; Biscuits</strong>
-        </a>
+            <a href="category.html?cat=oil-and-ghee" class="category-card">
+                <span class="category-icon">🫙</span>
+                <h3>Oil & Ghee</h3>
+            </a>
 
-        <a href="category.html?cat=household" class="category-card">
-            <span class="category-icon">🧴</span>
-            <strong>Home Essentials</strong>
-        </a>
-    </div>
-</section>
+            <a href="category.html?cat=snacks-and-namkeen" class="category-card">
+                <span class="category-icon">🍿</span>
+                <h3>Snacks & Namkeen</h3>
+            </a>
+
+            <a href="category.html?cat=household-cleaning" class="category-card">
+                <span class="category-icon">🧹</span>
+                <h3>Household Cleaning</h3>
+            </a>
+
+        </div>
+    </section>
 
     <section class="products section-container" id="featured-products">
         <div class="section-heading">
             <div>
-                <span class="section-eyebrow">HANDPICKED FOR YOU</span>
-                <h2>Popular products</h2>
-                <p>Your everyday essentials, all in one place.</p>
+                <span class="section-eyebrow">SHOP YOUR FAVOURITES</span>
+                <h2>Shop by Category</h2>
+                <p>Explore products from all our grocery categories.</p>
             </div>
         </div>
 
         <div class="product-grid" id="productGrid">
-            <!-- Products will load through the existing JavaScript. -->
+            <div class="gm-loading">Loading products...</div>
         </div>
     </section>
 
     <section class="benefits section-container">
         <div class="benefit-item">
-            <span>🛍️</span>
-            <div>
-                <strong>Easy ordering</strong>
-                <p>Shop from the comfort of home.</p>
-            </div>
+            <span>🛒</span>
+            <h3>Easy Ordering</h3>
+            <p>Shop your daily essentials online with ease.</p>
         </div>
 
         <div class="benefit-item">
             <span>📦</span>
-            <div>
-                <strong>Order updates</strong>
-                <p>Check your orders online.</p>
-            </div>
+            <h3>Order Updates</h3>
+            <p>Stay updated about your grocery orders.</p>
         </div>
 
         <div class="benefit-item">
-            <span>🏡</span>
-            <div>
-                <strong>Your local store</strong>
-                <p>Everyday essentials made convenient.</p>
-            </div>
+            <span>🏪</span>
+            <h3>Your Local Store</h3>
+            <p>Your neighbourhood grocery store, online.</p>
         </div>
     </section>
+
 </main>
 
 <footer class="site-footer">
     <div class="footer-content">
-
         <div class="footer-grid">
 
-            <!-- BRAND -->
             <div class="footer-about">
-                <a href="index.html" class="footer-logo" aria-label="Gram Mart Home">
-                    <img
-                        src="images/gram-mart-logo.png"
-                        alt="Gram Mart"
-                        class="footer-wordmark"
-                    >
+                <a href="index.html" class="footer-logo">
+                    <img src="images/gram-mart-logo.png" alt="Gram Mart" class="footer-wordmark">
                 </a>
-
-                <p>
-                    Har Zarurat Ek Jagah, Infinite Choice One Mart.
-                    Your neighbourhood store for everyday groceries
-                    and daily essentials.
-                </p>
-
-                <a
-                    href="https://wa.me/917340259598"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="footer-whatsapp"
-                >
-                    <span>☏</span> WhatsApp Support
+                <p>Har Zarurat Ek Jagah, Infinite Choice One Mart.</p>
+                <p>Everyday groceries and daily essentials for your home.</p>
+                <a href="https://wa.me/917340259598" target="_blank" rel="noopener">
+                    WhatsApp Support
                 </a>
             </div>
 
-            <!-- QUICK LINKS -->
             <div class="footer-column">
                 <h3>Quick Links</h3>
-                <div class="footer-links">
-                    <a href="index.html">Home</a>
-                    <a href="index.html#categories">Categories</a>
-                    <a href="index.html#featured-products">Shop Now</a>
-                    <a href="my-orders.html">My Orders</a>
-                    <a href="cart.html">My Cart</a>
-                    <a href="login.html">My Account</a>
-                </div>
+                <a href="index.html">Home</a>
+                <a href="#categories">Categories</a>
+                <a href="#featured-products">Shop Products</a>
+                <a href="my-orders.html">My Orders</a>
+                <a href="cart.html">My Cart</a>
             </div>
 
-            <!-- CUSTOMER SERVICE -->
             <div class="footer-column">
                 <h3>Customer Service</h3>
-                <div class="footer-links">
-                    <a href="contact.html">Contact Us</a>
-                    <a href="shipping-policy.html">Shipping Policy</a>
-                    <a href="refund-policy.html">Refund Policy</a>
-                    <a href="terms.html">Terms & Conditions</a>
-                    <a href="privacy.html">Privacy Policy</a>
-                </div>
+                <a href="contact.html">Contact Us</a>
+                <a href="about.html">About Us</a>
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="terms.html">Terms & Conditions</a>
             </div>
 
-            <!-- CONTACT -->
-            <div class="footer-column footer-contact">
-                <h3>Get in Touch</h3>
-                <p>Need help with your grocery order?</p>
-
-                <a href="tel:+917340259598">
-                    ☎ +91 73402 59598
-                </a>
-
-                <a
-                    href="https://wa.me/917340259598"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    WhatsApp Customer Support
-                </a>
-
-                <p class="footer-address">
-                    <span>⌖</span>
-                    Aakeda Dunger, Jaipur, Rajasthan
-                </p>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <p>📞 +91 73402 59598</p>
+                <p>📍 Aakeda Dunger, Jaipur, Rajasthan</p>
             </div>
 
         </div>
+    </div>
 
-        <div class="footer-bottom">
-            <p class="copyright">
-                © 2026 Gram Mart. All rights reserved.
-            </p>
-
-            <p class="footer-tagline">
-                Made with care for your everyday needs.
-            </p>
-        </div>
-
+    <div class="footer-bottom">
+        <p>© 2026 Gram Mart. All rights reserved.</p>
+        <p>Har Zarurat Ek Jagah, Infinite Choice One Mart.</p>
     </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./js/supabase.js"></script>
 <script src="./js/script.js"></script>
+
 <script>
-(() => {
+(function () {
     const button = document.getElementById("deliveryLocationBtn");
     const label = document.getElementById("deliveryLocationLabel");
     const status = document.getElementById("deliveryLocationStatus");
 
     if (!button || !label || !status) return;
 
-    let isChecking = false;
-
-    function showStatus(message, state) {
-        status.textContent = message;
-        status.dataset.state = state || "";
-    }
-
-    button.addEventListener("click", async () => {
-        if (isChecking) return;
-
-        if (!window.isSecureContext || !navigator.geolocation) {
-            showStatus(
-                "Location access unavailable. Please open the secure website and try again.",
-                "error"
-            );
+    button.addEventListener("click", function () {
+        if (!window.isSecureContext) {
+            status.textContent = "Location requires a secure connection";
+            status.dataset.state = "error";
             return;
         }
 
-        const client = window.supabaseClient;
-
-        if (!client || typeof client.rpc !== "function") {
-            showStatus(
-                "Service temporarily unavailable. Please try again.",
-                "error"
-            );
+        if (!navigator.geolocation) {
+            status.textContent = "Location is not supported by your browser";
+            status.dataset.state = "error";
             return;
         }
 
-        isChecking = true;
         button.disabled = true;
-        label.textContent = "Checking location...";
-        showStatus("Please allow location access.", "checking");
+        label.textContent = "📍 Detecting location...";
+        status.textContent = "Please allow location access";
+        status.dataset.state = "";
 
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                try {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
-
-                    const { data, error } = await client.rpc(
-                        "delivery_zone_contains",
-                        {
-                            p_lat: latitude,
-                            p_lng: longitude
-                        }
-                    );
-
-                    if (error) {
-                        console.error("Delivery zone check failed:", error);
-                        label.textContent = "Select your location";
-                        showStatus(
-                            "Could not check delivery availability. Please try again.",
-                            "error"
-                        );
-                        return;
-                    }
-
-                    if (data === true) {
-                        label.textContent = "Location checked ✓";
-                        showStatus(
-                            "Good news! Delivery is available in your area.",
-                            "success"
-                        );
-                    } else if (data === false) {
-                        label.textContent = "Select your location";
-                        showStatus(
-                            "Sorry, delivery is not available in your area yet.",
-                            "error"
-                        );
-                    } else {
-                        label.textContent = "Select your location";
-                        showStatus(
-                            "Could not confirm delivery availability. Please try again.",
-                            "error"
-                        );
-                    }
-                } catch (err) {
-                    console.error("Location check error:", err);
-                    label.textContent = "Select your location";
-                    showStatus(
-                        "Something went wrong. Please try again.",
-                        "error"
-                    );
-                } finally {
-                    isChecking = false;
-                    button.disabled = false;
+        navigator.geolocation.getCurrentPosition(async function (position) {
+            try {
+                if (!window.supabaseClient) {
+                    throw new Error("Connection unavailable");
                 }
-            },
-            (error) => {
-                label.textContent = "Select your location";
 
-                if (error.code === error.PERMISSION_DENIED) {
-                    showStatus(
-                        "Location permission denied. Allow it in your browser settings and try again.",
-                        "error"
-                    );
-                } else if (error.code === error.TIMEOUT) {
-                    showStatus(
-                        "Location request timed out. Please try again.",
-                        "error"
-                    );
+                const { data, error } = await window.supabaseClient.rpc(
+                    "delivery_zone_contains",
+                    {
+                        p_lat: position.coords.latitude,
+                        p_lng: position.coords.longitude
+                    }
+                );
+
+                if (error) throw error;
+
+                const allowed = data === true ||
+                    (Array.isArray(data) && data[0] === true);
+
+                if (allowed) {
+                    label.textContent = "📍 Location verified";
+                    status.textContent = "Delivery available in your area";
+                    status.dataset.state = "success";
                 } else {
-                    showStatus(
-                        "Unable to get your location. Check GPS/location settings and try again.",
-                        "error"
-                    );
+                    label.textContent = "📍 Location outside delivery area";
+                    status.textContent = "Delivery is not available here yet";
+                    status.dataset.state = "error";
                 }
-
-                isChecking = false;
+            } catch (error) {
+                console.error("Delivery check:", error);
+                label.textContent = "📍 Location check failed";
+                status.textContent = "Please try again later";
+                status.dataset.state = "error";
+            } finally {
                 button.disabled = false;
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 15000,
-                maximumAge: 0
             }
-        );
+        }, function (error) {
+            label.textContent = "📍 Select your location";
+            status.textContent = error.code === 1
+                ? "Location permission denied"
+                : "Unable to detect location";
+            status.dataset.state = "error";
+            button.disabled = false;
+        }, {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        });
     });
 })();
-</script>
-<script>
-(() => {
+
+(function () {
     const welcomeUser = document.getElementById("welcomeUser");
+
     if (!welcomeUser) return;
 
-    welcomeUser.style.cursor = "pointer";
-    welcomeUser.setAttribute("role", "link");
-    welcomeUser.setAttribute("tabindex", "0");
-    welcomeUser.setAttribute("title", "Open your profile");
-
-    welcomeUser.addEventListener("click", () => {
+    welcomeUser.addEventListener("click", function () {
         window.location.href = "profile.html";
     });
 
-    welcomeUser.addEventListener("keydown", (event) => {
+    welcomeUser.addEventListener("keydown", function (event) {
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
             window.location.href = "profile.html";
@@ -504,5 +333,6 @@
     });
 })();
 </script>
+
 </body>
 </html>
