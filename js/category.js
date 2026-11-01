@@ -1,48 +1,11 @@
-const categoryDefinitions = {
-    "fruits-vegetables": {
-        name: "Fruits & Vegetables",
-        description: "Fresh produce for your everyday meals.",
-        dbCategory: "Fruits & Vegetables"
-    },
-    "dairy-eggs": {
-        name: "Dairy & Eggs",
-        description: "Everyday dairy essentials for your home.",
-        dbCategory: "Dairy & Eggs"
-    },
-    "atta-rice-dal": {
-        name: "Atta, Rice & Dal",
-        description: "Stock up on everyday grocery staples.",
-        dbCategory: "Atta, Rice & Dal"
-    },
-    "oil-ghee-masala": {
-        name: "Oil, Ghee & Masala",
-        description: "Cooking essentials for your kitchen.",
-        dbCategory: "Oil, Ghee & Masala"
-    },
-    "snacks-beverages": {
-        name: "Snacks & Beverages",
-        description: "Snacks and drinks for every occasion.",
-        dbCategory: "Snacks & Beverages"
-    },
-    "personal-care": {
-        name: "Personal Care",
-        description: "Daily personal care essentials.",
-        dbCategory: "Personal Care"
-    },
-    "household": {
-        name: "Household",
-        description: "Useful essentials for a cleaner home.",
-        dbCategory: "Household"
-    }
-};
-
 let categoryProducts = [];
+let currentCategory = "";
 
 const categoryGrid = document.getElementById("categoryProductGrid");
 const categorySearch = document.getElementById("categorySearch");
 const productCount = document.getElementById("productCount");
 
-function safeText(value = "") {
+function escapeHTML(value = "") {
     return String(value).replace(/[&<>"']/g, char => ({
         "&": "&amp;",
         "<": "&lt;",
@@ -52,158 +15,187 @@ function safeText(value = "") {
     })[char]);
 }
 
-function formatPrice(price) {
-    return Number(price).toLocaleString("en-IN", {
-        style: "currency",
-        currency: "INR",
-        maximumFractionDigits: 2
-    });
+function slugifyCategory(value = "") {
+    return String(value)
+        .toLowerCase()
+        .trim()
+        .replace(/&/g, "and")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
 }
 
-function showEmpty(message) {
-    categoryGrid.innerHTML = "";
-    const paragraph = document.createElement("p");
-    paragraph.className = "category-empty";
-    paragraph.textContent = message;
-    categoryGrid.appendChild(paragraph);
-    productCount.textContent = "0 products";
-}
-
+// Find category using URL slug or exact category name
 async function loadCategoryProducts() {
-    const slug = new URLSearchParams(window.location.search).get("cat");
-    const category = categoryDefinitions[slug];
+    if (!categoryGrid) return;
 
-    if (!category) {
-        document.getElementById("categoryTitle").textContent =
-            "Category not found";
-        document.getElementById("breadcrumbCategory").textContent =
-            "Not found";
-        document.getElementById("categoryDescription").textContent =
-            "Please select a category from the homepage.";
-        showEmpty("Please go back and choose a valid category.");
+    categoryGrid.innerHTML = "<p>Loading products...</p>";
+
+    const params = new URLSearchParams(window.location.search);
+    const requestedCategory = params.get("cat");
+
+    if (!requestedCategory) {
+        showCategoryError("Category select nahi ki gayi.");
         return;
     }
 
-    document.title = `${category.name} | Gram Mart`;
-    document.getElementById("categoryTitle").textContent = category.name;
-    document.getElementById("breadcrumbCategory").textContent = category.name;
-    document.getElementById("categoryDescription").textContent =
-        category.description;
-
-    const client = window.supabaseClient;
-
-    if (!client) {
-        showEmpty("Service unavailable. Please refresh and try again.");
-        return;
-    }
-
-    categoryGrid.textContent = "Loading products...";
-    productCount.textContent = "Loading...";
-
-    const { data, error } = await client
+    const { data, error } = await window.supabaseClient
         .from("products")
         .select("id, name, description, price, image_url, category, stock")
         .eq("is_active", true)
-        .eq("category", category.dbCategory)
         .order("created_at", { ascending: false });
 
     if (error) {
-        console.error("Category products error:", error);
-        showEmpty("Products load nahi ho paaye. Please try again.");
+        console.error(error);
+        showCategoryError("Products load nahi ho paaye.");
         return;
     }
 
-    categoryProducts = data || [];
+    const allProducts = data || [];
+
+    const matchedCategory = allProducts.find(product =>
+        slugifyCategory(product.category) === slugifyCategory(requestedCategory)
+    );
+
+    if (!matchedCategory) {
+        showCategoryError("Ye category nahi mili ya isme abhi products available nahi hain.");
+        return;
+    }
+
+    currentCategory = matchedCategory.category;
+
+    categoryProducts = allProducts.filter(product =>
+        product.category === currentCategory
+    );
+
+    document.title = `${currentCategory} | Gram Mart`;
+
+    const title = document.getElementById("categoryTitle");
+    const description = document.getElementById("categoryDescription");
+    const breadcrumb = document.getElementById("breadcrumbCategory");
+
+    if (title) title.textContent = currentCategory;
+
+    if (description) {
+        description.textContent =
+            `Gram Mart par ${currentCategory} ke quality products ghar baithe order karein.`;
+    }
+
+    if (breadcrumb) {
+        breadcrumb.innerHTML = `
+            <a href="index.html">Home</a>
+            <span>›</span>
+            <span>${escapeHTML(currentCategory)}</span>
+        `;
+    }
+
     displayCategoryProducts(categoryProducts);
 }
 
+function showCategoryError(message) {
+    categoryGrid.innerHTML = `
+        <div class="category-empty">
+            <h3>${escapeHTML(message)}</h3>
+            <a href="index.html">Back to Home</a>
+        </div>
+    `;
+
+    if (productCount) productCount.textContent = "0 products";
+}
+
+// Create product card
+function createCategoryProductCard(product) {
+    const id = escapeHTML(product.id);
+    const name = escapeHTML(product.name);
+    const image = escapeHTML(product.image_url || "");
+    const price = Number(product.price || 0).toFixed(2);
+    const outOfStock = Number(product.stock) <= 0;
+
+    return `
+        <div class="category-product-card">
+            <a
+                href="product.html?id=${encodeURIComponent(product.id)}"
+                class="category-product-image-link"
+            >
+                <img
+                    src="${image || "https://placehold.co/300x300?text=Gram+Mart"}"
+                    alt="${name}"
+                    class="category-product-image"
+                    loading="lazy"
+                    onerror="this.onerror=null;this.src='https://placehold.co/300x300?text=Product';"
+                >
+            </a>
+
+            <h3 class="category-product-name">${name}</h3>
+
+            <p class="category-product-price">₹${price}</p>
+
+            <div class="category-product-actions">
+                <button
+                    type="button"
+                    class="category-add-btn"
+                    data-product-id="${id}"
+                    ${outOfStock ? "disabled" : ""}
+                >
+                    ${outOfStock ? "Out of Stock" : "Add to Cart 🛒"}
+                </button>
+
+                <a
+                    href="product.html?id=${encodeURIComponent(product.id)}"
+                    class="category-view-btn"
+                >
+                    View Product
+                </a>
+            </div>
+        </div>
+    `;
+}
+
+// Display and search products
 function displayCategoryProducts(products) {
-    categoryGrid.innerHTML = "";
+    if (!categoryGrid) return;
 
-    const query = categorySearch.value.trim().toLowerCase();
+    const query = categorySearch
+        ? categorySearch.value.trim().toLowerCase()
+        : "";
 
-    const filtered = products.filter(product =>
-        `${product.name || ""} ${product.description || ""} ${product.category || ""}`
+    const filteredProducts = products.filter(product =>
+        `${product.name} ${product.description || ""} ${product.category || ""}`
             .toLowerCase()
             .includes(query)
     );
 
-    productCount.textContent =
-        `${filtered.length} product${filtered.length === 1 ? "" : "s"}`;
+    if (productCount) {
+        productCount.textContent =
+            `${filteredProducts.length} products`;
+    }
 
-    if (!filtered.length) {
-        showEmpty(
-            query
-                ? "Is search se koi product nahi mila."
-                : "Is category mein abhi koi product available nahi hai."
-        );
+    if (!filteredProducts.length) {
+        categoryGrid.innerHTML = `
+            <div class="category-empty">
+                <h3>No products found</h3>
+                <p>Search change karke dobara try karein.</p>
+            </div>
+        `;
         return;
     }
 
-    categoryGrid.innerHTML = filtered.map(product => {
-        const outOfStock = Number(product.stock) <= 0;
-        const image = safeText(
-            product.image_url || "https://placehold.co/300x300?text=Gram+Mart"
-        );
-
-        return `
-            <article class="category-product-card">
-                <a
-                    class="category-product-image-link"
-                    href="product.html?id=${encodeURIComponent(product.id)}"
-                    aria-label="View ${safeText(product.name)}">
-                    <img
-                        class="category-product-image"
-                        src="${image}"
-                        alt="${safeText(product.name)}"
-                        loading="lazy">
-                </a>
-
-                <h2 class="category-product-name">
-                    ${safeText(product.name)}
-                </h2>
-
-                <p class="category-product-price">
-                    ${formatPrice(product.price)}
-                </p>
-
-                <div class="category-product-actions">
-                    <button
-                        type="button"
-                        class="category-add-btn"
-                        data-product-id="${safeText(product.id)}"
-                        ${outOfStock ? "disabled" : ""}>
-                        ${outOfStock ? "Out of Stock" : "Add to Cart 🛒"}
-                    </button>
-
-                    <a
-                        class="category-view-btn"
-                        href="product.html?id=${encodeURIComponent(product.id)}">
-                        View Product
-                    </a>
-                </div>
-            </article>
-        `;
-    }).join("");
-
-    categoryGrid.querySelectorAll(".category-product-image").forEach(img => {
-        img.addEventListener("error", () => {
-            img.src = "https://placehold.co/300x300?text=Product";
-        }, { once: true });
-    });
+    categoryGrid.innerHTML = filteredProducts
+        .map(createCategoryProductCard)
+        .join("");
 
     categoryGrid.querySelectorAll(".category-add-btn").forEach(button => {
         button.addEventListener("click", () => {
-            addCategoryProductToCart(button.dataset.productId, button);
+            addCategoryProductToCart(button.dataset.productId);
         });
     });
 }
 
-async function addCategoryProductToCart(productId, button) {
-    const client = window.supabaseClient;
-
-    const { data: { user }, error: authError } =
-        await client.auth.getUser();
+// Add to cart
+async function addCategoryProductToCart(productId) {
+    const {
+        data: { user },
+        error: authError
+    } = await window.supabaseClient.auth.getUser();
 
     if (authError || !user) {
         alert("Cart use karne ke liye pehle login karo.");
@@ -211,62 +203,64 @@ async function addCategoryProductToCart(productId, button) {
         return;
     }
 
-    const product = categoryProducts.find(item => item.id === productId);
+    const product = categoryProducts.find(
+        p => String(p.id) === String(productId)
+    );
 
     if (!product || Number(product.stock) < 1) {
         alert("Ye product abhi stock mein nahi hai.");
         return;
     }
 
-    button.disabled = true;
+    const { data: existing, error: readError } = await window.supabaseClient
+        .from("cart_items")
+        .select("id, quantity")
+        .eq("user_id", user.id)
+        .eq("product_id", productId)
+        .maybeSingle();
 
-    try {
-        const { data: existing, error: readError } = await client
-            .from("cart_items")
-            .select("id, quantity")
-            .eq("user_id", user.id)
-            .eq("product_id", productId)
-            .maybeSingle();
+    if (readError) {
+        console.error(readError);
+        alert("Cart check nahi ho paaya.");
+        return;
+    }
 
-        if (readError) throw readError;
+    let result;
 
-        let result;
-
-        if (existing) {
-            if (Number(existing.quantity) >= Number(product.stock)) {
-                alert("Available stock se zyada quantity add nahi kar sakte.");
-                return;
-            }
-
-            result = await client
-                .from("cart_items")
-                .update({ quantity: existing.quantity + 1 })
-                .eq("id", existing.id)
-                .eq("user_id", user.id);
-        } else {
-            result = await client
-                .from("cart_items")
-                .insert({
-                    user_id: user.id,
-                    product_id: productId,
-                    quantity: 1
-                });
+    if (existing) {
+        if (existing.quantity >= product.stock) {
+            alert("Available stock se zyada quantity add nahi kar sakte.");
+            return;
         }
 
-        if (result.error) throw result.error;
-
-        alert("Product cart mein add ho gaya! 🛒");
-
-    } catch (error) {
-        console.error("Add to cart error:", error);
-        alert("Item add nahi hua. Please dobara try karo.");
-    } finally {
-        button.disabled = false;
+        result = await window.supabaseClient
+            .from("cart_items")
+            .update({ quantity: existing.quantity + 1 })
+            .eq("id", existing.id);
+    } else {
+        result = await window.supabaseClient
+            .from("cart_items")
+            .insert({
+                user_id: user.id,
+                product_id: productId,
+                quantity: 1
+            });
     }
+
+    if (result.error) {
+        console.error(result.error);
+        alert("Item add nahi hua. Dobara try karo.");
+        return;
+    }
+
+    alert("Product cart mein add ho gaya! 🛒");
 }
 
-categorySearch.addEventListener("input", () => {
-    displayCategoryProducts(categoryProducts);
-});
+// Category search
+if (categorySearch) {
+    categorySearch.addEventListener("input", () => {
+        displayCategoryProducts(categoryProducts);
+    });
+}
 
 loadCategoryProducts();
