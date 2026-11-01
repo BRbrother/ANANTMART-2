@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventory Manager | GRAM MART</title>
+
+  <style>
+    :root {
+      --orange: #FF6A00;
+      --blue: #0B3091;
+      --bg: #f4f7fb;
+      --text: #172033;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --green: #15803d;
+      --red: #dc2626;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    header {
+      background: var(--blue);
+      color: white;
+      padding: 17px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      font-size: 23px;
+      font-weight: 900;
+    }
+
+    .brand span { color: #ffb36f; }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    header a, header button {
+      color: white;
+      background: transparent;
+      border: 1px solid #ffffff70;
+      border-radius: 8px;
+      padding: 10px 14px;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    main {
+      max-width: 1400px;
+      margin: 28px auto;
+      padding: 0 18px 45px;
+    }
+
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      margin: 0 0 7px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 13px;
+    }
+
+    .btn-primary {
+      color: white;
+      background: var(--orange);
+    }
+
+    .btn-blue {
+      color: white;
+      background: var(--blue);
+    }
+
+    .btn-light {
+      color: var(--text);
+      background: #e8edf5;
+    }
+
+    .btn-danger {
+      color: white;
+      background: var(--red);
+    }
+
+    .btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 15px;
+      margin-bottom: 22px;
+    }
+
+    .stat {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 19px;
+      box-shadow: 0 4px 15px #0b309108;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 9px;
+    }
+
+    .stat-value {
+      font-size: 27px;
+      font-weight: 800;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 20px;
+      box-shadow: 0 4px 15px #0b309108;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(200px, 1fr) 230px auto;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font: inherit;
+      min-width: 0;
+      background: white;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid #0b309125;
+      border-color: var(--blue);
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 850px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 13px 11px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--muted);
+      background: #f8fafc;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    .product-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 190px;
+    }
+
+    .product-cell img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: white;
+    }
+
+    .product-name {
+      font-weight: 700;
+      max-width: 210px;
+      overflow-wrap: anywhere;
+    }
+
+    .stock-control {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 145px;
+    }
+
+    .stock-control input {
+      width: 75px;
+      padding: 8px;
+    }
+
+    .stock-control button {
+      padding: 8px 10px;
+    }
+
+    .status {
+      display: inline-block;
+      border-radius: 20px;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .status-active {
+      color: #166534;
+      background: #dcfce7;
+    }
+
+    .status-inactive {
+      color: #991b1b;
+      background: #fee2e2;
+    }
+
+    .actions {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .actions .btn {
+      padding: 8px 10px;
+    }
+
+    #message {
+      margin: 14px 0;
+      font-size: 13px;
+      color: var(--muted);
+      min-height: 18px;
+    }
+
+    .empty {
+      padding: 35px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 800px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .toolbar { grid-template-columns: 1fr 1fr; }
+      .toolbar input { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 500px) {
+      main { padding-left: 12px; padding-right: 12px; }
+      .stats { gap: 9px; }
+      .stat { padding: 14px; }
+      .stat-value { font-size: 23px; }
+      .toolbar { grid-template-columns: 1fr; }
+      .toolbar input { grid-column: auto; }
+      .panel { padding: 12px; }
+      h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">GRAM <span>MART</span> / INVENTORY</div>
+
+  <div class="header-actions">
+    <a href="./index.html">View Store</a>
+    <button id="logoutBtn" type="button">Logout</button>
+  </div>
+</header>
+
+<main>
+
+  <section class="heading">
+    <div>
+      <h1>Inventory Manager</h1>
+      <p class="subtitle">Manage products, stock and product listings.</p>
+    </div>
+
+    <a class="btn btn-primary" href="./add-product.html">
+      + Add New Product
+    </a>
+  </section>
+
+  <section class="stats">
+    <div class="stat">
+      <div class="stat-label">Total Products</div>
+      <div class="stat-value" id="totalProducts">0</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">In Stock</div>
+      <div class="stat-value" id="inStock">0</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">Low Stock (5 or less)</div>
+      <div class="stat-value" id="lowStock">0</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-label">Out of Stock</div>
+      <div class="stat-value" id="outStock">0</div>
+    </div>
+  </section>
+
+  <section class="panel">
+
+    <div class="toolbar">
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Search product name..."
+      >
+
+      <select id="categoryFilter">
+        <option value="">All Categories</option>
+      </select>
+
+      <button class="btn btn-blue" id="refreshBtn" type="button">
+        Refresh
+      </button>
+    </div>
+
+    <div id="message" role="status"></div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="productTable">
+          <tr>
+            <td colspan="6" class="empty">Loading inventory...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="footer-note">
+      Inventory Manager provides product and stock controls only.
+    </p>
+
+  </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./js/supabase.js"></script>
+<script src="./js/inventory-manager.js"></script>
+
+</body>
+</html>

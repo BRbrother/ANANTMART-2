@@ -16,35 +16,30 @@ let variants = [];
 let saving = false;
 
 
-/* =========================
-   ADMIN VERIFICATION
-========================= */
-
 async function verifyAdmin() {
-
-    if (!db) {
-        throw new Error(
-            "Supabase client load nahi hua. js/supabase.js check karo."
-        );
-    }
-
-    const { data: sessionData, error: sessionError } =
+    const { data: { session }, error: sessionError } =
         await db.auth.getSession();
 
-    if (sessionError) throw sessionError;
-
-    if (!sessionData.session) {
-        location.href = "./login.html";
+    if (sessionError || !session) {
+        alert("Please login first.");
+        window.location.href = "./login.html";
         return false;
     }
 
-    const { data: isAdmin, error } = await db.rpc("is_admin");
+    const [ownerCheck, inventoryCheck] = await Promise.all([
+        db.rpc("is_admin"),
+        db.rpc("is_inventory_admin")
+    ]);
 
-    if (error) throw error;
+    if (ownerCheck.error || inventoryCheck.error) {
+        console.error(ownerCheck.error, inventoryCheck.error);
+        alert("Permission check failed.");
+        return false;
+    }
 
-    if (isAdmin !== true) {
-        alert("Sirf admin product edit kar sakta hai.");
-        location.href = "./index.html";
+    if (ownerCheck.data !== true && inventoryCheck.data !== true) {
+        alert("You are not authorized to access this page.");
+        window.location.href = "./inventory-manager.html";
         return false;
     }
 

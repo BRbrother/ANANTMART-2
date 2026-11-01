@@ -59,28 +59,34 @@
   }
 
   async function verifyAdmin() {
-    const { data, error } = await db.auth.getSession();
+    const { data: { session }, error: sessionError } =
+        await db.auth.getSession();
 
-    if (error) throw error;
-
-    if (!data.session) {
-      window.location.href = "./login.html";
-      return false;
+    if (sessionError || !session) {
+        alert("Please login first.");
+        window.location.href = "./login.html";
+        return false;
     }
 
-    const { data: isAdmin, error: adminError } =
-      await db.rpc("is_admin");
+    const [ownerCheck, inventoryCheck] = await Promise.all([
+        db.rpc("is_admin"),
+        db.rpc("is_inventory_admin")
+    ]);
 
-    if (adminError) throw adminError;
+    if (ownerCheck.error || inventoryCheck.error) {
+        console.error(ownerCheck.error, inventoryCheck.error);
+        alert("Permission check failed.");
+        return false;
+    }
 
-    if (isAdmin !== true) {
-      showStatus("Access denied: admin account required.", "error");
-      window.location.href = "./index.html";
-      return false;
+    if (ownerCheck.data !== true && inventoryCheck.data !== true) {
+        alert("You are not authorized to access this page.");
+        window.location.href = "./inventory-manager.html";
+        return false;
     }
 
     return true;
-  }
+}
 
   function makeImageSlot(index) {
     const slot = document.createElement("div");
