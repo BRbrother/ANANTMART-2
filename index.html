@@ -2,120 +2,188 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
     <title>Gram Mart Jaipur | Online Grocery & Daily Essentials Delivery</title>
+
     <meta name="description" content="Shop groceries and daily essentials online with Gram Mart in Aakeda Dunger, Jaipur. Easy ordering, affordable prices and convenient home delivery.">
     <meta name="keywords" content="Gram Mart, Gram Mart Jaipur, online grocery Jaipur, grocery delivery Aakeda Dunger, daily essentials Jaipur">
     <meta name="robots" content="index, follow">
+
     <link rel="canonical" href="https://anantmart.vercel.app/">
+    <meta name="theme-color" content="#0B3091">
 
     <link rel="icon" type="image/png" href="images/gram-mart-icon.png">
     <link rel="apple-touch-icon" href="images/gram-mart-icon.png">
-    <link rel="stylesheet" href="css/style.css">
 
-    <style>
-        .delivery-location {
-            display:flex;
-            flex-direction:column;
-            align-items:flex-start;
-            gap:4px;
-            border:1px solid #e5e9f0;
-            background:#fff;
-            border-radius:10px;
-            padding:9px 12px;
-            cursor:pointer;
-            min-width:150px;
-        }
-        .delivery-location-text {
-            color:#0B3091;
-            font-size:12px;
-            font-weight:700;
-        }
-        .delivery-location-status {
-            font-size:11px;
-            color:#647084;
-        }
-        .delivery-location-status[data-state="success"] {color:#16803c;}
-        .delivery-location-status[data-state="error"] {color:#d93025;}
-        .delivery-location:focus-visible {
-            outline:3px solid rgba(255,106,0,.3);
-        }
-        .delivery-location:disabled {
-            opacity:.65;
-            cursor:wait;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-<header class="site-header">
-    <nav class="navbar">
+<!-- ================= HEADER ================= -->
 
-        <a href="index.html" class="logo">
-            <img src="images/gram-mart-icon.png" class="brand-logo-icon" alt="Gram Mart">
+<header class="site-header">
+    <nav class="navbar" aria-label="Main navigation">
+
+        <a href="index.html" class="logo" aria-label="Gram Mart home">
+            <img src="images/gram-mart-icon.png" class="brand-logo-icon" alt="">
             <span>Gram<span class="logo-accent">Mart</span></span>
         </a>
 
         <button class="delivery-location" id="deliveryLocationBtn" type="button">
-            <span class="delivery-location-text" id="deliveryLocationLabel">📍 Select your location</span>
+            <span class="delivery-location-text" id="deliveryLocationLabel">
+                📍 Select your location
+            </span>
             <span class="delivery-location-status" id="deliveryLocationStatus" aria-live="polite">
                 Check delivery availability
             </span>
         </button>
 
         <div class="search-box">
-            <input type="search" id="searchInput" placeholder="Search groceries and daily essentials..." aria-label="Search products">
+            <span class="search-symbol" aria-hidden="true">⌕</span>
+
+            <input
+                type="search"
+                id="searchInput"
+                placeholder="Search groceries and daily essentials..."
+                aria-label="Search products"
+            >
+
+            <span class="search-hint" aria-hidden="true">Search</span>
         </div>
 
         <div class="actions">
+
             <a href="login.html" id="loginlink">Login</a>
+
             <a href="my-orders.html">My Orders</a>
-            <a href="cart.html">🛒 Cart</a>
-            <span id="welcomeUser" style="display:none;cursor:pointer"></span>
-            <button id="logoutBtn" style="display:none" type="button">Logout</button>
+
+            <a href="cart.html" class="header-cart">
+                🛒 <span>Cart</span>
+            </a>
+
+            <span
+                id="welcomeUser"
+                role="button"
+                tabindex="0"
+                style="display:none;cursor:pointer"
+            ></span>
+
+            <button id="logoutBtn" style="display:none" type="button">
+                Logout
+            </button>
+
         </div>
 
     </nav>
 </header>
 
+
+<!-- ================= MAIN CONTENT ================= -->
+
 <main>
 
-    <section class="hero">
-        <div class="hero-content">
-            <span class="hero-label">WELCOME TO GRAM MART</span>
+    <!-- HERO SECTION -->
 
-            <h1>Everyday essentials.<br>
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <span class="hero-label">
+                WELCOME TO GRAM MART
+            </span>
+
+            <h1>
+                Everyday essentials.<br>
                 <span>Delivered with care.</span>
             </h1>
 
-            <p>Your neighbourhood grocery store is now online. Shop daily essentials at affordable prices.</p>
+            <p>
+                Your neighbourhood grocery store is now online.
+                Shop daily essentials at affordable prices.
+            </p>
 
-            <a href="#featured-products" class="shop-btn">Start Shopping →</a>
+            <a href="#featured-products" class="shop-btn">
+                Start Shopping <span aria-hidden="true">→</span>
+            </a>
 
             <div class="hero-trust">
                 <span>✓ Everyday essentials</span>
                 <span>✓ Easy online ordering</span>
+                <span>✓ Your neighbourhood store</span>
             </div>
+
         </div>
 
-        <div class="hero-visual">
+
+        <div class="hero-visual" aria-hidden="true">
+
             <div class="hero-circle">
                 <span class="hero-emoji">🛒</span>
             </div>
-            <div class="hero-note">Your daily needs, one place!</div>
+
+            <div class="hero-note">
+                Your daily needs, one place!
+            </div>
+
+            <span class="hero-float hero-float-one">🥦</span>
+            <span class="hero-float hero-float-two">🥛</span>
+
         </div>
+
     </section>
 
-    <section class="categories section-container" id="categories">
-        <div class="section-heading">
-            <div>
-                <span class="section-eyebrow">EXPLORE OUR STORE</span>
-                <h2>What do you need today?</h2>
-                <p>Explore everyday grocery categories.</p>
-            </div>
+
+    <!-- BENEFITS STRIP -->
+
+    <div class="gm-promise-strip" aria-label="Gram Mart benefits">
+
+        <div>
+            <span>🧺</span>
+            <strong>Daily essentials</strong>
+            <small>For your home</small>
         </div>
+
+        <div>
+            <span>📍</span>
+            <strong>Local convenience</strong>
+            <small>Aakeda Dunger, Jaipur</small>
+        </div>
+
+        <div>
+            <span>📦</span>
+            <strong>Easy ordering</strong>
+            <small>Shop from your phone</small>
+        </div>
+
+    </div>
+
+
+    <!-- CATEGORIES SECTION -->
+
+    <section class="categories section-container" id="categories">
+
+        <div class="section-heading">
+
+            <div>
+                <span class="section-eyebrow">
+                    EXPLORE OUR STORE
+                </span>
+
+                <h2>What do you need today?</h2>
+
+                <p>
+                    Explore everyday grocery categories.
+                </p>
+            </div>
+
+            <a href="#featured-products" class="section-text-link">
+                Shop all products <span aria-hidden="true">→</span>
+            </a>
+
+        </div>
+
 
         <div class="category-grid">
 
@@ -150,23 +218,46 @@
             </a>
 
         </div>
+
     </section>
+
+
+    <!-- PRODUCTS SECTION -->
 
     <section class="products section-container" id="featured-products">
+
         <div class="section-heading">
+
             <div>
-                <span class="section-eyebrow">SHOP YOUR FAVOURITES</span>
+                <span class="section-eyebrow">
+                    SHOP YOUR FAVOURITES
+                </span>
+
                 <h2>Shop by Category</h2>
-                <p>Explore products from all our grocery categories.</p>
+
+                <p>
+                    Find your everyday essentials in one place.
+                </p>
             </div>
+
         </div>
 
-        <div class="product-grid" id="productGrid">
-            <div class="gm-loading">Loading products...</div>
+
+        <div class="product-grid" id="productGrid" aria-live="polite">
+
+            <div class="gm-loading">
+                Loading products...
+            </div>
+
         </div>
+
     </section>
 
+
+    <!-- BENEFITS SECTION -->
+
     <section class="benefits section-container">
+
         <div class="benefit-item">
             <span>🛒</span>
             <h3>Easy Ordering</h3>
@@ -184,63 +275,151 @@
             <h3>Your Local Store</h3>
             <p>Your neighbourhood grocery store, online.</p>
         </div>
+
     </section>
 
 </main>
 
+
+<!-- ================= FOOTER ================= -->
+
 <footer class="site-footer">
+
     <div class="footer-content">
+
         <div class="footer-grid">
 
             <div class="footer-about">
+
                 <a href="index.html" class="footer-logo">
-                    <img src="images/gram-mart-logo.png" alt="Gram Mart" class="footer-wordmark">
+                    <img
+                        src="images/gram-mart-logo.png"
+                        alt="Gram Mart"
+                        class="footer-wordmark"
+                    >
                 </a>
-                <p>Har Zarurat Ek Jagah, Infinite Choice One Mart.</p>
-                <p>Everyday groceries and daily essentials for your home.</p>
-                <a href="https://wa.me/917340259598" target="_blank" rel="noopener">
-                    WhatsApp Support
+
+                <p>
+                    Har Zarurat Ek Jagah, Infinite Choice One Mart.
+                </p>
+
+                <p>
+                    Everyday groceries and daily essentials for your home.
+                </p>
+
+                <a
+                    class="footer-whatsapp"
+                    href="https://wa.me/917340259598"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    WhatsApp Support ↗
                 </a>
+
             </div>
 
+
             <div class="footer-column">
+
                 <h3>Quick Links</h3>
+
                 <a href="index.html">Home</a>
                 <a href="#categories">Categories</a>
                 <a href="#featured-products">Shop Products</a>
                 <a href="my-orders.html">My Orders</a>
                 <a href="cart.html">My Cart</a>
+
             </div>
 
+
             <div class="footer-column">
+
                 <h3>Customer Service</h3>
+
                 <a href="contact.html">Contact Us</a>
                 <a href="about.html">About Us</a>
                 <a href="privacy-policy.html">Privacy Policy</a>
                 <a href="terms.html">Terms & Conditions</a>
+
             </div>
 
+
             <div class="footer-contact">
+
                 <h3>Contact Us</h3>
+
                 <p>📞 +91 73402 59598</p>
-                <p>📍 Aakeda Dunger, Jaipur, Rajasthan</p>
+
+                <p>
+                    📍 Aakeda Dunger, Jaipur, Rajasthan
+                </p>
+
             </div>
 
         </div>
+
     </div>
+
 
     <div class="footer-bottom">
+
         <p>© 2026 Gram Mart. All rights reserved.</p>
-        <p>Har Zarurat Ek Jagah, Infinite Choice One Mart.</p>
+
+        <p>
+            Har Zarurat Ek Jagah, Infinite Choice One Mart.
+        </p>
+
     </div>
+
 </footer>
 
+
+<!-- ================= MOBILE BOTTOM NAVIGATION ================= -->
+
+<nav class="gm-mobile-nav" aria-label="Mobile quick navigation">
+
+    <a href="index.html" class="is-active">
+        <span>⌂</span>
+        <small>Home</small>
+    </a>
+
+    <a href="#categories">
+        <span>▦</span>
+        <small>Categories</small>
+    </a>
+
+    <a href="#featured-products">
+        <span>⌕</span>
+        <small>Shop</small>
+    </a>
+
+    <a href="my-orders.html">
+        <span>▤</span>
+        <small>Orders</small>
+    </a>
+
+    <a href="cart.html">
+        <span>🛒</span>
+        <small>Cart</small>
+    </a>
+
+</nav>
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="./js/supabase.js"></script>
+
 <script src="./js/script.js"></script>
+
+
+<!-- LOCATION DETECTION -->
 
 <script>
 (function () {
+
     const button = document.getElementById("deliveryLocationBtn");
     const label = document.getElementById("deliveryLocationLabel");
     const status = document.getElementById("deliveryLocationStatus");
@@ -248,25 +427,37 @@
     if (!button || !label || !status) return;
 
     button.addEventListener("click", function () {
+
         if (!window.isSecureContext) {
+
             status.textContent = "Location requires a secure connection";
             status.dataset.state = "error";
+
             return;
         }
 
         if (!navigator.geolocation) {
+
             status.textContent = "Location is not supported by your browser";
             status.dataset.state = "error";
+
             return;
         }
 
+
         button.disabled = true;
+
         label.textContent = "📍 Detecting location...";
+
         status.textContent = "Please allow location access";
+
         status.dataset.state = "";
 
+
         navigator.geolocation.getCurrentPosition(async function (position) {
+
             try {
+
                 if (!window.supabaseClient) {
                     throw new Error("Connection unavailable");
                 }
@@ -281,58 +472,180 @@
 
                 if (error) throw error;
 
-                const allowed = data === true ||
+
+                const allowed =
+                    data === true ||
                     (Array.isArray(data) && data[0] === true);
 
+
                 if (allowed) {
+
                     label.textContent = "📍 Location verified";
+
                     status.textContent = "Delivery available in your area";
+
                     status.dataset.state = "success";
+
                 } else {
-                    label.textContent = "📍 Location outside delivery area";
+
+                    label.textContent = "📍 Outside delivery area";
+
                     status.textContent = "Delivery is not available here yet";
+
                     status.dataset.state = "error";
+
                 }
+
             } catch (error) {
+
                 console.error("Delivery check:", error);
+
                 label.textContent = "📍 Location check failed";
+
                 status.textContent = "Please try again later";
+
                 status.dataset.state = "error";
+
             } finally {
+
                 button.disabled = false;
+
             }
+
         }, function (error) {
+
             label.textContent = "📍 Select your location";
-            status.textContent = error.code === 1
-                ? "Location permission denied"
-                : "Unable to detect location";
+
+            status.textContent =
+                error.code === 1
+                    ? "Location permission denied"
+                    : "Unable to detect location";
+
             status.dataset.state = "error";
+
             button.disabled = false;
+
         }, {
             enableHighAccuracy: true,
             timeout: 15000,
             maximumAge: 0
         });
-    });
-})();
 
+    });
+
+})();
+</script>
+
+
+<!-- USER PROFILE CLICK -->
+
+<script>
 (function () {
+
     const welcomeUser = document.getElementById("welcomeUser");
 
     if (!welcomeUser) return;
 
-    welcomeUser.addEventListener("click", function () {
+    const openProfile = () => {
         window.location.href = "profile.html";
+    };
+
+    welcomeUser.addEventListener("click", openProfile);
+
+    welcomeUser.addEventListener("keydown", event => {
+
+        if (event.key === "Enter" || event.key === " ") {
+
+            event.preventDefault();
+
+            openProfile();
+
+        }
+
     });
 
-    welcomeUser.addEventListener("keydown", function (event) {
-        if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            window.location.href = "profile.html";
-        }
-    });
 })();
 </script>
 
+
+<!-- MOBILE NAV ACTIVE STATE -->
+
+<script>
+document.querySelectorAll('.gm-mobile-nav a[href^="#"]').forEach(link => {
+
+    link.addEventListener("click", () => {
+
+        document.querySelectorAll(".gm-mobile-nav a").forEach(item => {
+            item.classList.remove("is-active");
+        });
+
+        link.classList.add("is-active");
+
+    });
+
+});
+</script>
+<script>
+/* =====================================
+   GRAM MART SMART HEADER SCROLL SYSTEM
+===================================== */
+
+(function () {
+
+    const header = document.querySelector(".site-header");
+
+    if (!header) return;
+
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+
+    function handleHeaderScroll() {
+
+        const currentScrollY = window.scrollY;
+        const difference = currentScrollY - lastScrollY;
+
+        // Page ke top par header hamesha visible
+        if (currentScrollY <= 80) {
+
+            header.classList.remove("gm-header-hidden");
+            header.classList.add("gm-header-visible");
+
+        }
+
+        // Scroll down: header hide
+        else if (difference > 5 && currentScrollY > 120) {
+
+            header.classList.add("gm-header-hidden");
+            header.classList.remove("gm-header-visible");
+
+        }
+
+        // Scroll up: header show
+        else if (difference < -5) {
+
+            header.classList.remove("gm-header-hidden");
+            header.classList.add("gm-header-visible");
+
+        }
+
+        lastScrollY = currentScrollY;
+        ticking = false;
+
+    }
+
+    window.addEventListener("scroll", function () {
+
+        if (!ticking) {
+
+            window.requestAnimationFrame(handleHeaderScroll);
+
+            ticking = true;
+
+        }
+
+    }, { passive: true });
+
+})();
+</script>
 </body>
 </html>
