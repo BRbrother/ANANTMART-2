@@ -3,9 +3,54 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Product Details | Gram Mart</title>
-  <meta name="description" content="Shop everyday groceries and essentials at Gram Mart.">
+
+  <title>Product Details | Gram Mart Jaipur</title>
+
+  <meta name="description" content="Shop groceries and daily essentials online at Gram Mart Jaipur.">
+
   <meta name="theme-color" content="#0B3091">
+  <meta name="application-name" content="Gram Mart">
+
+  <!-- FAVICON -->
+  <link rel="icon" type="image/png" sizes="48x48" href="/images/gram-mart-icon.png">
+  <link rel="apple-touch-icon" href="/images/gram-mart-icon.png">
+
+  <!-- CANONICAL: updated dynamically for each product -->
+  <link rel="canonical" href="https://anantmart.vercel.app/">
+
+  <!-- OPEN GRAPH -->
+  <meta property="og:site_name" content="Gram Mart">
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="Product Details | Gram Mart">
+  <meta property="og:description" content="Shop everyday groceries at Gram Mart Jaipur.">
+  <meta property="og:url" content="https://anantmart.vercel.app/">
+  <meta property="og:image" content="https://anantmart.vercel.app/images/gram-mart-logo.png">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Gram Mart Jaipur">
+  <meta name="twitter:description" content="Shop groceries and daily essentials online.">
+
+  <!-- WEBSITE IDENTITY -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Gram Mart",
+    "alternateName": "GramMart",
+    "url": "https://anantmart.vercel.app/"
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Gram Mart",
+    "url": "https://anantmart.vercel.app/",
+    "logo": "https://anantmart.vercel.app/images/gram-mart-logo.png"
+  }
+  </script>
+
   <link rel="stylesheet" href="css/style.css">
 
   <style>
@@ -446,8 +491,10 @@
 </head>
 
 <body>
+
 <header class="product-header">
   <nav class="product-navbar" aria-label="Main navigation">
+
     <a href="index.html" class="product-brand" aria-label="Gram Mart Home">
       <span class="product-brand-icon">G</span>
       <span>Gram<span class="brand-mart">Mart</span></span>
@@ -467,10 +514,12 @@
       <a href="my-orders.html">Orders</a>
       <a href="cart.html" class="header-cart">🛒 Cart</a>
     </div>
+
   </nav>
 </header>
 
 <main>
+
   <div class="product-breadcrumb">
     <a href="index.html">Home</a>
     <span> / </span>
@@ -482,34 +531,59 @@
   </div>
 
   <section class="product-layout" id="productContent" hidden>
+
     <div class="product-gallery">
+
       <div class="product-image-panel">
         <img id="productImage" src="" alt="Product image">
       </div>
+
       <div id="productThumbnails" class="product-thumbnails" aria-label="More product images"></div>
+
     </div>
 
     <div class="product-details">
+
       <span class="product-kicker">GRAM MART • DAILY ESSENTIALS</span>
+
       <h1 id="productTitle">Product name</h1>
 
       <div class="product-meta">
-        <span id="productBrandWrap" hidden>Brand: <strong id="productBrand"></strong></span>
-        <span id="productCategoryWrap" hidden>Category: <strong id="productCategory"></strong></span>
-        <span id="productUnitWrap" hidden>Unit: <strong id="productUnit"></strong></span>
-        <span id="productSkuWrap" hidden>SKU: <strong id="productSku"></strong></span>
+
+        <span id="productBrandWrap" hidden>
+          Brand: <strong id="productBrand"></strong>
+        </span>
+
+        <span id="productCategoryWrap" hidden>
+          Category: <strong id="productCategory"></strong>
+        </span>
+
+        <span id="productUnitWrap" hidden>
+          Unit: <strong id="productUnit"></strong>
+        </span>
+
+        <span id="productSkuWrap" hidden>
+          SKU: <strong id="productSku"></strong>
+        </span>
+
       </div>
 
       <div class="price-row">
+
         <h2 class="product-price" id="productPrice">₹0</h2>
+
         <span class="product-mrp" id="productMrpWrap" hidden>
           MRP <s id="productMrp"></s>
         </span>
+
         <span class="discount-badge" id="productDiscount"></span>
+
       </div>
 
       <p class="tax-note">Price shown is the listed selling price.</p>
+
       <p class="stock-status" id="productStock"></p>
+
       <p class="product-description" id="productDescription"></p>
 
       <hr class="product-separator">
@@ -525,28 +599,37 @@
       </div>
 
       <div class="action-buttons">
+
         <button id="addToCart" class="cart-btn-big" type="button" disabled>
           Add to Cart 🛒
         </button>
+
         <button id="goToCart" class="buy-btn" type="button">
           Go to Cart →
         </button>
+
       </div>
 
       <div id="productMessage" class="product-message" role="status" aria-live="polite"></div>
 
       <div class="product-benefits">
+
         <div class="product-benefit">
           <strong>🛍️ Easy ordering</strong>
           <span>Add your everyday essentials to your cart.</span>
         </div>
+
         <div class="product-benefit">
           <strong>📦 Order tracking</strong>
           <span>View your orders from your account.</span>
         </div>
+
       </div>
+
     </div>
+
   </section>
+
 </main>
 
 <footer class="product-footer">
@@ -555,8 +638,190 @@
   <p>&copy; 2026 Gram Mart. All rights reserved.</p>
 </footer>
 
+
+<!-- DYNAMIC PRODUCT SEO -->
+<script>
+(function () {
+
+  const SITE_URL = "https://anantmart.vercel.app/";
+
+  function getText(id) {
+    const el = document.getElementById(id);
+    return el ? el.textContent.trim() : "";
+  }
+
+  function getAbsoluteImage() {
+    const img = document.getElementById("productImage");
+    if (!img || !img.src || !img.getAttribute("src")) return "";
+    try {
+      return new URL(img.src, location.href).href;
+    } catch {
+      return "";
+    }
+  }
+
+  function updateMeta(property, content, isProperty = false) {
+    const selector = isProperty
+      ? `meta[property="${property}"]`
+      : `meta[name="${property}"]`;
+
+    let tag = document.head.querySelector(selector);
+
+    if (!tag) {
+      tag = document.createElement("meta");
+      tag.setAttribute(isProperty ? "property" : "name", property);
+      document.head.appendChild(tag);
+    }
+
+    tag.setAttribute("content", content);
+  }
+
+  function updateCanonical(url) {
+    let canonical = document.querySelector('link[rel="canonical"]');
+
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
+    }
+
+    canonical.href = url;
+  }
+
+  function updateProductSEO() {
+
+    const title = getText("productTitle");
+    const description = getText("productDescription");
+    const priceText = getText("productPrice");
+    const image = getAbsoluteImage();
+
+    if (!title || title === "Product name" || !priceText || priceText === "₹0") {
+      return;
+    }
+
+    const category = getText("productCategory");
+    const brand = getText("productBrand");
+    const sku = getText("productSku");
+    const stockText = getText("productStock");
+
+    const price = Number(
+      priceText.replace(/[^\d.]/g, "")
+    );
+
+    if (!Number.isFinite(price) || price <= 0) return;
+
+    const productUrl = location.href.split("#")[0];
+
+    const seoDescription = (
+      description ||
+      `Buy ${title} online at Gram Mart. Shop groceries and daily essentials with convenient ordering in Jaipur.`
+    ).replace(/\s+/g, " ").slice(0, 300);
+
+    // PAGE TITLE
+    document.title = `${title} | Buy Online at Gram Mart Jaipur`;
+
+    // META DESCRIPTION
+    updateMeta("description", seoDescription);
+
+    // OPEN GRAPH
+    updateMeta("og:title", `${title} | Gram Mart`, true);
+    updateMeta("og:description", seoDescription, true);
+    updateMeta("og:url", productUrl, true);
+    updateMeta("og:type", "product", true);
+
+    if (image) {
+      updateMeta("og:image", image, true);
+      updateMeta("twitter:image", image);
+    }
+
+    updateMeta("twitter:title", `${title} | Gram Mart`);
+    updateMeta("twitter:description", seoDescription);
+
+    // CANONICAL URL
+    updateCanonical(productUrl);
+
+    // STOCK STATUS
+    const isAvailable =
+      !/out of stock|unavailable|sold out/i.test(stockText);
+
+    const productSchema = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": title,
+      "description": seoDescription,
+      "url": productUrl,
+      "image": image ? [image] : undefined,
+      "sku": sku || undefined,
+      "category": category || undefined,
+      "brand": brand ? {
+        "@type": "Brand",
+        "name": brand
+      } : undefined,
+      "offers": {
+        "@type": "Offer",
+        "url": productUrl,
+        "priceCurrency": "INR",
+        "price": price.toFixed(2),
+        "availability": isAvailable
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+        "seller": {
+          "@type": "Organization",
+          "name": "Gram Mart"
+        }
+      }
+    };
+
+    // Remove empty optional values
+    Object.keys(productSchema).forEach(key => {
+      if (productSchema[key] === undefined) {
+        delete productSchema[key];
+      }
+    });
+
+    let schemaScript = document.getElementById("dynamicProductSchema");
+
+    if (!schemaScript) {
+      schemaScript = document.createElement("script");
+      schemaScript.type = "application/ld+json";
+      schemaScript.id = "dynamicProductSchema";
+      document.head.appendChild(schemaScript);
+    }
+
+    schemaScript.textContent = JSON.stringify(productSchema);
+
+  }
+
+  // Product.js loads product information asynchronously.
+  // Observe the product details so SEO updates after data arrives.
+  const target = document.getElementById("productContent");
+
+  if (target) {
+
+    const observer = new MutationObserver(() => {
+      updateProductSEO();
+    });
+
+    observer.observe(target, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+      attributes: true
+    });
+
+  }
+
+  // Also check after initial page loading.
+  document.addEventListener("DOMContentLoaded", updateProductSEO);
+
+})();
+</script>
+
+
+<!-- SUPABASE AND PRODUCT SCRIPT -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./js/supabase.js"></script>
 <script src="./js/product.js"></script>
+
 </body>
 </html>
