@@ -8,6 +8,8 @@
 <link rel="stylesheet" href="css/style.css">
 <link rel="icon" type="image/png" href="images/gram-mart-icon.png">
 <link rel="apple-touch-icon" href="images/gram-mart-icon.png">
+<link rel="stylesheet" href="css/profile.css">
+<link rel="stylesheet" href="css/header-scroll.css">
 
 <style>
 :root{--gm-blue:#0B3091;--gm-orange:#FF6A00;--gm-bg:#f5f7fb}
@@ -63,7 +65,7 @@ body{background:var(--gm-bg)}
 </head>
 <body>
 
-<header class="site-header">
+<header class="site-header" data-scroll-header>
 <nav class="navbar">
 <a href="index.html" class="page-brand" aria-label="Gram Mart Home">
 <img src="images/gram-mart-logo.png" alt="Gram Mart" class="page-wordmark">
@@ -243,6 +245,8 @@ body{background:var(--gm-bg)}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./js/supabase.js"></script>
+<script src="./js/profile.js"></script>
+<script src="./js/header-scroll.js"></script>
 
 <script>
 (() => {
@@ -702,5 +706,6 @@ message("pageMessage","Could not load your account. Please refresh the page.","e
 });
 })();
 </script>
+
 </body>
 </html>
